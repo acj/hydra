@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- <!DOCTYPE XMI SYSTEM "C:\Program Files\Rational\XDE\Addins\XMI\DTD\XMI11UML14.dtd"> -->
+<XMI xmi.version="1.1" xmlns:UML="http://www.omg.org/UML" xmlns:xlink="http://www.w3c.org/xlink" xmlns:XDE="http://www.rational.com/products/XDE">
+    <XMI.header>
+        <XMI.documentation>
+            <XMI.exporter>Rational XDE</XMI.exporter>
+            <XMI.exporterVersion>1.5</XMI.exporterVersion>
+        </XMI.documentation>
+        <XMI.metamodel xmi.name="UML" xmi.version="1.4"/>
+    </XMI.header>
+    <XMI.content>
+        <UML:Model xmi.id="XDE-64AB19F6-2D37-4A34-9E57-98EBED3CB21C" name="XDEModel" isSpecification="false">
+            <UML:Namespace.ownedElement>
+                <UML:Class xmi.id="XDE-F4EBC43D-5C4E-4A90-83C3-D1AF207EA10F" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="_SYSTEMCLASS_" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Operation xmi.id="XDE-BC4189A6-65AF-4F13-A7EB-2AA6E1B19233" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="ready" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-C0E859D9-1DB4-4255-BD2D-AB6415459242" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:StateMachine xmi.id="XDE-BF3B7958-845F-41A2-9930-BB7AB2331179" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-9AAAA889-891F-44AA-BBE2-87E077BE35EB" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-B93A03D3-B07B-4733-A511-4248B851182D" kind="initial" outgoing="XDE-AB49FF1D-95E8-4F30-8BBB-EE966CB58427" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-F3413FBD-2C8D-4876-A906-E589F828176F" isConcurrent="false" outgoing="XDE-C83A0D3B-7CA8-48BB-A364-37D3B3C9B293" name="s1" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-AC012482-421B-48CD-8C01-2BEC33B9DE91" isConcurrent="false" outgoing="XDE-ACCF6E47-D09E-476B-9FFA-31DF7311B05F" name="s2" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-522CC0C6-E82E-42D5-932A-E74CA08D9D79" isConcurrent="false" outgoing="XDE-C8227608-02DD-4F8D-BA2C-C133992F255C" name="s3" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-63FDA13E-F8C5-426A-95FB-C90A7BE4D4E4" isConcurrent="false" outgoing="XDE-CA9DD0C6-E07C-405F-BD96-DFEECDF7D0D8" name="s4" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-D71AB841-8035-4028-8C8E-0D3A057AC738" isConcurrent="false" name="s5" isSpecification="false"/>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-CA9DD0C6-E07C-405F-BD96-DFEECDF7D0D8" source="XDE-63FDA13E-F8C5-426A-95FB-C90A7BE4D4E4" target="XDE-D71AB841-8035-4028-8C8E-0D3A057AC738" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-D73FB01B-5D95-4698-A6A4-2807EB9F4FBF" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.start"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-C8227608-02DD-4F8D-BA2C-C133992F255C" source="XDE-522CC0C6-E82E-42D5-932A-E74CA08D9D79" target="XDE-63FDA13E-F8C5-426A-95FB-C90A7BE4D4E4" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-0483204C-808D-4B8B-8353-2B3DFE115D0F" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="new(ClassC)"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-CE840D62-63AD-4471-93B6-63F4323BDBBE" operation="XDE-BC4189A6-65AF-4F13-A7EB-2AA6E1B19233" name="ready" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-ACCF6E47-D09E-476B-9FFA-31DF7311B05F" source="XDE-AC012482-421B-48CD-8C01-2BEC33B9DE91" target="XDE-522CC0C6-E82E-42D5-932A-E74CA08D9D79" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-724BD33D-822D-41EC-885F-A4A247479A38" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="new(ClassB)"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-D85592B4-4650-45FF-B4CD-93264E0A6727" operation="XDE-BC4189A6-65AF-4F13-A7EB-2AA6E1B19233" name="ready" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-C83A0D3B-7CA8-48BB-A364-37D3B3C9B293" source="XDE-F3413FBD-2C8D-4876-A906-E589F828176F" target="XDE-AC012482-421B-48CD-8C01-2BEC33B9DE91" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-EC2991DB-65AD-4D59-91F3-A75A9F1B1EB8" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="new(ClassA)"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-AB49FF1D-95E8-4F30-8BBB-EE966CB58427" source="XDE-B93A03D3-B07B-4733-A511-4248B851182D" target="XDE-F3413FBD-2C8D-4876-A906-E589F828176F" name="" isSpecification="false"/>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-1459E48E-EA82-461D-82C2-A3BE1FCE5952" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="ClassA" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-426A9CE3-AAB0-49E4-84F9-24BF5DD7101A" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-2F5D718A-9EF5-4621-B44A-9C1523EEE338" name="attr1A" isSpecification="false">
+                            <UML:Attribute.initialValue>
+                                <UML:Expression language="" body="0"/>
+                            </UML:Attribute.initialValue>
+                        </UML:Attribute>
+                        <UML:Operation xmi.id="XDE-51D3830F-A17E-4525-A076-6C2C80CE3365" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation1A" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-46CE8D1E-2C24-45C1-AA90-F9A6DECE04A4" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-F89B7199-7E2E-4E15-91D0-3B4C0E8BD6F7" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation2A" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-A59EA8D5-9E34-42C2-B8CE-B2C2A2F2DAAA" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-7A4F043C-FA33-479F-88F4-012F7B720F99" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation3A" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-FE66D8D2-2288-4C86-91DA-66680F474554" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-79C65667-9AF3-428F-A6DD-617EDE79A800" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="start" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-469A2D26-CBB1-4AEF-844A-460720C7EEAF" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="ackA" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-71AC4374-1FD8-4A57-8F94-BA257D55AB5F" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:StateMachine xmi.id="XDE-3DA3BE63-E075-47AC-BEE3-32BE871AD725" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-22CC102E-CF43-4A0F-BC43-25BCDC848458" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-95251D55-6886-4867-8767-3F5B364222A6" kind="initial" outgoing="XDE-F2681A2D-5AE0-483A-AFCE-0AC0C966BD88" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-FE167410-E7E0-454A-B9F6-B6D8D81E9E16" isConcurrent="false" outgoing="XDE-CF3626D8-A400-403C-A1DC-AA8C939F0308" name="s1A" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-AA5A26DB-EF29-463A-9F55-13081D93FAF5" isConcurrent="false" outgoing="XDE-CFBA175A-C1FD-405B-BB81-87570BD4A683" name="s2A" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-787E5EFE-C35A-498B-B470-FD107DAB791B" isConcurrent="false" outgoing="XDE-2B30A69D-0643-4267-9A68-BE4B946A3317" name="s3A" isSpecification="false">
+                                            <UML:State.entry>
+                                                <UML:UninterpretedAction xmi.id="XDE-973BA6AA-172C-482F-B083-36C150C30970" isAsynchronous="false" name="" isSpecification="false">
+                                                    <UML:Action.script>
+                                                        <UML:ActionExpression language="" body="attr1A:=1"/>
+                                                    </UML:Action.script>
+                                                </UML:UninterpretedAction>
+                                            </UML:State.entry>
+                                        </UML:CompositeState>
+                                        <UML:CompositeState xmi.id="XDE-C124A4F3-04E8-4905-9DC4-3EE66D0B804C" isConcurrent="false" outgoing="XDE-DDDCF7C1-D596-4408-9DFE-0203FFDBAA61" name="s8A" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-1D288936-4040-4FBC-B298-3D18B7C27868" isConcurrent="false" outgoing="XDE-C5F51E0C-C96D-44A9-B53D-B22D79F7476F" name="s4A" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-10106638-4DF3-4E44-962C-960CAAE13AA4" isConcurrent="false" outgoing="XDE-B97CAF75-0AF6-47DC-A20C-CD5967BB8FFE" name="s5A" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-6911E014-F1A1-456B-8C05-D0D39E256FEE" isConcurrent="false" outgoing="XDE-F6811F53-28AC-4C92-AF89-9B6D3BF97E02" name="s6A" isSpecification="false">
+                                            <UML:State.entry>
+                                                <UML:UninterpretedAction xmi.id="XDE-DD7D0EAC-1798-47A9-9290-671EACEFE950" isAsynchronous="false" name="" isSpecification="false">
+                                                    <UML:Action.script>
+                                                        <UML:ActionExpression language="" body="attr1A:=1"/>
+                                                    </UML:Action.script>
+                                                </UML:UninterpretedAction>
+                                            </UML:State.entry>
+                                        </UML:CompositeState>
+                                        <UML:CompositeState xmi.id="XDE-912DA716-767C-4AF8-9A30-D63CAB876720" isConcurrent="false" outgoing="XDE-220DF919-F257-4A2D-8AC3-C91D0EB5C5DB" name="s7A" isSpecification="false">
+                                            <UML:State.entry>
+                                                <UML:UninterpretedAction xmi.id="XDE-31ED65EE-8072-4018-B907-A96BBF15BABF" isAsynchronous="false" name="" isSpecification="false">
+                                                    <UML:Action.script>
+                                                        <UML:ActionExpression language="" body="attr1A:=0"/>
+                                                    </UML:Action.script>
+                                                </UML:UninterpretedAction>
+                                            </UML:State.entry>
+                                        </UML:CompositeState>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-CF3626D8-A400-403C-A1DC-AA8C939F0308" source="XDE-FE167410-E7E0-454A-B9F6-B6D8D81E9E16" target="XDE-912DA716-767C-4AF8-9A30-D63CAB876720" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-778CD7A8-5669-4D1A-8FDF-A28FBF35FC58" operation="XDE-79C65667-9AF3-428F-A6DD-617EDE79A800" name="start" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-F6811F53-28AC-4C92-AF89-9B6D3BF97E02" source="XDE-6911E014-F1A1-456B-8C05-D0D39E256FEE" target="XDE-912DA716-767C-4AF8-9A30-D63CAB876720" name="" isSpecification="false">
+                                    <UML:Transition.guard>
+                                        <UML:Guard>
+                                            <UML:Guard.expression>
+                                                <UML:BooleanExpression body="attr1A=0" language=""/>
+                                            </UML:Guard.expression>
+                                        </UML:Guard>
+                                    </UML:Transition.guard>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-03E6D7D4-72D4-4578-8F0A-07753C2EC8BF" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-B97CAF75-0AF6-47DC-A20C-CD5967BB8FFE" source="XDE-10106638-4DF3-4E44-962C-960CAAE13AA4" target="XDE-6911E014-F1A1-456B-8C05-D0D39E256FEE" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-D37E0CC6-C7A5-4ED7-82B9-DCD628E9D7B8" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassC.operation3C"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-971BEF1A-6FFE-408E-825D-AF62DE732E1A" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-C5F51E0C-C96D-44A9-B53D-B22D79F7476F" source="XDE-1D288936-4040-4FBC-B298-3D18B7C27868" target="XDE-10106638-4DF3-4E44-962C-960CAAE13AA4" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-35584AC6-C259-4A9B-9371-2137EF874C3D" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassB.operation3B"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-AC04CB28-324E-4B20-87D0-86ED122EAFC9" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-DDDCF7C1-D596-4408-9DFE-0203FFDBAA61" source="XDE-C124A4F3-04E8-4905-9DC4-3EE66D0B804C" target="XDE-1D288936-4040-4FBC-B298-3D18B7C27868" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-F6CFEB12-8D43-48A5-B423-88D655FE4077" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassC.operation2C"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-2C52A294-91DC-47B4-A805-54AB5D33A2BF" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-2B30A69D-0643-4267-9A68-BE4B946A3317" source="XDE-787E5EFE-C35A-498B-B470-FD107DAB791B" target="XDE-C124A4F3-04E8-4905-9DC4-3EE66D0B804C" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-80E8A479-C19B-45B8-8963-33F549F91125" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassB.operation2B"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-041D4F6E-4B3B-45E3-88BE-62660CB8308F" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-CFBA175A-C1FD-405B-BB81-87570BD4A683" source="XDE-AA5A26DB-EF29-463A-9F55-13081D93FAF5" target="XDE-787E5EFE-C35A-498B-B470-FD107DAB791B" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-B52E7574-7178-4F0F-ABF3-8D2480CF53E5" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassC.operation1C"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-A512519F-6AA7-4251-A556-6D03D90B286D" operation="XDE-89B34216-01C7-431E-AFC0-37BF49C48F2F" name="ackA" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-220DF919-F257-4A2D-8AC3-C91D0EB5C5DB" source="XDE-912DA716-767C-4AF8-9A30-D63CAB876720" target="XDE-AA5A26DB-EF29-463A-9F55-13081D93FAF5" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-C7727182-A03C-4E23-B123-67C476040BBA" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassB.operation1B"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-F2681A2D-5AE0-483A-AFCE-0AC0C966BD88" source="XDE-95251D55-6886-4867-8767-3F5B364222A6" target="XDE-FE167410-E7E0-454A-B9F6-B6D8D81E9E16" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-65BA0B13-3545-47CD-9936-5527632282B5" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^_SYSTEMCLASS_.ready"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-4F4DBA2B-AF30-45E2-8DB5-5D6AE9FBFAF0" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="ClassB" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-F76D5F34-18F0-4770-9232-93BC08737F79" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-2F5D718A-9EF5-4621-B44A-9C1523EEE338" name="attr1B" isSpecification="false">
+                            <UML:Attribute.initialValue>
+                                <UML:Expression language="" body="0"/>
+                            </UML:Attribute.initialValue>
+                        </UML:Attribute>
+                        <UML:Operation xmi.id="XDE-4D9B1AF2-C3E6-4B9B-B2D8-B2E21E59BDA2" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation1B" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-CEDD64E2-B1CF-490B-B4DD-128E7F5657CF" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-63B86A01-A0BB-49BC-8F4D-C0447A476F77" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation2B" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-15822EF1-9519-4A90-B8FC-A9B0A2E302FA" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-5A103D08-F8B2-4183-A6C8-82A4B14CD945" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation3B" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-22A1DDCF-E460-422E-A99C-B31CC8D62E42" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:StateMachine xmi.id="XDE-2E19A1D4-54D0-4677-92CB-5B9D37B1ADA8" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-5D765E21-F896-43FC-9760-870C88472249" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-3A18CC25-CD10-4F5D-AAC3-913B3EC9D072" kind="initial" outgoing="XDE-4BB314B3-4186-4AF2-A569-E43897CFF1A7" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-092981B4-52AF-4AA6-AD69-1EC1FB3776EF" isConcurrent="false" outgoing="XDE-1EC4BC26-917B-41BA-955C-48392FD93F8F" name="s1B" isSpecification="false">
+                                            <UML:State.entry>
+                                                <UML:UninterpretedAction xmi.id="XDE-F0B67FC0-BB64-4786-9A46-8CACB36883EC" isAsynchronous="false" name="" isSpecification="false">
+                                                    <UML:Action.script>
+                                                        <UML:ActionExpression language="" body="attr1B:=0"/>
+                                                    </UML:Action.script>
+                                                </UML:UninterpretedAction>
+                                            </UML:State.entry>
+                                        </UML:CompositeState>
+                                        <UML:CompositeState xmi.id="XDE-A849E5B0-0AE8-462A-8887-298F214B624D" isConcurrent="false" outgoing="XDE-3CE461CE-65D0-4F65-91D9-F70CA377AD31" name="s2B" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-942DB5E4-8263-4B07-A495-FF86C0A6D509" isConcurrent="false" outgoing="XDE-EBE8ADC1-E154-4D20-B4B4-E3D95DC35450" name="s3B" isSpecification="false">
+                                            <UML:State.entry>
+                                                <UML:UninterpretedAction xmi.id="XDE-31BC89DC-F618-4B53-90DE-E229153A92C6" isAsynchronous="false" name="" isSpecification="false">
+                                                    <UML:Action.script>
+                                                        <UML:ActionExpression language="" body="attr1B:=1"/>
+                                                    </UML:Action.script>
+                                                </UML:UninterpretedAction>
+                                            </UML:State.entry>
+                                        </UML:CompositeState>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-EBE8ADC1-E154-4D20-B4B4-E3D95DC35450" source="XDE-942DB5E4-8263-4B07-A495-FF86C0A6D509" target="XDE-092981B4-52AF-4AA6-AD69-1EC1FB3776EF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-ADE916AE-AC2F-4C34-B44A-7C6DF8DB1919" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-2C28F1A5-BD1E-4815-AF38-2E189DA591DA" operation="XDE-5A103D08-F8B2-4183-A6C8-82A4B14CD945" name="operation3B" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-3CE461CE-65D0-4F65-91D9-F70CA377AD31" source="XDE-A849E5B0-0AE8-462A-8887-298F214B624D" target="XDE-942DB5E4-8263-4B07-A495-FF86C0A6D509" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-0808F9EF-43EA-4E50-9F2E-D0C21995C6EF" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-344DF995-9897-42EF-BBD4-323BD45013FF" operation="XDE-63B86A01-A0BB-49BC-8F4D-C0447A476F77" name="operation2B" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-1EC4BC26-917B-41BA-955C-48392FD93F8F" source="XDE-092981B4-52AF-4AA6-AD69-1EC1FB3776EF" target="XDE-A849E5B0-0AE8-462A-8887-298F214B624D" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-0118C302-7356-48E6-A8FC-E1E7D741F891" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-8F400B8B-24E1-4D18-B549-F7C1ED8478E9" operation="XDE-4D9B1AF2-C3E6-4B9B-B2D8-B2E21E59BDA2" name="operation1B" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-4BB314B3-4186-4AF2-A569-E43897CFF1A7" source="XDE-3A18CC25-CD10-4F5D-AAC3-913B3EC9D072" target="XDE-092981B4-52AF-4AA6-AD69-1EC1FB3776EF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-2669FBD3-B6BA-443B-8590-6FC6C9A439AB" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^_SYSTEMCLASS_.ready"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-F33B485F-5158-4F3E-9672-C47C4CF2867F" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="ClassC" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-3D0F1285-5DC9-4C75-AA30-ED9C889887E6" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-2F5D718A-9EF5-4621-B44A-9C1523EEE338" name="attr1C" isSpecification="false">
+                            <UML:Attribute.initialValue>
+                                <UML:Expression language="" body="0"/>
+                            </UML:Attribute.initialValue>
+                        </UML:Attribute>
+                        <UML:Operation xmi.id="XDE-5A0B65DF-77DD-43C5-97D2-3B807895ABB5" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation1C" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-1F201191-1C8C-412D-8011-E5CF4AB71888" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-7E1B3E6D-E18B-4CA2-BD1B-D95D02B6A753" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation2C" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-5A74CC88-A413-424A-BB45-15505A7C1A72" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                        <UML:Operation xmi.id="XDE-1192FFFA-4413-48C9-BBEB-962B68B3DBDC" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="operation3C" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-65C1B385-3071-499B-9D85-D5ED37F07BB5" kind="return" type="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:StateMachine xmi.id="XDE-DB756345-28D0-4314-A584-CC34446DCA11" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-8A331451-6094-44C0-834E-397FDE6D329D" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-4FD30B62-267F-4682-9068-BA8819919D4F" kind="initial" outgoing="XDE-A9EA9ECD-6C83-453B-9420-3689E465AE35" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-2AF3FA50-EEA8-4DA2-A838-459B47DDB4BB" isConcurrent="false" outgoing="XDE-7DD4542A-8B22-467F-ABF5-32D9DF44E6E3" name="s1C" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-907FE64D-B3A0-4328-9ED1-35F9FC40CEDB" isConcurrent="false" outgoing="XDE-6F3BB1F2-0070-4D09-AF92-5E72B8899628" name="s2C" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-48B2392C-0CF5-4E57-BCDF-6BD8C4E5C5EB" isConcurrent="false" outgoing="XDE-69638801-D4A7-4F59-A539-EBBF77F20B06" name="s3C" isSpecification="false"/>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-69638801-D4A7-4F59-A539-EBBF77F20B06" source="XDE-48B2392C-0CF5-4E57-BCDF-6BD8C4E5C5EB" target="XDE-2AF3FA50-EEA8-4DA2-A838-459B47DDB4BB" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-343049FF-0901-4EA8-958B-C8DB7DF6F9C0" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-C399F896-2562-485C-B1AD-B9454C76CA16" operation="XDE-1192FFFA-4413-48C9-BBEB-962B68B3DBDC" name="operation3C" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-6F3BB1F2-0070-4D09-AF92-5E72B8899628" source="XDE-907FE64D-B3A0-4328-9ED1-35F9FC40CEDB" target="XDE-48B2392C-0CF5-4E57-BCDF-6BD8C4E5C5EB" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-2374AEF9-F198-4EE6-A1B4-2121D81444E3" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-C545AE1C-3CBD-4905-8047-9CCAB1513ED0" operation="XDE-7E1B3E6D-E18B-4CA2-BD1B-D95D02B6A753" name="operation2C" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-7DD4542A-8B22-467F-ABF5-32D9DF44E6E3" source="XDE-2AF3FA50-EEA8-4DA2-A838-459B47DDB4BB" target="XDE-907FE64D-B3A0-4328-9ED1-35F9FC40CEDB" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-12E7F005-AB87-4449-A11E-2A0D5F8AF80C" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ClassA.ackA"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-E18954A0-60B5-4625-81BB-97D259C9F7A1" operation="XDE-5A0B65DF-77DD-43C5-97D2-3B807895ABB5" name="operation1C" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-A9EA9ECD-6C83-453B-9420-3689E465AE35" source="XDE-4FD30B62-267F-4682-9068-BA8819919D4F" target="XDE-2AF3FA50-EEA8-4DA2-A838-459B47DDB4BB" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-A7928763-BEFB-4DFC-9047-86AF1DB647AF" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^_SYSTEMCLASS_.ready"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+            </UML:Namespace.ownedElement>
+        </UML:Model>
+        <UML:DataType xmi.id="XDE-AA8D9E22-EB81-4E2C-BED2-581D5B00A6FB" name="void"/>
+        <UML:DataType xmi.id="XDE-2F5D718A-9EF5-4621-B44A-9C1523EEE338" name="bool"/>
+        <UML:TaggedValue xmi.id="XDE-8E51777E-E737-484C-AC65-57F71D87B3D1" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-1459E48E-EA82-461D-82C2-A3BE1FCE5952"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-F9ED19D4-DFD5-4C12-B751-D38C86B34AA8" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-F4EBC43D-5C4E-4A90-83C3-D1AF207EA10F"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-5016B623-B3A1-41B9-82B6-2E99FB9CD879" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-426A9CE3-AAB0-49E4-84F9-24BF5DD7101A"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-93120FC9-5BC4-42C5-B965-83DF82D83FFF" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-4F4DBA2B-AF30-45E2-8DB5-5D6AE9FBFAF0"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-8986D4F6-500E-4AA2-9C56-90091EA3AAB0" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-F76D5F34-18F0-4770-9232-93BC08737F79"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-589DB9BE-5C8B-4995-BF67-8029ADC5F911" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-3D0F1285-5DC9-4C75-AA30-ED9C889887E6"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-3540FAC3-3AFA-4C2B-9D01-82543EDFE0E8" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-F33B485F-5158-4F3E-9672-C47C4CF2867F"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+    </XMI.content>
+</XMI>

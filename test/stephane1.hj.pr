@@ -1,0 +1,281 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan wait=[10] of {int,mtype};
+mtype={
+        ackA, operation1A, 
+        operation2A, operation3A, 
+        start, ready, 
+        operation1C, operation2B, 
+        operation3B, operation3C, 
+        operation1B, operation2C
+        
+};
+typedef Timer_T {
+        bool timerwait;
+        }
+Timer_T Timer_V;
+
+typedef ClassA_T {
+        bool timerwait;
+        bool attr1A;
+
+        }
+ClassA_T ClassA_V;
+
+chan ClassA_q=[5] of {mtype};
+chan ClassA_C=[0] of {bit};
+
+typedef ClassB_T {
+        bool timerwait;
+        bool attr1B;
+
+        }
+ClassB_T ClassB_V;
+
+chan ClassB_q=[5] of {mtype};
+chan ClassB_C=[0] of {bit};
+
+typedef ClassC_T {
+        bool timerwait;
+        bool attr1C;
+
+        }
+ClassC_T ClassC_V;
+
+chan ClassC_q=[5] of {mtype};
+chan ClassC_C=[0] of {bit};
+
+
+chan _SYSTEMCLASS__q=[5] of {mtype};
+chan _SYSTEMCLASS__C=[0] of {bit};
+active proctype ClassA()
+{atomic{
+mtype m;
+        ClassA_V.attr1A = 0;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1A; skip;};
+/* State s1A */
+s1A:          atomic{skip; printf("in state ClassA.s1A\n");
+        }
+
+        s1A_G:
+        if
+        :: atomic{ClassA_q?start -> 
+           printf("Transition to ClassA.s7A (evt:start())");goto s7A; skip;}
+        fi;
+/* State s2A */
+s2A:          atomic{skip; printf("in state ClassA.s2A\n");
+        }
+
+        s2A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           ClassC_q!operation1C;
+           printf("Transition to ClassA.s3A (evt:ackA()^ClassC.operation1C)");goto s3A; skip;}
+        fi;
+/* State s3A */
+s3A:          atomic{skip; printf("in state ClassA.s3A\n");
+/* entry actions */
+        ClassA_V.attr1A=1;        }
+
+        s3A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           ClassB_q!operation2B;
+           printf("Transition to ClassA.s8A (evt:ackA()^ClassB.operation2B)");goto s8A; skip;}
+        fi;
+/* State s4A */
+s4A:          atomic{skip; printf("in state ClassA.s4A\n");
+        }
+
+        s4A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           ClassB_q!operation3B;
+           printf("Transition to ClassA.s5A (evt:ackA()^ClassB.operation3B)");goto s5A; skip;}
+        fi;
+/* State s5A */
+s5A:          atomic{skip; printf("in state ClassA.s5A\n");
+        }
+
+        s5A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           ClassC_q!operation3C;
+           printf("Transition to ClassA.s6A (evt:ackA()^ClassC.operation3C)");goto s6A; skip;}
+        fi;
+/* State s6A */
+s6A:          atomic{skip; printf("in state ClassA.s6A\n");
+/* entry actions */
+        ClassA_V.attr1A=1;        }
+
+        s6A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           if
+           :: atomic{ClassA_V.attr1A==0 ->
+              printf("Transition to ClassA.s7A (evt:ackA()[attr1A=0])");goto s7A; skip;}
+           :: else -> goto s6A_G; skip;
+           fi}
+        fi;
+/* State s7A */
+s7A:          atomic{skip; printf("in state ClassA.s7A\n");
+/* entry actions */
+        ClassA_V.attr1A=0;        }
+
+        s7A_G:
+        if
+        :: atomic{1 -> 
+           ClassB_q!operation1B;
+           printf("Transition to ClassA.s2A (^ClassB.operation1B)");goto s2A; skip;}
+        fi;
+/* State s8A */
+s8A:          atomic{skip; printf("in state ClassA.s8A\n");
+        }
+
+        s8A_G:
+        if
+        :: atomic{ClassA_q?ackA -> 
+           ClassC_q!operation2C;
+           printf("Transition to ClassA.s4A (evt:ackA()^ClassC.operation2C)");goto s4A; skip;}
+        fi;
+exit:      skip
+}
+active proctype ClassB()
+{atomic{
+mtype m;
+        ClassB_V.attr1B = 0;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1B; skip;};
+/* State s1B */
+s1B:          atomic{skip; printf("in state ClassB.s1B\n");
+/* entry actions */
+        ClassB_V.attr1B=0;        }
+
+        s1B_G:
+        if
+        :: atomic{ClassB_q?operation1B -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassB.s2B (evt:operation1B()^ClassA.ackA)");goto s2B; skip;}
+        fi;
+/* State s2B */
+s2B:          atomic{skip; printf("in state ClassB.s2B\n");
+        }
+
+        s2B_G:
+        if
+        :: atomic{ClassB_q?operation2B -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassB.s3B (evt:operation2B()^ClassA.ackA)");goto s3B; skip;}
+        fi;
+/* State s3B */
+s3B:          atomic{skip; printf("in state ClassB.s3B\n");
+/* entry actions */
+        ClassB_V.attr1B=1;        }
+
+        s3B_G:
+        if
+        :: atomic{ClassB_q?operation3B -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassB.s1B (evt:operation3B()^ClassA.ackA)");goto s1B; skip;}
+        fi;
+exit:      skip
+}
+active proctype ClassC()
+{atomic{
+mtype m;
+        ClassC_V.attr1C = 0;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1C; skip;};
+/* State s1C */
+s1C:          atomic{skip; printf("in state ClassC.s1C\n");
+        }
+
+        s1C_G:
+        if
+        :: atomic{ClassC_q?operation1C -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassC.s2C (evt:operation1C()^ClassA.ackA)");goto s2C; skip;}
+        fi;
+/* State s2C */
+s2C:          atomic{skip; printf("in state ClassC.s2C\n");
+        }
+
+        s2C_G:
+        if
+        :: atomic{ClassC_q?operation2C -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassC.s3C (evt:operation2C()^ClassA.ackA)");goto s3C; skip;}
+        fi;
+/* State s3C */
+s3C:          atomic{skip; printf("in state ClassC.s3C\n");
+        }
+
+        s3C_G:
+        if
+        :: atomic{ClassC_q?operation3C -> 
+           ClassA_q!ackA;
+           printf("Transition to ClassC.s1C (evt:operation3C()^ClassA.ackA)");goto s1C; skip;}
+        fi;
+exit:      skip
+}
+active proctype _SYSTEMCLASS_()
+{atomic{
+mtype m;
+
+/*Init state*/
+        goto  s1; skip;};
+/* State s1 */
+s1:           atomic{skip; printf("in state _SYSTEMCLASS_.s1\n");
+        }
+
+        s1_G:
+        if
+        :: atomic{1 -> 
+           run ClassA();
+           printf("Transition to _SYSTEMCLASS_.s2 (/new (ClassA))");goto s2; skip;}
+        fi;
+/* State s2 */
+s2:           atomic{skip; printf("in state _SYSTEMCLASS_.s2\n");
+        }
+
+        s2_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run ClassB();
+           printf("Transition to _SYSTEMCLASS_.s3 (evt:ready()/new (ClassB))");goto s3; skip;}
+        fi;
+/* State s3 */
+s3:           atomic{skip; printf("in state _SYSTEMCLASS_.s3\n");
+        }
+
+        s3_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run ClassC();
+           printf("Transition to _SYSTEMCLASS_.s4 (evt:ready()/new (ClassC))");goto s4; skip;}
+        fi;
+/* State s4 */
+s4:           atomic{skip; printf("in state _SYSTEMCLASS_.s4\n");
+        }
+
+        s4_G:
+        if
+        :: atomic{1 -> 
+           ClassA_q!start;
+           printf("Transition to _SYSTEMCLASS_.s5 (^ClassA.start)");goto s5; skip;}
+        fi;
+/* State s5 */
+s5:           atomic{skip; printf("in state _SYSTEMCLASS_.s5\n");
+        }
+        if
+        :: skip -> false
+        fi;
+exit:      skip
+}
