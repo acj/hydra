@@ -35,6 +35,7 @@ public class PromelaTest1 {
 	public static void main(String[] args) throws ParseException {
         ConversionDriver cvd;
 		String filename = "";
+        String outputFilename = "";
         NodeUtilityClass nuc = new NodeUtilityClass();
 //       boolean outputToFile = false;
 //        AcceptReturnType outputString; // = new AcceptReturnType();
@@ -49,6 +50,7 @@ public class PromelaTest1 {
 			  System.out.println("Error. File '" + filename + "' Not found. Exiting.");
 			}
             if (args.length > 1) {
+                outputFilename = args[1];
 //              outputToFile = true;   
             }
 		}
@@ -61,7 +63,7 @@ public class PromelaTest1 {
         nuc.println("***** Warning: All processes active! *******\n");
 	    try {
             cvd.convert();
-            cvd.save(args[1]);
+            cvd.save(outputFilename);
             /*
             outputString = new AcceptReturnType(cvd.promelaOutput);
             if (outputString.defV().length() > 0) {

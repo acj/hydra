@@ -6,7 +6,7 @@
  */
 package xmi2hil;
 
-import h2PFoundation.AcceptReturnType;
+import h2PFoundation.*;
 import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
 import h2PVisitors.Parser.*;
@@ -24,7 +24,7 @@ import umlModel.Visitor;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class ConversionDriver {
+public class ConversionDriver extends NodeUtilityClass {
     WorldUtilNode rootNode;
     Hil2PromelaVisitor funkyVisitor;
     UMLParser1 tHILParser;
@@ -102,7 +102,7 @@ public class ConversionDriver {
         if (filename.length() > 0) {
           retval = outputString.writeFile("default", filename);
         } else {
-           System.out.print (outputString.defV());   
+           print (outputString.defV());   
         }
         return retval;
     }
@@ -112,7 +112,12 @@ public class ConversionDriver {
         boolean retval = true;
         // File source=new File(inputFilename);
         
-        retval = outputString.writeFile("default", f);
+        if (f == null) { // output to stdin if the parameter is null.
+            print (outputString.defV());   
+        } else {
+            retval = outputString.writeFile("default", f);            
+        }
+          
         
         return retval;
     }
