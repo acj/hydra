@@ -36,8 +36,8 @@ public class PromelaTest1 {
         ConversionDriver cvd;
 		String filename = "";
         NodeUtilityClass nuc = new NodeUtilityClass();
-        boolean outputToFile = false;
-        AcceptReturnType outputString; // = new AcceptReturnType();
+//       boolean outputToFile = false;
+//        AcceptReturnType outputString; // = new AcceptReturnType();
 		
 		InputStream ios = System.in; // input sourcee, default, standard in
 		if (args.length > 0) { // read from a file if argument present.
@@ -49,7 +49,7 @@ public class PromelaTest1 {
 			  System.out.println("Error. File '" + filename + "' Not found. Exiting.");
 			}
             if (args.length > 1) {
-              outputToFile = true;   
+//              outputToFile = true;   
             }
 		}
 		// outputString.readFile("default", filename);
