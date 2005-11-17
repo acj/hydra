@@ -33,4 +33,19 @@ public class ClassBodyNode extends aNode {
 		// TODO Auto-generated method stub
 		return v.visitClassBodyNode(this);
 	}
+    
+    public boolean hasStateMachine () {
+      // boolean retVal = false;
+      
+      for (int i = 0; i < children.size(); i++) {
+        aNode childNode = (aNode) children.get(i);
+        if (childNode.getType().equals("StateNode") ||
+            childNode.getType().equals("CompositeStateNode") ||
+            childNode.getType().equals("ConcurrentCompositeNode")) {
+          return true;
+        }
+      }
+      
+      return false;   
+    }
 }

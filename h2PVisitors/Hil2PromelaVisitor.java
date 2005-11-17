@@ -676,8 +676,11 @@ public class Hil2PromelaVisitor extends aVisitor {
             // #SK fix for process termination bug.
 			tmpART.addStr("Class", "active " + "proctype " + classname + "()");			
 		}
-		tmpART.addStr("Class", "{atomic{");
-		tmpART.addStr("Class", "mtype m;");
+        tmpART.addStr("Class", "{");
+        if (tNode.hasStateMachine()) {
+        	tmpART.addStr("Class", "atomic{");
+        	tmpART.addStr("Class", "mtype m;");
+        }
 		
 		return tmpART;
 	}
