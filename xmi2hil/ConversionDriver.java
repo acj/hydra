@@ -6,17 +6,22 @@
  */
 package xmi2hil;
 
-import h2PFoundation.*;
+import h2PFoundation.AcceptReturnType;
+import h2PFoundation.NodeUtilityClass;
 import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
-import h2PVisitors.Parser.*;
-import xmiParser.*;
-import java.io.*;
+import h2PVisitors.Parser.ParseException;
+import h2PVisitors.Parser.UMLParser1;
+
+import java.io.File;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 
 import umlModel.Model;
 import umlModel.Visitor;
+import xmiParser.XmiParserComponent;
 
 /**
  * @author karli

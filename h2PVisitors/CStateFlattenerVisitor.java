@@ -1,7 +1,34 @@
 package h2PVisitors;
 
 import h2PFoundation.AcceptReturnType;
-import h2PNodes.*;
+import h2PNodes.ActionNode;
+import h2PNodes.ClassBodyNode;
+import h2PNodes.ClassNode;
+import h2PNodes.CompositeStateBodyNode;
+import h2PNodes.CompositeStateNode;
+import h2PNodes.ConcurrentCompositeBodyNode;
+import h2PNodes.ConcurrentCompositeNode;
+import h2PNodes.DriverFileNode;
+import h2PNodes.EventNode;
+import h2PNodes.HistoryNode;
+import h2PNodes.InitNode;
+import h2PNodes.InstanceVariableNode;
+import h2PNodes.JoinNode;
+import h2PNodes.MessageNode;
+import h2PNodes.MessagesNode;
+import h2PNodes.ModelBodyNode;
+import h2PNodes.ModelNode;
+import h2PNodes.NullNode;
+import h2PNodes.SignalNode;
+import h2PNodes.StateBodyNode;
+import h2PNodes.StateNode;
+import h2PNodes.TimeInvariantNode;
+import h2PNodes.TransitionActionNode;
+import h2PNodes.TransitionActionsNode;
+import h2PNodes.TransitionBodyNode;
+import h2PNodes.TransitionNode;
+import h2PNodes.WorldUtilNode;
+import h2PNodes.aNode;
 
 
 /*

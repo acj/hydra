@@ -3,7 +3,8 @@ package h2PFoundation;
 import h2PNodes.ClassBodyNode;
 import h2PNodes.aNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class NodeUtilityClass {
 

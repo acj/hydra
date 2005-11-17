@@ -7,7 +7,7 @@
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
-import h2PVisitors.*;
+import h2PVisitors.aVisitor;
 
 import java.util.Vector;
 

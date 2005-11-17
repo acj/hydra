@@ -1,7 +1,11 @@
 package h2PVisitors;
 
 import h2PFoundation.AcceptReturnType;
-import h2PNodes.*;
+import h2PNodes.CompositeStateNode;
+import h2PNodes.ConcurrentCompositeNode;
+import h2PNodes.StateNode;
+import h2PNodes.TransitionNode;
+import h2PNodes.aNode;
 
 public class PromelaStateVisitor extends aVisitor {
 

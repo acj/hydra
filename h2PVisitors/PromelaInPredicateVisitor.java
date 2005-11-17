@@ -1,10 +1,23 @@
 package h2PVisitors;
 
-import h2PFoundation.*;
-import h2PNodes.*;
-import h2PVisitors.Parser.*;
+import h2PFoundation.AcceptReturnType;
+import h2PNodes.ClassBodyNode;
+import h2PNodes.ClassNode;
+import h2PNodes.CompositeStateBodyNode;
+import h2PNodes.CompositeStateNode;
+import h2PNodes.ConcurrentCompositeBodyNode;
+import h2PNodes.ConcurrentCompositeNode;
+import h2PNodes.EventNode;
+import h2PNodes.ModelBodyNode;
+import h2PNodes.ModelNode;
+import h2PNodes.StateBodyNode;
+import h2PNodes.StateNode;
+import h2PNodes.TransitionBodyNode;
+import h2PNodes.TransitionNode;
+import h2PNodes.aNode;
+import h2PVisitors.Parser.UMLExpr1;
 
-import java.util.*;
+import java.util.Vector;
 
 // PromelaInPredicateVisitor
 /*

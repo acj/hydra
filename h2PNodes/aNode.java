@@ -6,8 +6,9 @@
  */
 package h2PNodes;
 
-import h2PFoundation.*;
-import h2PVisitors.*;
+import h2PFoundation.AcceptReturnType;
+import h2PFoundation.NodeUtilityClass;
+import h2PVisitors.aVisitor;
 
 import java.util.Vector;
 
