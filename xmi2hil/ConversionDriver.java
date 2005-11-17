@@ -29,9 +29,9 @@ public class ConversionDriver {
     Hil2PromelaVisitor funkyVisitor;
     UMLParser1 tHILParser;
     StringBuffer hilIntermediate;
-    public String promelaOutput = "";
-    public String inputFilename = "";
-    public boolean isSilent = false;
+    String promelaOutput = "";
+    String inputFilename = "";
+    boolean isSilent = false;
     
 	/**
 	 * 
@@ -49,7 +49,7 @@ public class ConversionDriver {
     }
     
     // Multi-stage xmi-hil converter
-    public void Convert() throws ParseException  {
+    public void convert() throws ParseException  {
         if (inputFilename.length() == 0) {
           return;   
         }
@@ -116,4 +116,28 @@ public class ConversionDriver {
         
         return retval;
     }
+
+	public String getInputFilename() {
+		return inputFilename;
+	}
+
+	public void setInputFilename(String inputFilename) {
+		this.inputFilename = inputFilename;
+	}
+
+	public boolean isSilent() {
+		return isSilent;
+	}
+
+	public void setSilent(boolean isSilent) {
+		this.isSilent = isSilent;
+	}
+
+	public String getPromelaOutput() {
+		return promelaOutput;
+	}
+
+	public void setPromelaOutput(String promelaOutput) {
+		this.promelaOutput = promelaOutput;
+	}
 }

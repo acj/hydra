@@ -60,7 +60,7 @@ public class PromelaTest1 {
         nuc.println("***** Warning: Contains Hack around Process Termination Bug! *******\n");
         nuc.println("***** Warning: All processes active! *******\n");
 	    try {
-            cvd.Convert();
+            cvd.convert();
             cvd.save(args[1]);
             /*
             outputString = new AcceptReturnType(cvd.promelaOutput);
