@@ -61,6 +61,8 @@ public class PromelaTest1 {
         nuc.println("***** Warning: All processes active! *******\n");
 	    try {
             cvd.Convert();
+            cvd.save(args[1]);
+            /*
             outputString = new AcceptReturnType(cvd.promelaOutput);
             if (outputString.defV().length() > 0) {
                 if (!outputToFile) {
@@ -68,7 +70,7 @@ public class PromelaTest1 {
                 } else {
                     outputString.writeFile("default", args[1]);
                 }
-            }
+            }*/
 		} catch (ParseException x) {
 		    	System.out.println("Parse Error. Exiting.");
 		    	throw x;

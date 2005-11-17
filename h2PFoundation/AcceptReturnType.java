@@ -286,13 +286,39 @@ public class AcceptReturnType extends NodeUtilityClass {
 	}
 	
     // Loads the contents of a file into a given hashkey
+    public boolean writeFile (String hashKey, File f) {
+        boolean success = false;
+        
+        try {
+          FileOutputStream fos = new FileOutputStream(f);
+        
+          success = writeFile(hashKey, fos);
+        } catch (FileNotFoundException fnfe) {
+            success = false;
+        }
+        return success;
+    }
+    
     public boolean writeFile (String hashKey, String filename) {
+        boolean success = false;
+        
+        try {
+          FileOutputStream fos = new FileOutputStream(filename);
+        
+          success = writeFile(hashKey, fos);
+        } catch (FileNotFoundException fnfe) {
+            success = false;
+        }
+        return success;
+    }
+
+    public boolean writeFile (String hashKey, FileOutputStream fos) {
         boolean success = true;
         
         String finalStr = "";
         
         try {
-            FileOutputStream fos = new FileOutputStream(filename);
+            //FileOutputStream fos = new FileOutputStream(filename);
             
             byte buffer[] = new byte[readBufferSize];
             StringBuffer strbuf = new StringBuffer (getStr(hashKey));

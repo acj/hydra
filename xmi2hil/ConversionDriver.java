@@ -6,6 +6,7 @@
  */
 package xmi2hil;
 
+import h2PFoundation.AcceptReturnType;
 import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
 import h2PVisitors.Parser.*;
@@ -27,7 +28,7 @@ public class ConversionDriver {
     WorldUtilNode rootNode;
     Hil2PromelaVisitor funkyVisitor;
     UMLParser1 tHILParser;
-    String hilIntermediate = "";
+    StringBuffer hilIntermediate;
     public String promelaOutput = "";
     public String inputFilename = "";
     public boolean isSilent = false;
@@ -76,13 +77,13 @@ public class ConversionDriver {
         Iterator it = data.iterator();
 
         // write the hil source to a string
-        hilIntermediate = "";
+        hilIntermediate = new StringBuffer();
         while (it.hasNext()) {
-            hilIntermediate += ((String) it.next()) + "\n";
+            hilIntermediate.append(((String) it.next()) + "\n");
         }
 
         // Finally convert the hil to a promela file
-        Reader dataStream = new StringReader (hilIntermediate);
+        Reader dataStream = new StringReader (hilIntermediate.toString());
         
         rootNode = new WorldUtilNode();
         tHILParser = new UMLParser1(dataStream);
@@ -94,4 +95,25 @@ public class ConversionDriver {
 
     }
 
+    public boolean save(String filename) {       
+        AcceptReturnType outputString = new AcceptReturnType(promelaOutput);
+        boolean retval = true;
+        
+        if (filename.length() > 0) {
+          retval = outputString.writeFile("default", filename);
+        } else {
+           System.out.print (outputString.defV());   
+        }
+        return retval;
+    }
+    
+    public boolean save (File f) {
+        AcceptReturnType outputString = new AcceptReturnType(promelaOutput);
+        boolean retval = true;
+        // File source=new File(inputFilename);
+        
+        retval = outputString.writeFile("default", f);
+        
+        return retval;
+    }
 }
