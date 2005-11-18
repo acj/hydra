@@ -42,7 +42,7 @@ public class PromelaTest1 {
 //       boolean outputToFile = false;
 //        AcceptReturnType outputString; // = new AcceptReturnType();
 		
-		InputStream ios = System.in; // input sourcee, default, standard in
+/*		InputStream ios = System.in; // input sourcee, default, standard in
 		if (args.length > 0) { // read from a file if argument present.
 			filename = args[0];
 			try {
@@ -55,8 +55,13 @@ public class PromelaTest1 {
                 outputFilename = args[1];
 //              outputToFile = true;   
             }
-		}
+		}*/
 		// outputString.readFile("default", filename);
+        
+        if (args.length == 0) {
+           System.out.println ("Please enter an input filename in the first argument. ");
+           System.exit(0);
+        }
         
         cvd = new ConversionDriver(filename);
 		

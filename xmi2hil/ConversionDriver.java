@@ -36,6 +36,7 @@ public class ConversionDriver extends NodeUtilityClass {
     StringBuffer hilIntermediate;
     String promelaOutput = "";
     String inputFilename = "";
+    File sourceFile = null;
     boolean isSilent = false;
     
 	/**
@@ -48,12 +49,20 @@ public class ConversionDriver extends NodeUtilityClass {
 	}
     
     public ConversionDriver(String theInputFilename) {
-        this();
+        this(new File(theInputFilename));
         // TODO Auto-generated constructor stub
-        inputFilename = theInputFilename;
+        //inputFilename = theInputFilename;
+        setInputFilename(theInputFilename);
     }
     
-    // Multi-stage xmi-hil converter
+    public ConversionDriver(File theInputFile) {
+        this();
+        // TODO Auto-generated constructor stub
+        //sourceFile = theInputFile;
+        setSourceFile(theInputFile);
+    }
+    
+   // Multi-stage xmi-hil converter
     public void convert() throws ParseException  {
         if (inputFilename.length() == 0) {
           return;   
@@ -63,15 +72,15 @@ public class ConversionDriver extends NodeUtilityClass {
         // I hope this can change later
         XmiParserComponent parser=new XmiParserComponent();
         parser.isVerbose = !isSilent;
-        File source=new File(inputFilename);
+        //File source=new File(inputFilename);
 
-        if(!source.exists() && !isSilent)
+        if(!sourceFile.exists() && !isSilent)
         {
             System.out.println("xmi file '" + inputFilename + "' not found.");
             System.exit(0);
         }
         // Parse the XMI file
-        parser.parse(source);
+        parser.parse(sourceFile);
         
         Model model=parser.getUMLModel();
 
@@ -132,7 +141,8 @@ public class ConversionDriver extends NodeUtilityClass {
 	}
 
 	public void setInputFilename(String inputFilename) {
-		this.inputFilename = inputFilename;
+		//this.inputFilename = inputFilename;
+        setSourceFile(new File (inputFilename));
 	}
 
 	public boolean isSilent() {
@@ -149,5 +159,18 @@ public class ConversionDriver extends NodeUtilityClass {
 
 	public void setPromelaOutput(String promelaOutput) {
 		this.promelaOutput = promelaOutput;
+	}
+	/**
+	 * @return Returns the sourceFile.
+	 */
+	public File getSourceFile() {
+		return sourceFile;
+	}
+	/**
+	 * @param sourceFile The sourceFile to set.
+	 */
+	public void setSourceFile(File sourceFile) {
+		this.sourceFile = sourceFile;
+        this.inputFilename = sourceFile.toString();
 	}
 }
