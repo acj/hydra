@@ -2337,7 +2337,7 @@ public class Hil2PromelaVisitor extends aVisitor {
             
             desc = "printf(\"Transition to " + dest + " (" + tmp + ").\");";
             */
-            desc = "printf(\"" + escapeStr (transNode.getDescription()) + "\");";            
+            desc = "printf(\" \" /*" + escapeStr (transNode.getDescription()) + "*/);";            
         }
         if (!printTransitionEntry) {
           desc = ""; // for comparison.

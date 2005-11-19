@@ -61,6 +61,11 @@ public class PromelaTest1 {
         if (args.length == 0) {
            System.out.println ("Please enter an input filename in the first argument. ");
            System.exit(0);
+        } else {
+        	filename = args[0];
+        	if (args.length > 1) {
+        		outputFilename = args[1];
+        	}
         }
         
         cvd = new ConversionDriver(filename);

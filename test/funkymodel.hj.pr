@@ -168,7 +168,7 @@ BrValueRequested:     atomic{skip; printf("in state BrightnessSensor.BrValueRequ
         if
         :: atomic{1 -> 
            Environment_q!getBrightnessValue;
-           printf("Transition to BrightnessSensor.WaitingForEnvironment (^Environment.getBrightnessValue)");goto WaitingForEnvironment; skip;}
+           printf(" " /*Transition to BrightnessSensor.WaitingForEnvironment (^Environment.getBrightnessValue)*/);goto WaitingForEnvironment; skip;}
         fi;
 /* State DetermineOS */
 DetermineOS:     atomic{skip; printf("in state BrightnessSensor.DetermineOS\n");
@@ -179,11 +179,11 @@ DetermineOS:     atomic{skip; printf("in state BrightnessSensor.DetermineOS\n");
         :: atomic{1 -> 
            BrightnessSensor_V.operationalState=1;
            ComputingComponent_q!ccOK;
-           printf("Transition to BrightnessSensor.Idle (/operationalState:=1^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to BrightnessSensor.Idle (/operationalState:=1^ComputingComponent.ccOK)*/);goto Idle; skip;}
         :: atomic{1 -> 
            BrightnessSensor_V.operationalState=0;
            ComputingComponent_q!ccFAIL;
-           printf("Transition to BrightnessSensor.Idle (/operationalState:=0^ComputingComponent.ccFAIL)");goto Idle; skip;}
+           printf(" " /*Transition to BrightnessSensor.Idle (/operationalState:=0^ComputingComponent.ccFAIL)*/);goto Idle; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state BrightnessSensor.Idle\n");
@@ -192,9 +192,9 @@ Idle:         atomic{skip; printf("in state BrightnessSensor.Idle\n");
         Idle_G:
         if
         :: atomic{BrightnessSensor_q?getOperationalState -> 
-           printf("Transition to BrightnessSensor.DetermineOS (evt:getOperationalState())");goto DetermineOS; skip;}
+           printf(" " /*Transition to BrightnessSensor.DetermineOS (evt:getOperationalState())*/);goto DetermineOS; skip;}
         :: atomic{BrightnessSensor_q?getBrightnessValue -> 
-           printf("Transition to BrightnessSensor.BrValueRequested (evt:getBrightnessValue())");goto BrValueRequested; skip;}
+           printf(" " /*Transition to BrightnessSensor.BrValueRequested (evt:getBrightnessValue())*/);goto BrValueRequested; skip;}
         fi;
 /* State ValueChecked */
 ValueChecked:     atomic{skip; printf("in state BrightnessSensor.ValueChecked\n");
@@ -204,7 +204,7 @@ ValueChecked:     atomic{skip; printf("in state BrightnessSensor.ValueChecked\n"
         if
         :: atomic{1 -> 
            ComputingComponent_setBrightnessValue_p1!BrightnessSensor_V.brightnessValue; ComputingComponent_q!setBrightnessValue;
-           printf("Transition to BrightnessSensor.Idle (^ComputingComponent.setBrightnessValue(brightnessValue))");goto Idle; skip;}
+           printf(" " /*Transition to BrightnessSensor.Idle (^ComputingComponent.setBrightnessValue(brightnessValue))*/);goto Idle; skip;}
         fi;
 /* State ValueReceived */
 ValueReceived:     atomic{skip; printf("in state BrightnessSensor.ValueReceived\n");
@@ -214,13 +214,13 @@ ValueReceived:     atomic{skip; printf("in state BrightnessSensor.ValueReceived\
         if
            :: atomic{BrightnessSensor_V.brightnessValue<0 ->
               BrightnessSensor_V.correctedBrightnessValue=0;
-              printf("Transition to BrightnessSensor.ValueChecked ([brightnessValue<0]/correctedBrightnessValue:=0)");goto ValueChecked; skip;}
+              printf(" " /*Transition to BrightnessSensor.ValueChecked ([brightnessValue<0]/correctedBrightnessValue:=0)*/);goto ValueChecked; skip;}
            :: atomic{BrightnessSensor_V.brightnessValue>=0 && BrightnessSensor_V.brightnessValue<=1000 ->
               BrightnessSensor_V.correctedBrightnessValue=BrightnessSensor_V.brightnessValue;
-              printf("Transition to BrightnessSensor.ValueChecked ([brightnessValue >=0 & brightnessValue<=1000]/correctedBrightnessValue:=brightnessValue)");goto ValueChecked; skip;}
+              printf(" " /*Transition to BrightnessSensor.ValueChecked ([brightnessValue >=0 & brightnessValue<=1000]/correctedBrightnessValue:=brightnessValue)*/);goto ValueChecked; skip;}
            :: atomic{BrightnessSensor_V.brightnessValue>1000 ->
               BrightnessSensor_V.correctedBrightnessValue=1000;
-              printf("Transition to BrightnessSensor.ValueChecked ([brightnessValue>1000]/correctedBrightnessValue:=1000)");goto ValueChecked; skip;}
+              printf(" " /*Transition to BrightnessSensor.ValueChecked ([brightnessValue>1000]/correctedBrightnessValue:=1000)*/);goto ValueChecked; skip;}
         fi;
 /* State WaitingForEnvironment */
 WaitingForEnvironment:     atomic{skip; printf("in state BrightnessSensor.WaitingForEnvironment\n");
@@ -231,7 +231,7 @@ WaitingForEnvironment:     atomic{skip; printf("in state BrightnessSensor.Waitin
         :: atomic{BrightnessSensor_q?setBrightnessValue -> 
                    BrightnessSensor_setBrightnessValue_p1?BrightnessSensor_V.brightnessValue
                    -> 
-           printf("Transition to BrightnessSensor.ValueReceived (evt:setBrightnessValue(brightnessValue))");goto ValueReceived; skip;}
+           printf(" " /*Transition to BrightnessSensor.ValueReceived (evt:setBrightnessValue(brightnessValue))*/);goto ValueReceived; skip;}
         fi;
 exit:      skip
 }
@@ -250,9 +250,9 @@ InitState:    atomic{skip; printf("in state ComputingComponent.InitState\n");
         InitState_G:
         if
         :: atomic{ComputingComponent_q?shutdownES -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto PowerOff; skip;}
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.Initialize");goto to_Initialize; skip;}
+           printf(" " /*Transition to ComputingComponent.Initialize*/);goto to_Initialize; skip;}
         fi;
 /* Link to composite state Initialize */
 to_Initialize:  atomic{skip; Initialize_start!1;}
@@ -276,17 +276,17 @@ PowerOff:     atomic{skip; printf("in state ComputingComponent.PowerOff\n");
         :: atomic{ComputingComponent_q?setDesiredBrightnessValue -> 
                    ComputingComponent_setDesiredBrightnessValue_p1?ComputingComponent_V.desiredBrightnessValue
                    -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:setDesiredBrightnessValue(desiredBrightnessValue))");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:setDesiredBrightnessValue(desiredBrightnessValue))*/);goto PowerOff; skip;}
         :: atomic{ComputingComponent_q?setBrightnessValue -> 
                    ComputingComponent_setBrightnessValue_p1?ComputingComponent_V.brightnessValue
                    -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:setBrightnessValue(brightnessValue))");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:setBrightnessValue(brightnessValue))*/);goto PowerOff; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto PowerOff; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto PowerOff; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.PowerOff (evt:ccOK())");goto PowerOff; skip;}
+           printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccOK())*/);goto PowerOff; skip;}
         fi;
 exit:      skip
 }
@@ -307,11 +307,11 @@ FaultyState:     atomic{skip; printf("in state ComputingComponent.FaultyState\n"
         if
         :: atomic{1 -> 
            fault=1;
-           printf("Transition to ComputingComponent.FaultyStateReached (/fault:=1)");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (/fault:=1)*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State FaultyStateReached */
 FaultyStateReached:     atomic{skip; printf("in state ComputingComponent.FaultyStateReached\n");
@@ -320,9 +320,9 @@ FaultyStateReached:     atomic{skip; printf("in state ComputingComponent.FaultyS
         FaultyStateReached_G:
         if
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
@@ -331,14 +331,14 @@ Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
         Idle_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.FaultyState");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState*/);goto FaultyState; skip;}
         :: atomic{1 -> 
            Dimmer_q!getOperationalState;
-           printf("Transition to ComputingComponent.State1 (^Dimmer.getOperationalState)");goto State1; skip;}
+           printf(" " /*Transition to ComputingComponent.State1 (^Dimmer.getOperationalState)*/);goto State1; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State State1 */
 State1:       atomic{skip; printf("in state ComputingComponent.State1\n");
@@ -347,13 +347,13 @@ State1:       atomic{skip; printf("in state ComputingComponent.State1\n");
         State1_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.FaultyState (evt:ccOK())");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState (evt:ccOK())*/);goto FaultyState; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.State2 (evt:ccOK())");goto State2; skip;}
+           printf(" " /*Transition to ComputingComponent.State2 (evt:ccOK())*/);goto State2; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State State2 */
 State2:       atomic{skip; printf("in state ComputingComponent.State2\n");
@@ -362,14 +362,14 @@ State2:       atomic{skip; printf("in state ComputingComponent.State2\n");
         State2_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.FaultyState");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState*/);goto FaultyState; skip;}
         :: atomic{1 -> 
            BrightnessSensor_q!getOperationalState;
-           printf("Transition to ComputingComponent.State3 (^BrightnessSensor.getOperationalState)");goto State3; skip;}
+           printf(" " /*Transition to ComputingComponent.State3 (^BrightnessSensor.getOperationalState)*/);goto State3; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State State3 */
 State3:       atomic{skip; printf("in state ComputingComponent.State3\n");
@@ -378,13 +378,13 @@ State3:       atomic{skip; printf("in state ComputingComponent.State3\n");
         State3_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.FaultyState (evt:ccOK())");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState (evt:ccOK())*/);goto FaultyState; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.State4 (evt:ccOK())");goto State4; skip;}
+           printf(" " /*Transition to ComputingComponent.State4 (evt:ccOK())*/);goto State4; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State State4 */
 State4:       atomic{skip; printf("in state ComputingComponent.State4\n");
@@ -393,14 +393,14 @@ State4:       atomic{skip; printf("in state ComputingComponent.State4\n");
         State4_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.FaultyState");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState*/);goto FaultyState; skip;}
         :: atomic{1 -> 
            MotionSensor_q!getOperationalState;
-           printf("Transition to ComputingComponent.State5 (^MotionSensor.getOperationalState)");goto State5; skip;}
+           printf(" " /*Transition to ComputingComponent.State5 (^MotionSensor.getOperationalState)*/);goto State5; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 /* State State5 */
 State5:       atomic{skip; printf("in state ComputingComponent.State5\n");
@@ -409,14 +409,14 @@ State5:       atomic{skip; printf("in state ComputingComponent.State5\n");
         State5_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.FaultyState (evt:ccOK())");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState (evt:ccOK())*/);goto FaultyState; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
            ComputingComponent_V.initialized=1;
-           wait!_pid,st_NormalBehavior; Initialize_C!1; printf("Transition to ComputingComponent.NormalBehavior (evt:ccOK()/initialized:=1)");goto exit; skip;}
+           wait!_pid,st_NormalBehavior; Initialize_C!1; printf(" " /*Transition to ComputingComponent.NormalBehavior (evt:ccOK()/initialized:=1)*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           wait!_pid,st_PowerOff; Initialize_C!1; printf("Transition to ComputingComponent.PowerOff (evt:ccFAIL())");goto exit; skip;}
+           wait!_pid,st_PowerOff; Initialize_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:ccFAIL())*/);goto exit; skip;}
         fi;
 exit:             Initialize_start?1->goto startCState;
 
@@ -446,10 +446,10 @@ EnterAuto:    atomic{skip; printf("in state ComputingComponent.EnterAuto\n");
         EnterAuto_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.OpStatusAutoSet");goto OpStatusAutoSet; skip;}
+           printf(" " /*Transition to ComputingComponent.OpStatusAutoSet*/);goto OpStatusAutoSet; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State EnterManual */
 EnterManual:     atomic{skip; printf("in state ComputingComponent.EnterManual\n");
@@ -458,10 +458,10 @@ EnterManual:     atomic{skip; printf("in state ComputingComponent.EnterManual\n"
         EnterManual_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.OpStatusManualSet");goto OpStatusManualSet; skip;}
+           printf(" " /*Transition to ComputingComponent.OpStatusManualSet*/);goto OpStatusManualSet; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State FaultyState */
 FaultyState:     atomic{skip; printf("in state ComputingComponent.FaultyState\n");
@@ -471,10 +471,10 @@ FaultyState:     atomic{skip; printf("in state ComputingComponent.FaultyState\n"
         if
         :: atomic{1 -> 
            fault=1;
-           printf("Transition to ComputingComponent.FaultyStateReached (/fault:=1)");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (/fault:=1)*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State FaultyStateReached */
 FaultyStateReached:     atomic{skip; printf("in state ComputingComponent.FaultyStateReached\n");
@@ -485,18 +485,18 @@ FaultyStateReached:     atomic{skip; printf("in state ComputingComponent.FaultyS
         :: atomic{ComputingComponent_q?setBrightnessValue -> 
                    ComputingComponent_setBrightnessValue_p1?ComputingComponent_V.brightnessValue
                    -> 
-           printf("Transition to ComputingComponent.FaultyStateReached (evt:setBrightnessValue(brightnessValue))");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (evt:setBrightnessValue(brightnessValue))*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?setDesiredBrightnessValue -> 
                    ComputingComponent_setDesiredBrightnessValue_p1?ComputingComponent_V.desiredBrightnessValue
                    -> 
-           printf("Transition to ComputingComponent.FaultyStateReached (evt:setDesiredBrightnessValue(desiredBrightnessValue))");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (evt:setDesiredBrightnessValue(desiredBrightnessValue))*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           printf("Transition to ComputingComponent.FaultyStateReached (evt:ccFAIL())");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (evt:ccFAIL())*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.FaultyStateReached (evt:ccOK())");goto FaultyStateReached; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyStateReached (evt:ccOK())*/);goto FaultyStateReached; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State Init */
 Init:         atomic{skip; printf("in state ComputingComponent.Init\n");
@@ -505,13 +505,13 @@ Init:         atomic{skip; printf("in state ComputingComponent.Init\n");
         Init_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.FaultyState");goto FaultyState; skip;}
+           printf(" " /*Transition to ComputingComponent.FaultyState*/);goto FaultyState; skip;}
         :: atomic{1 -> 
            UserInterface_q!getManualMode;
-           printf("Transition to ComputingComponent.ManualModeCheck (^UserInterface.getManualMode)");goto ManualModeCheck; skip;}
+           printf(" " /*Transition to ComputingComponent.ManualModeCheck (^UserInterface.getManualMode)*/);goto ManualModeCheck; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* Link to composite state Manual */
 to_Manual: atomic{skip; Manual_start!1;}
@@ -529,12 +529,12 @@ ManualModeCheck:     atomic{skip; printf("in state ComputingComponent.ManualMode
         ManualModeCheck_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.EnterManual (evt:ccOK())");goto EnterManual; skip;}
+           printf(" " /*Transition to ComputingComponent.EnterManual (evt:ccOK())*/);goto EnterManual; skip;}
         :: atomic{ComputingComponent_q?ccFAIL -> 
-           printf("Transition to ComputingComponent.EnterAuto (evt:ccFAIL())");goto EnterAuto; skip;}
+           printf(" " /*Transition to ComputingComponent.EnterAuto (evt:ccFAIL())*/);goto EnterAuto; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State OpStatusAutoSet */
 OpStatusAutoSet:     atomic{skip; printf("in state ComputingComponent.OpStatusAutoSet\n");
@@ -543,10 +543,10 @@ OpStatusAutoSet:     atomic{skip; printf("in state ComputingComponent.OpStatusAu
         OpStatusAutoSet_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.Automatic");goto to_Automatic; skip;}
+           printf(" " /*Transition to ComputingComponent.Automatic*/);goto to_Automatic; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State OpStatusManualSet */
 OpStatusManualSet:     atomic{skip; printf("in state ComputingComponent.OpStatusManualSet\n");
@@ -555,10 +555,10 @@ OpStatusManualSet:     atomic{skip; printf("in state ComputingComponent.OpStatus
         OpStatusManualSet_G:
         if
         :: atomic{1 -> 
-           printf("Transition to ComputingComponent.Manual");goto to_Manual; skip;}
+           printf(" " /*Transition to ComputingComponent.Manual*/);goto to_Manual; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; NormalBehavior_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 exit:             NormalBehavior_start?1->goto startCState;
 
@@ -585,14 +585,14 @@ ActualValueRequested:     atomic{skip; printf("in state ComputingComponent.Actua
         :: atomic{ComputingComponent_q?setBrightnessValue -> 
                    ComputingComponent_setBrightnessValue_p1?ComputingComponent_V.brightnessValue
                    -> 
-           printf("Transition to ComputingComponent.BrightnessValueReceived (evt:setBrightnessValue(brightnessValue))");goto BrightnessValueReceived; skip;}
+           printf(" " /*Transition to ComputingComponent.BrightnessValueReceived (evt:setBrightnessValue(brightnessValue))*/);goto BrightnessValueReceived; skip;}
         :: atomic{ComputingComponent_q?setBrightnessValue -> 
                    ComputingComponent_setBrightnessValue_p1?ComputingComponent_V.brightnessValue
                    -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState (evt:setBrightnessValue(brightnessValue))");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState (evt:setBrightnessValue(brightnessValue))*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State BrightnessValueReceived */
 BrightnessValueReceived:     atomic{skip; printf("in state ComputingComponent.BrightnessValueReceived\n");
@@ -602,12 +602,12 @@ BrightnessValueReceived:     atomic{skip; printf("in state ComputingComponent.Br
         if
         :: atomic{1 -> 
            ComputingComponent_V.computedDimmerValue=ComputingComponent_V.desiredBrightnessValue-ComputingComponent_V.brightnessValue;
-           printf("Transition to ComputingComponent.CorrectionValueCalculated (/computedDimmerValue:=desiredBrightnessValue-brightnessValue)");goto CorrectionValueCalculated; skip;}
+           printf(" " /*Transition to ComputingComponent.CorrectionValueCalculated (/computedDimmerValue:=desiredBrightnessValue-brightnessValue)*/);goto CorrectionValueCalculated; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State CorrectionValueCalculated */
 CorrectionValueCalculated:     atomic{skip; printf("in state ComputingComponent.CorrectionValueCalculated\n");
@@ -617,12 +617,12 @@ CorrectionValueCalculated:     atomic{skip; printf("in state ComputingComponent.
         if
         :: atomic{1 -> 
            Dimmer_changeDimmerValue_p1!ComputingComponent_V.computedDimmerValue; Dimmer_q!changeDimmerValue;
-           printf("Transition to ComputingComponent.CorrectionValueSumbitted (^Dimmer.changeDimmerValue(computedDimmerValue))");goto CorrectionValueSumbitted; skip;}
+           printf(" " /*Transition to ComputingComponent.CorrectionValueSumbitted (^Dimmer.changeDimmerValue(computedDimmerValue))*/);goto CorrectionValueSumbitted; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State CorrectionValueSumbitted */
 CorrectionValueSumbitted:     atomic{skip; printf("in state ComputingComponent.CorrectionValueSumbitted\n");
@@ -631,12 +631,12 @@ CorrectionValueSumbitted:     atomic{skip; printf("in state ComputingComponent.C
         CorrectionValueSumbitted_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState (evt:ccOK())");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState (evt:ccOK())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           wait!_pid,st_Init; Automatic_C!1; printf("Transition to ComputingComponent.Init (evt:ccOK())");goto exit; skip;}
+           wait!_pid,st_Init; Automatic_C!1; printf(" " /*Transition to ComputingComponent.Init (evt:ccOK())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State DesiredValueReceived */
 DesiredValueReceived:     atomic{skip; printf("in state ComputingComponent.DesiredValueReceived\n");
@@ -646,12 +646,12 @@ DesiredValueReceived:     atomic{skip; printf("in state ComputingComponent.Desir
         if
         :: atomic{1 -> 
            BrightnessSensor_q!getBrightnessValue;
-           printf("Transition to ComputingComponent.ActualValueRequested (^BrightnessSensor.getBrightnessValue)");goto ActualValueRequested; skip;}
+           printf(" " /*Transition to ComputingComponent.ActualValueRequested (^BrightnessSensor.getBrightnessValue)*/);goto ActualValueRequested; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State DesiredValueRequested */
 DesiredValueRequested:     atomic{skip; printf("in state ComputingComponent.DesiredValueRequested\n");
@@ -662,14 +662,14 @@ DesiredValueRequested:     atomic{skip; printf("in state ComputingComponent.Desi
         :: atomic{ComputingComponent_q?setDesiredBrightnessValue -> 
                    ComputingComponent_setDesiredBrightnessValue_p1?ComputingComponent_V.desiredBrightnessValue
                    -> 
-           printf("Transition to ComputingComponent.DesiredValueReceived (evt:setDesiredBrightnessValue(desiredBrightnessValue))");goto DesiredValueReceived; skip;}
+           printf(" " /*Transition to ComputingComponent.DesiredValueReceived (evt:setDesiredBrightnessValue(desiredBrightnessValue))*/);goto DesiredValueReceived; skip;}
         :: atomic{ComputingComponent_q?setDesiredBrightnessValue -> 
                    ComputingComponent_setDesiredBrightnessValue_p1?ComputingComponent_V.desiredBrightnessValue
                    -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState (evt:setDesiredBrightnessValue(desiredBrightnessValue))");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState (evt:setDesiredBrightnessValue(desiredBrightnessValue))*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
@@ -679,12 +679,12 @@ Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
         if
         :: atomic{ComputingComponent_q?ccOK -> 
            MotionSensor_q!getMotionValue;
-           printf("Transition to ComputingComponent.checkPresence (evt:ccOK()^MotionSensor.getMotionValue)");goto checkPresence; skip;}
+           printf(" " /*Transition to ComputingComponent.checkPresence (evt:ccOK()^MotionSensor.getMotionValue)*/);goto checkPresence; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State MotionValueReeived */
 MotionValueReeived:     atomic{skip; printf("in state ComputingComponent.MotionValueReeived\n");
@@ -694,14 +694,14 @@ MotionValueReeived:     atomic{skip; printf("in state ComputingComponent.MotionV
         if
            :: atomic{ComputingComponent_V.motionValue==1 ->
               UserInterface_q!getDesiredBrightnessValue;
-              printf("Transition to ComputingComponent.DesiredValueRequested ([motionValue=1]^UserInterface.getDesiredBrightnessValue)");goto DesiredValueRequested; skip;}
+              printf(" " /*Transition to ComputingComponent.DesiredValueRequested ([motionValue=1]^UserInterface.getDesiredBrightnessValue)*/);goto DesiredValueRequested; skip;}
            :: atomic{ComputingComponent_V.motionValue==0 ->
-              wait!_pid,st_Init; Automatic_C!1; printf("Transition to ComputingComponent.Init ([motionValue=0])");goto exit; skip;}
+              wait!_pid,st_Init; Automatic_C!1; printf(" " /*Transition to ComputingComponent.Init ([motionValue=0])*/);goto exit; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State checkPresence */
 checkPresence:     atomic{skip; printf("in state ComputingComponent.checkPresence\n");
@@ -712,14 +712,14 @@ checkPresence:     atomic{skip; printf("in state ComputingComponent.checkPresenc
         :: atomic{ComputingComponent_q?setMotionValue -> 
                    ComputingComponent_setMotionValue_p1?ComputingComponent_V.motionValue
                    -> 
-           printf("Transition to ComputingComponent.MotionValueReeived (evt:setMotionValue(motionValue))");goto MotionValueReeived; skip;}
+           printf(" " /*Transition to ComputingComponent.MotionValueReeived (evt:setMotionValue(motionValue))*/);goto MotionValueReeived; skip;}
         :: atomic{ComputingComponent_q?setMotionValue -> 
                    ComputingComponent_setMotionValue_p1?ComputingComponent_V.motionValue
                    -> 
-           wait!_pid,st_FaultyState; Automatic_C!1; printf("Transition to ComputingComponent.FaultyState (evt:setMotionValue(motionValue))");goto exit; skip;}
+           wait!_pid,st_FaultyState; Automatic_C!1; printf(" " /*Transition to ComputingComponent.FaultyState (evt:setMotionValue(motionValue))*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Automatic_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Automatic_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 exit:             Automatic_start?1->goto startCState;
 
@@ -744,12 +744,12 @@ DimmerValueSet:     atomic{skip; printf("in state ComputingComponent.DimmerValue
         DimmerValueSet_G:
         if
         :: atomic{ComputingComponent_q?ccOK -> 
-           printf("Transition to ComputingComponent.Done (evt:ccOK())");goto Done; skip;}
+           printf(" " /*Transition to ComputingComponent.Done (evt:ccOK())*/);goto Done; skip;}
         :: atomic{ComputingComponent_q?ccOK -> 
-           wait!_pid,st_FaultyState; Manual_C!1; printf("Transition to ComputingComponent.FaultyState (evt:ccOK())");goto exit; skip;}
+           wait!_pid,st_FaultyState; Manual_C!1; printf(" " /*Transition to ComputingComponent.FaultyState (evt:ccOK())*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Manual_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Manual_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State Done */
 Done:         atomic{skip; printf("in state ComputingComponent.Done\n");
@@ -758,12 +758,12 @@ Done:         atomic{skip; printf("in state ComputingComponent.Done\n");
         Done_G:
         if
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Manual_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Manual_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_Init; Manual_C!1; printf("Transition to ComputingComponent.Init");goto exit; skip;}
+           wait!_pid,st_Init; Manual_C!1; printf(" " /*Transition to ComputingComponent.Init*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Manual_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Manual_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
@@ -773,12 +773,12 @@ Idle:         atomic{skip; printf("in state ComputingComponent.Idle\n");
         if
         :: atomic{ComputingComponent_q?ccOK -> 
            Dimmer_changeDimmerValue_p1!1000; Dimmer_q!changeDimmerValue;
-           printf("Transition to ComputingComponent.DimmerValueSet (evt:ccOK()^Dimmer.changeDimmerValue(1000))");goto DimmerValueSet; skip;}
+           printf(" " /*Transition to ComputingComponent.DimmerValueSet (evt:ccOK()^Dimmer.changeDimmerValue(1000))*/);goto DimmerValueSet; skip;}
         :: atomic{1 -> 
-           wait!_pid,st_FaultyState; Manual_C!1; printf("Transition to ComputingComponent.FaultyState");goto exit; skip;}
+           wait!_pid,st_FaultyState; Manual_C!1; printf(" " /*Transition to ComputingComponent.FaultyState*/);goto exit; skip;}
         :: atomic{ComputingComponent_q?shutdownES -> 
            Dimmer_changeDimmerValue_p1!-1000; Dimmer_q!changeDimmerValue;
-           wait!_pid,st_PowerOff; Manual_C!1; printf("Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))");goto exit; skip;}
+           wait!_pid,st_PowerOff; Manual_C!1; printf(" " /*Transition to ComputingComponent.PowerOff (evt:shutdownES()^Dimmer.changeDimmerValue(-1000))*/);goto exit; skip;}
         fi;
 exit:             Manual_start?1->goto startCState;
 
@@ -804,7 +804,7 @@ Fault:        atomic{skip; printf("in state Corrector.Fault\n");
         if
         :: atomic{1 -> 
            ComputingComponent_q!shutdownES;
-           printf("Transition to Corrector.CorrectionInitiated (^ComputingComponent.shutdownES)");goto CorrectionInitiated; skip;}
+           printf(" " /*Transition to Corrector.CorrectionInitiated (^ComputingComponent.shutdownES)*/);goto CorrectionInitiated; skip;}
         fi;
 /* State NoFault */
 NoFault:      atomic{skip; printf("in state Corrector.NoFault\n");
@@ -813,7 +813,7 @@ NoFault:      atomic{skip; printf("in state Corrector.NoFault\n");
         NoFault_G:
         if
         :: atomic{Corrector_q?correctFault -> 
-           printf("Transition to Corrector.Fault (evt:correctFault())");goto Fault; skip;}
+           printf(" " /*Transition to Corrector.Fault (evt:correctFault())*/);goto Fault; skip;}
         fi;
 exit:      skip
 }
@@ -832,7 +832,7 @@ FaultHasOccurred:     atomic{skip; printf("in state Detector.FaultHasOccurred\n"
         if
         :: atomic{1 -> 
            LocalFaultHandler_q!faultOccurred;
-           printf("Transition to Detector.FaultReported (^LocalFaultHandler.faultOccurred)");goto FaultReported; skip;}
+           printf(" " /*Transition to Detector.FaultReported (^LocalFaultHandler.faultOccurred)*/);goto FaultReported; skip;}
         fi;
 /* State FaultReported */
 FaultReported:     atomic{skip; printf("in state Detector.FaultReported\n");
@@ -847,7 +847,7 @@ NoFaultOccurred:     atomic{skip; printf("in state Detector.NoFaultOccurred\n");
         NoFaultOccurred_G:
         if
            :: atomic{fault==1 ->
-              printf("Transition to Detector.FaultHasOccurred ([fault=1])");goto FaultHasOccurred; skip;}
+              printf(" " /*Transition to Detector.FaultHasOccurred ([fault=1])*/);goto FaultHasOccurred; skip;}
         fi;
 exit:      skip
 }
@@ -867,11 +867,11 @@ DetermineOS:     atomic{skip; printf("in state Dimmer.DetermineOS\n");
         :: atomic{1 -> 
            Dimmer_V.operationalState=1;
            ComputingComponent_q!ccOK;
-           printf("Transition to Dimmer.Idle (/operationalState:=1^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to Dimmer.Idle (/operationalState:=1^ComputingComponent.ccOK)*/);goto Idle; skip;}
         :: atomic{1 -> 
            Dimmer_V.operationalState=0;
            ComputingComponent_q!ccFAIL;
-           printf("Transition to Dimmer.Idle (/operationalState:=0^ComputingComponent.ccFAIL)");goto Idle; skip;}
+           printf(" " /*Transition to Dimmer.Idle (/operationalState:=0^ComputingComponent.ccFAIL)*/);goto Idle; skip;}
         fi;
 /* State DimmerValueSet */
 DimmerValueSet:     atomic{skip; printf("in state Dimmer.DimmerValueSet\n");
@@ -883,10 +883,10 @@ DimmerValueSet:     atomic{skip; printf("in state Dimmer.DimmerValueSet\n");
                    Dimmer_changeDimmerValue_p1?Dimmer_V.deltaDimmerValue
                    -> 
            Dimmer_V.tempDimmerValue=Dimmer_V.dimmerValue+Dimmer_V.deltaDimmerValue;
-           printf("Transition to Dimmer.TempValueReceived (evt:changeDimmerValue(deltaDimmerValue)/tempDimmerValue:=dimmerValue+deltaDimmerValue)");goto TempValueReceived; skip;}
+           printf(" " /*Transition to Dimmer.TempValueReceived (evt:changeDimmerValue(deltaDimmerValue)/tempDimmerValue:=dimmerValue+deltaDimmerValue)*/);goto TempValueReceived; skip;}
         :: atomic{Dimmer_q?dimmerOK -> 
            ComputingComponent_q!ccOK;
-           printf("Transition to Dimmer.Idle (evt:dimmerOK()^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to Dimmer.Idle (evt:dimmerOK()^ComputingComponent.ccOK)*/);goto Idle; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state Dimmer.Idle\n");
@@ -895,14 +895,14 @@ Idle:         atomic{skip; printf("in state Dimmer.Idle\n");
         Idle_G:
         if
         :: atomic{Dimmer_q?dimmerOK -> 
-           printf("Transition to Dimmer.Idle (evt:dimmerOK())");goto Idle; skip;}
+           printf(" " /*Transition to Dimmer.Idle (evt:dimmerOK())*/);goto Idle; skip;}
         :: atomic{Dimmer_q?getOperationalState -> 
-           printf("Transition to Dimmer.DetermineOS (evt:getOperationalState())");goto DetermineOS; skip;}
+           printf(" " /*Transition to Dimmer.DetermineOS (evt:getOperationalState())*/);goto DetermineOS; skip;}
         :: atomic{Dimmer_q?changeDimmerValue -> 
                    Dimmer_changeDimmerValue_p1?Dimmer_V.deltaDimmerValue
                    -> 
            Dimmer_V.tempDimmerValue=Dimmer_V.dimmerValue+Dimmer_V.deltaDimmerValue;
-           printf("Transition to Dimmer.TempValueReceived (evt:changeDimmerValue(deltaDimmerValue)/tempDimmerValue:=dimmerValue+deltaDimmerValue)");goto TempValueReceived; skip;}
+           printf(" " /*Transition to Dimmer.TempValueReceived (evt:changeDimmerValue(deltaDimmerValue)/tempDimmerValue:=dimmerValue+deltaDimmerValue)*/);goto TempValueReceived; skip;}
         fi;
 /* State TempValueReceived */
 TempValueReceived:     atomic{skip; printf("in state Dimmer.TempValueReceived\n");
@@ -912,13 +912,13 @@ TempValueReceived:     atomic{skip; printf("in state Dimmer.TempValueReceived\n"
         if
            :: atomic{Dimmer_V.tempDimmerValue>1000 ->
               Dimmer_V.dimmerValue=1000;
-              printf("Transition to Dimmer.ValueProcessed ([tempDimmerValue>1000]/dimmerValue:=1000)");goto ValueProcessed; skip;}
+              printf(" " /*Transition to Dimmer.ValueProcessed ([tempDimmerValue>1000]/dimmerValue:=1000)*/);goto ValueProcessed; skip;}
            :: atomic{Dimmer_V.tempDimmerValue>=0 && Dimmer_V.tempDimmerValue<=1000 ->
               Dimmer_V.dimmerValue=Dimmer_V.tempDimmerValue;
-              printf("Transition to Dimmer.ValueProcessed ([tempDimmerValue>=0 & tempDimmerValue<=1000]/dimmerValue:=tempDimmerValue)");goto ValueProcessed; skip;}
+              printf(" " /*Transition to Dimmer.ValueProcessed ([tempDimmerValue>=0 & tempDimmerValue<=1000]/dimmerValue:=tempDimmerValue)*/);goto ValueProcessed; skip;}
            :: atomic{Dimmer_V.tempDimmerValue<0 ->
               Dimmer_V.dimmerValue=0;
-              printf("Transition to Dimmer.ValueProcessed ([tempDimmerValue<0]/dimmerValue:=0)");goto ValueProcessed; skip;}
+              printf(" " /*Transition to Dimmer.ValueProcessed ([tempDimmerValue<0]/dimmerValue:=0)*/);goto ValueProcessed; skip;}
         fi;
 /* State ValueProcessed */
 ValueProcessed:     atomic{skip; printf("in state Dimmer.ValueProcessed\n");
@@ -928,7 +928,7 @@ ValueProcessed:     atomic{skip; printf("in state Dimmer.ValueProcessed\n");
         if
         :: atomic{1 -> 
            Environment_setDimmerValue_p1!Dimmer_V.dimmerValue; Environment_q!setDimmerValue;
-           printf("Transition to Dimmer.DimmerValueSet (^Environment.setDimmerValue(dimmerValue))");goto DimmerValueSet; skip;}
+           printf(" " /*Transition to Dimmer.DimmerValueSet (^Environment.setDimmerValue(dimmerValue))*/);goto DimmerValueSet; skip;}
         fi;
 exit:      skip
 }
@@ -947,16 +947,16 @@ BrightnessValueRequested:     atomic{skip; printf("in state Environment.Brightne
         if
         :: atomic{1 -> 
            Environment_V.brightnessValue=1100;
-           printf("Transition to Environment.BrightnessValueSelected (/brightnessValue:=1100)");goto BrightnessValueSelected; skip;}
+           printf(" " /*Transition to Environment.BrightnessValueSelected (/brightnessValue:=1100)*/);goto BrightnessValueSelected; skip;}
         :: atomic{1 -> 
            Environment_V.brightnessValue=850;
-           printf("Transition to Environment.BrightnessValueSelected (/brightnessValue:=850)");goto BrightnessValueSelected; skip;}
+           printf(" " /*Transition to Environment.BrightnessValueSelected (/brightnessValue:=850)*/);goto BrightnessValueSelected; skip;}
         :: atomic{1 -> 
            Environment_V.brightnessValue=0;
-           printf("Transition to Environment.BrightnessValueSelected (/brightnessValue:=0)");goto BrightnessValueSelected; skip;}
+           printf(" " /*Transition to Environment.BrightnessValueSelected (/brightnessValue:=0)*/);goto BrightnessValueSelected; skip;}
         :: atomic{1 -> 
            Environment_V.brightnessValue=300;
-           printf("Transition to Environment.BrightnessValueSelected (/brightnessValue:=300)");goto BrightnessValueSelected; skip;}
+           printf(" " /*Transition to Environment.BrightnessValueSelected (/brightnessValue:=300)*/);goto BrightnessValueSelected; skip;}
         fi;
 /* State BrightnessValueSelected */
 BrightnessValueSelected:     atomic{skip; printf("in state Environment.BrightnessValueSelected\n");
@@ -966,7 +966,7 @@ BrightnessValueSelected:     atomic{skip; printf("in state Environment.Brightnes
         if
         :: atomic{1 -> 
            Environment_V.totalBrightnessValue=Environment_V.brightnessValue+Environment_V.dimmerValue;
-           printf("Transition to Environment.TotalValueComputed (/totalBrightnessValue:=brightnessValue+dimmerValue)");goto TotalValueComputed; skip;}
+           printf(" " /*Transition to Environment.TotalValueComputed (/totalBrightnessValue:=brightnessValue+dimmerValue)*/);goto TotalValueComputed; skip;}
         fi;
 /* State DimmerValueSet */
 DimmerValueSet:     atomic{skip; printf("in state Environment.DimmerValueSet\n");
@@ -977,7 +977,7 @@ DimmerValueSet:     atomic{skip; printf("in state Environment.DimmerValueSet\n")
         :: atomic{1 -> 
            Environment_V.totalBrightnessValue=Environment_V.brightnessValue+Environment_V.dimmerValue;
            Dimmer_q!dimmerOK;
-           printf("Transition to Environment.Idle (/totalBrightnessValue:=brightnessValue+dimmerValue^Dimmer.dimmerOK)");goto Idle; skip;}
+           printf(" " /*Transition to Environment.Idle (/totalBrightnessValue:=brightnessValue+dimmerValue^Dimmer.dimmerOK)*/);goto Idle; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state Environment.Idle\n");
@@ -988,11 +988,11 @@ Idle:         atomic{skip; printf("in state Environment.Idle\n");
         :: atomic{Environment_q?setDimmerValue -> 
                    Environment_setDimmerValue_p1?Environment_V.dimmerValue
                    -> 
-           printf("Transition to Environment.DimmerValueSet (evt:setDimmerValue(dimmerValue))");goto DimmerValueSet; skip;}
+           printf(" " /*Transition to Environment.DimmerValueSet (evt:setDimmerValue(dimmerValue))*/);goto DimmerValueSet; skip;}
         :: atomic{Environment_q?getMotionValue -> 
-           printf("Transition to Environment.MotionValueRequested (evt:getMotionValue())");goto MotionValueRequested; skip;}
+           printf(" " /*Transition to Environment.MotionValueRequested (evt:getMotionValue())*/);goto MotionValueRequested; skip;}
         :: atomic{Environment_q?getBrightnessValue -> 
-           printf("Transition to Environment.BrightnessValueRequested (evt:getBrightnessValue())");goto BrightnessValueRequested; skip;}
+           printf(" " /*Transition to Environment.BrightnessValueRequested (evt:getBrightnessValue())*/);goto BrightnessValueRequested; skip;}
         fi;
 /* State MotionValueRequested */
 MotionValueRequested:     atomic{skip; printf("in state Environment.MotionValueRequested\n");
@@ -1002,10 +1002,10 @@ MotionValueRequested:     atomic{skip; printf("in state Environment.MotionValueR
         if
         :: atomic{1 -> 
            Environment_V.motionValue=1;
-           printf("Transition to Environment.MotionValueSelected (/motionValue:=1)");goto MotionValueSelected; skip;}
+           printf(" " /*Transition to Environment.MotionValueSelected (/motionValue:=1)*/);goto MotionValueSelected; skip;}
         :: atomic{1 -> 
            Environment_V.motionValue=0;
-           printf("Transition to Environment.MotionValueSelected (/motionValue:=0)");goto MotionValueSelected; skip;}
+           printf(" " /*Transition to Environment.MotionValueSelected (/motionValue:=0)*/);goto MotionValueSelected; skip;}
         fi;
 /* State MotionValueSelected */
 MotionValueSelected:     atomic{skip; printf("in state Environment.MotionValueSelected\n");
@@ -1015,7 +1015,7 @@ MotionValueSelected:     atomic{skip; printf("in state Environment.MotionValueSe
         if
         :: atomic{1 -> 
            MotionSensor_setMotionValue_p1!Environment_V.motionValue; MotionSensor_q!setMotionValue;
-           printf("Transition to Environment.Idle (^MotionSensor.setMotionValue(motionValue))");goto Idle; skip;}
+           printf(" " /*Transition to Environment.Idle (^MotionSensor.setMotionValue(motionValue))*/);goto Idle; skip;}
         fi;
 /* State TotalValueComputed */
 TotalValueComputed:     atomic{skip; printf("in state Environment.TotalValueComputed\n");
@@ -1025,7 +1025,7 @@ TotalValueComputed:     atomic{skip; printf("in state Environment.TotalValueComp
         if
         :: atomic{1 -> 
            BrightnessSensor_setBrightnessValue_p1!Environment_V.totalBrightnessValue; BrightnessSensor_q!setBrightnessValue;
-           printf("Transition to Environment.Idle (^BrightnessSensor.setBrightnessValue(totalBrightnessValue))");goto Idle; skip;}
+           printf(" " /*Transition to Environment.Idle (^BrightnessSensor.setBrightnessValue(totalBrightnessValue))*/);goto Idle; skip;}
         fi;
 exit:      skip
 }
@@ -1050,7 +1050,7 @@ Fault:        atomic{skip; printf("in state GlobalFaultHandler.Fault\n");
         if
         :: atomic{1 -> 
            Corrector_q!correctFault;
-           printf("Transition to GlobalFaultHandler.CorectionInitiated (^Corrector.correctFault)");goto CorectionInitiated; skip;}
+           printf(" " /*Transition to GlobalFaultHandler.CorectionInitiated (^Corrector.correctFault)*/);goto CorectionInitiated; skip;}
         fi;
 /* State NoFault */
 NoFault:      atomic{skip; printf("in state GlobalFaultHandler.NoFault\n");
@@ -1059,7 +1059,7 @@ NoFault:      atomic{skip; printf("in state GlobalFaultHandler.NoFault\n");
         NoFault_G:
         if
         :: atomic{GlobalFaultHandler_q?faultOccurred -> 
-           printf("Transition to GlobalFaultHandler.Fault (evt:faultOccurred())");goto Fault; skip;}
+           printf(" " /*Transition to GlobalFaultHandler.Fault (evt:faultOccurred())*/);goto Fault; skip;}
         fi;
 exit:      skip
 }
@@ -1078,7 +1078,7 @@ Fault:        atomic{skip; printf("in state LocalFaultHandler.Fault\n");
         if
         :: atomic{1 -> 
            GlobalFaultHandler_q!faultOccurred;
-           printf("Transition to LocalFaultHandler.FaultReported (^GlobalFaultHandler.faultOccurred)");goto FaultReported; skip;}
+           printf(" " /*Transition to LocalFaultHandler.FaultReported (^GlobalFaultHandler.faultOccurred)*/);goto FaultReported; skip;}
         fi;
 /* State FaultReported */
 FaultReported:     atomic{skip; printf("in state LocalFaultHandler.FaultReported\n");
@@ -1093,7 +1093,7 @@ NoFault:      atomic{skip; printf("in state LocalFaultHandler.NoFault\n");
         NoFault_G:
         if
         :: atomic{LocalFaultHandler_q?faultOccurred -> 
-           printf("Transition to LocalFaultHandler.Fault (evt:faultOccurred())");goto Fault; skip;}
+           printf(" " /*Transition to LocalFaultHandler.Fault (evt:faultOccurred())*/);goto Fault; skip;}
         fi;
 exit:      skip
 }
@@ -1113,11 +1113,11 @@ DetermineOS:     atomic{skip; printf("in state MotionSensor.DetermineOS\n");
         :: atomic{1 -> 
            MotionSensor_V.operationalState=1;
            ComputingComponent_q!ccOK;
-           printf("Transition to MotionSensor.Idle (/operationalState:=1^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to MotionSensor.Idle (/operationalState:=1^ComputingComponent.ccOK)*/);goto Idle; skip;}
         :: atomic{1 -> 
            MotionSensor_V.operationalState=0;
            ComputingComponent_q!ccFAIL;
-           printf("Transition to MotionSensor.Idle (/operationalState:=0^ComputingComponent.ccFAIL)");goto Idle; skip;}
+           printf(" " /*Transition to MotionSensor.Idle (/operationalState:=0^ComputingComponent.ccFAIL)*/);goto Idle; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state MotionSensor.Idle\n");
@@ -1126,10 +1126,10 @@ Idle:         atomic{skip; printf("in state MotionSensor.Idle\n");
         Idle_G:
         if
         :: atomic{MotionSensor_q?getOperationalState -> 
-           printf("Transition to MotionSensor.DetermineOS (evt:getOperationalState())");goto DetermineOS; skip;}
+           printf(" " /*Transition to MotionSensor.DetermineOS (evt:getOperationalState())*/);goto DetermineOS; skip;}
         :: atomic{MotionSensor_q?getMotionValue -> 
            Environment_q!getMotionValue;
-           printf("Transition to MotionSensor.MotionValueRequested (evt:getMotionValue()^Environment.getMotionValue)");goto MotionValueRequested; skip;}
+           printf(" " /*Transition to MotionSensor.MotionValueRequested (evt:getMotionValue()^Environment.getMotionValue)*/);goto MotionValueRequested; skip;}
         fi;
 /* State MotionValueMeasured */
 MotionValueMeasured:     atomic{skip; printf("in state MotionSensor.MotionValueMeasured\n");
@@ -1139,7 +1139,7 @@ MotionValueMeasured:     atomic{skip; printf("in state MotionSensor.MotionValueM
         if
         :: atomic{1 -> 
            ComputingComponent_setMotionValue_p1!MotionSensor_V.motionValue; ComputingComponent_q!setMotionValue;
-           printf("Transition to MotionSensor.Idle (^ComputingComponent.setMotionValue(motionValue))");goto Idle; skip;}
+           printf(" " /*Transition to MotionSensor.Idle (^ComputingComponent.setMotionValue(motionValue))*/);goto Idle; skip;}
         fi;
 /* State MotionValueRequested */
 MotionValueRequested:     atomic{skip; printf("in state MotionSensor.MotionValueRequested\n");
@@ -1150,7 +1150,7 @@ MotionValueRequested:     atomic{skip; printf("in state MotionSensor.MotionValue
         :: atomic{MotionSensor_q?setMotionValue -> 
                    MotionSensor_setMotionValue_p1?MotionSensor_V.motionValue
                    -> 
-           printf("Transition to MotionSensor.MotionValueMeasured (evt:setMotionValue(motionValue))");goto MotionValueMeasured; skip;}
+           printf(" " /*Transition to MotionSensor.MotionValueMeasured (evt:setMotionValue(motionValue))*/);goto MotionValueMeasured; skip;}
         fi;
 exit:      skip
 }
@@ -1169,13 +1169,13 @@ DesiredValueRequested:     atomic{skip; printf("in state UserInterface.DesiredVa
         if
         :: atomic{1 -> 
            UserInterface_V.desiredBrightnessValue=1000;
-           printf("Transition to UserInterface.State1 (/desiredBrightnessValue:=1000)");goto State1; skip;}
+           printf(" " /*Transition to UserInterface.State1 (/desiredBrightnessValue:=1000)*/);goto State1; skip;}
         :: atomic{1 -> 
            UserInterface_V.desiredBrightnessValue=500;
-           printf("Transition to UserInterface.State1 (/desiredBrightnessValue:=500)");goto State1; skip;}
+           printf(" " /*Transition to UserInterface.State1 (/desiredBrightnessValue:=500)*/);goto State1; skip;}
         :: atomic{1 -> 
            UserInterface_V.desiredBrightnessValue=0;
-           printf("Transition to UserInterface.State1 (/desiredBrightnessValue:=0)");goto State1; skip;}
+           printf(" " /*Transition to UserInterface.State1 (/desiredBrightnessValue:=0)*/);goto State1; skip;}
         fi;
 /* State Idle */
 Idle:         atomic{skip; printf("in state UserInterface.Idle\n");
@@ -1184,13 +1184,13 @@ Idle:         atomic{skip; printf("in state UserInterface.Idle\n");
         Idle_G:
         if
         :: atomic{UserInterface_q?getManualMode -> 
-           printf("Transition to UserInterface.State2 (evt:getManualMode())");goto State2; skip;}
+           printf(" " /*Transition to UserInterface.State2 (evt:getManualMode())*/);goto State2; skip;}
         :: atomic{UserInterface_q?setWarningLevel -> 
                    UserInterface_setWarningLevel_p1?UserInterface_V.warningLevel
                    -> 
-           printf("Transition to UserInterface.OperationalStatusSet (evt:setWarningLevel(warningLevel))");goto OperationalStatusSet; skip;}
+           printf(" " /*Transition to UserInterface.OperationalStatusSet (evt:setWarningLevel(warningLevel))*/);goto OperationalStatusSet; skip;}
         :: atomic{UserInterface_q?getDesiredBrightnessValue -> 
-           printf("Transition to UserInterface.DesiredValueRequested (evt:getDesiredBrightnessValue())");goto DesiredValueRequested; skip;}
+           printf(" " /*Transition to UserInterface.DesiredValueRequested (evt:getDesiredBrightnessValue())*/);goto DesiredValueRequested; skip;}
         fi;
 /* State OperationalStatusSet */
 OperationalStatusSet:     atomic{skip; printf("in state UserInterface.OperationalStatusSet\n");
@@ -1200,7 +1200,7 @@ OperationalStatusSet:     atomic{skip; printf("in state UserInterface.Operationa
         if
         :: atomic{1 -> 
            ComputingComponent_q!ccOK;
-           printf("Transition to UserInterface.Idle (^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to UserInterface.Idle (^ComputingComponent.ccOK)*/);goto Idle; skip;}
         fi;
 /* State State1 */
 State1:       atomic{skip; printf("in state UserInterface.State1\n");
@@ -1210,7 +1210,7 @@ State1:       atomic{skip; printf("in state UserInterface.State1\n");
         if
         :: atomic{1 -> 
            ComputingComponent_setDesiredBrightnessValue_p1!UserInterface_V.desiredBrightnessValue; ComputingComponent_q!setDesiredBrightnessValue;
-           printf("Transition to UserInterface.Idle (^ComputingComponent.setDesiredBrightnessValue(desiredBrightnessValue))");goto Idle; skip;}
+           printf(" " /*Transition to UserInterface.Idle (^ComputingComponent.setDesiredBrightnessValue(desiredBrightnessValue))*/);goto Idle; skip;}
         fi;
 /* State State2 */
 State2:       atomic{skip; printf("in state UserInterface.State2\n");
@@ -1221,11 +1221,11 @@ State2:       atomic{skip; printf("in state UserInterface.State2\n");
         :: atomic{1 -> 
            UserInterface_V.manualMode=1;
            ComputingComponent_q!ccOK;
-           printf("Transition to UserInterface.Idle (/manualMode:=1^ComputingComponent.ccOK)");goto Idle; skip;}
+           printf(" " /*Transition to UserInterface.Idle (/manualMode:=1^ComputingComponent.ccOK)*/);goto Idle; skip;}
         :: atomic{1 -> 
            UserInterface_V.manualMode=0;
            ComputingComponent_q!ccFAIL;
-           printf("Transition to UserInterface.Idle (/manualMode:=0^ComputingComponent.ccFAIL)");goto Idle; skip;}
+           printf(" " /*Transition to UserInterface.Idle (/manualMode:=0^ComputingComponent.ccFAIL)*/);goto Idle; skip;}
         fi;
 exit:      skip
 }

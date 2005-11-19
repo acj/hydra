@@ -6,6 +6,35 @@
  */
 package h2PVisitors;
 
+import h2PFoundation.AcceptReturnType;
+import h2PNodes.ActionNode;
+import h2PNodes.ClassBodyNode;
+import h2PNodes.ClassNode;
+import h2PNodes.CompositeStateBodyNode;
+import h2PNodes.CompositeStateNode;
+import h2PNodes.ConcurrentCompositeBodyNode;
+import h2PNodes.ConcurrentCompositeNode;
+import h2PNodes.DriverFileNode;
+import h2PNodes.EventNode;
+import h2PNodes.HistoryNode;
+import h2PNodes.InitNode;
+import h2PNodes.InstanceVariableNode;
+import h2PNodes.JoinNode;
+import h2PNodes.MessageNode;
+import h2PNodes.MessagesNode;
+import h2PNodes.ModelBodyNode;
+import h2PNodes.ModelNode;
+import h2PNodes.NullNode;
+import h2PNodes.SignalNode;
+import h2PNodes.StateBodyNode;
+import h2PNodes.StateNode;
+import h2PNodes.TimeInvariantNode;
+import h2PNodes.TransitionActionNode;
+import h2PNodes.TransitionActionsNode;
+import h2PNodes.TransitionBodyNode;
+import h2PNodes.TransitionNode;
+import h2PNodes.aNode;
+
 /**
  * @author karli
  *
@@ -20,6 +49,222 @@ public class ASTErrorChecker extends aVisitor {
 	public ASTErrorChecker() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitActionNode(h2PNodes.ActionNode)
+	 */
+	public AcceptReturnType visitActionNode(ActionNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitActionNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitClassBodyNode(h2PNodes.ClassBodyNode)
+	 */
+	public AcceptReturnType visitClassBodyNode(ClassBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitClassBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitClassNode(h2PNodes.ClassNode)
+	 */
+	public AcceptReturnType visitClassNode(ClassNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitClassNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitCompositeStateBodyNode(h2PNodes.CompositeStateBodyNode)
+	 */
+	public AcceptReturnType visitCompositeStateBodyNode(CompositeStateBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitCompositeStateBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitCompositeStateNode(h2PNodes.CompositeStateNode)
+	 */
+	public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitCompositeStateNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeBodyNode(h2PNodes.ConcurrentCompositeBodyNode)
+	 */
+	public AcceptReturnType visitConcurrentCompositeBodyNode(ConcurrentCompositeBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitConcurrentCompositeBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeNode(h2PNodes.ConcurrentCompositeNode)
+	 */
+	public AcceptReturnType visitConcurrentCompositeNode(ConcurrentCompositeNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitConcurrentCompositeNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitDriverFileNode(h2PNodes.DriverFileNode)
+	 */
+	public AcceptReturnType visitDriverFileNode(DriverFileNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitDriverFileNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitEventNode(h2PNodes.EventNode)
+	 */
+	public AcceptReturnType visitEventNode(EventNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitEventNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitHistoryNode(h2PNodes.HistoryNode)
+	 */
+	public AcceptReturnType visitHistoryNode(HistoryNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitHistoryNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitInitNode(h2PNodes.InitNode)
+	 */
+	public AcceptReturnType visitInitNode(InitNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitInitNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitInstanceVariableNode(h2PNodes.InstanceVariableNode)
+	 */
+	public AcceptReturnType visitInstanceVariableNode(InstanceVariableNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitInstanceVariableNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitJoinNode(h2PNodes.JoinNode)
+	 */
+	public AcceptReturnType visitJoinNode(JoinNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitJoinNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitMessageNode(h2PNodes.MessageNode)
+	 */
+	public AcceptReturnType visitMessageNode(MessageNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitMessageNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitMessagesNode(h2PNodes.MessagesNode)
+	 */
+	public AcceptReturnType visitMessagesNode(MessagesNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitMessagesNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitModelBodyNode(h2PNodes.ModelBodyNode)
+	 */
+	public AcceptReturnType visitModelBodyNode(ModelBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitModelBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitModelNode(h2PNodes.ModelNode)
+	 */
+	public AcceptReturnType visitModelNode(ModelNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitModelNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitNode(h2PNodes.aNode)
+	 */
+	public AcceptReturnType visitNode(aNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitNullNode(h2PNodes.NullNode)
+	 */
+	public AcceptReturnType visitNullNode(NullNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitNullNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitSignalNode(h2PNodes.SignalNode)
+	 */
+	public AcceptReturnType visitSignalNode(SignalNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitSignalNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitStateBodyNode(h2PNodes.StateBodyNode)
+	 */
+	public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitStateBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitStateNode(h2PNodes.StateNode)
+	 */
+	public AcceptReturnType visitStateNode(StateNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitStateNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitTimeInvariantNode(h2PNodes.TimeInvariantNode)
+	 */
+	public AcceptReturnType visitTimeInvariantNode(TimeInvariantNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitTimeInvariantNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode)
+	 */
+	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitTransitionActionNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitTransitionActionsNode(h2PNodes.TransitionActionsNode)
+	 */
+	public AcceptReturnType visitTransitionActionsNode(TransitionActionsNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitTransitionActionsNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitTransitionBodyNode(h2PNodes.TransitionBodyNode)
+	 */
+	public AcceptReturnType visitTransitionBodyNode(TransitionBodyNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitTransitionBodyNode(tNode);
+	}
+
+	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitTransitionNode(h2PNodes.TransitionNode)
+	 */
+	public AcceptReturnType visitTransitionNode(TransitionNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitTransitionNode(tNode);
 	}
 
 }
