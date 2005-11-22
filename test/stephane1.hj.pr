@@ -49,7 +49,8 @@ chan ClassC_C=[0] of {bit};
 chan _SYSTEMCLASS__q=[5] of {mtype};
 chan _SYSTEMCLASS__C=[0] of {bit};
 active proctype ClassA()
-{atomic{
+{
+atomic{
 mtype m;
         ClassA_V.attr1A = 0;
 /*Init state*/
@@ -144,7 +145,8 @@ s8A:          atomic{skip; printf("in state ClassA.s8A\n");
 exit:      skip
 }
 active proctype ClassB()
-{atomic{
+{
+atomic{
 mtype m;
         ClassB_V.attr1B = 0;
 /*Init state*/
@@ -186,7 +188,8 @@ s3B:          atomic{skip; printf("in state ClassB.s3B\n");
 exit:      skip
 }
 active proctype ClassC()
-{atomic{
+{
+atomic{
 mtype m;
         ClassC_V.attr1C = 0;
 /*Init state*/
@@ -226,7 +229,8 @@ s3C:          atomic{skip; printf("in state ClassC.s3C\n");
 exit:      skip
 }
 active proctype _SYSTEMCLASS_()
-{atomic{
+{
+atomic{
 mtype m;
 
 /*Init state*/

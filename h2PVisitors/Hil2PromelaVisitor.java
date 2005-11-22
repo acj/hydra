@@ -2312,6 +2312,9 @@ public class Hil2PromelaVisitor extends aVisitor {
         return sbnhOutput_Dest(tNode, "", dest, destType, countGuard, checkMTypeList);
     }
 
+    public String sbnhGetTransitionDescriptionAction (TransitionNode transNode) {
+    	return "printf(\"" + escapeStr (transNode.getDescription()) + "\");";
+    }
     public AcceptReturnType sbnhOutput_Dest (StateBodyNode tNode, TransitionNode transNode, int countGuard, boolean checkMTypeList) {
         String desc = "";
         String dest = "";
@@ -2321,23 +2324,9 @@ public class Hil2PromelaVisitor extends aVisitor {
         if (transNode != null) {
             dest = transNode.getDestination();
             destType = transNode.getDestinationType();
-            /*if (transNode.hasBody()) {
-                  TransitionBodyNode tbNode = transNode.bodyChild;
-                  if (tbNode.hasEventNodeChild()) {
-                    tmp += "evt:" +tbNode.eventNodeChild.getID(); 
-                  }
-                  tmp += "[" + tbNode.getGuard() + "]";
-                  if (tbNode.hasActionsChild()) {
-                    tmp += "/" + tbNode.actionsChild.getID(); 
-                  }
-                  if (tbNode.hasMessagesChild()) {
-                    tmp += "^" + tbNode.messagesChild.getID(); 
-                  }
-            }
             
-            desc = "printf(\"Transition to " + dest + " (" + tmp + ").\");";
-            */
-            desc = "printf(\" \" /*" + escapeStr (transNode.getDescription()) + "*/);";            
+            //desc = "printf(\"" + escapeStr (transNode.getDescription()) + "\");";
+            desc = sbnhGetTransitionDescriptionAction(transNode);
         }
         if (!printTransitionEntry) {
           desc = ""; // for comparison.
