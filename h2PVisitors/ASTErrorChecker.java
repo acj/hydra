@@ -63,48 +63,196 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitClassBodyNode(h2PNodes.ClassBodyNode)
 	 */
 	public AcceptReturnType visitClassBodyNode(ClassBodyNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitClassBodyNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		int initNodeCount = 0;
+		
+		String nodeName = tNode.getParent().getID();
+		for (int i = 0; i < tNode.children.size(); i++) {
+			boolean validChild = false;
+			aNode childNode = (aNode)tNode.children.get(i);
+			if (childNode.getType().equals("InitNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+				initNodeCount++;
+			}
+			if (childNode.getType().equals("StateNode") || 
+				childNode.getType().equals("CompositeStateNode") ||
+				childNode.getType().equals("ConcurrentCompositeNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (childNode.getType().equals("TimeInvariantNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (childNode.getType().equals("InstanceVariableNode")) {
+				validChild = true;				
+			}
+			if (childNode.getType().equals("SignalNode")) {
+				validChild = true;				
+			}
+			if (childNode.getType().equals("JoinNode")) {
+				validChild = true;				
+			}
+			if (!validChild) {
+				tART.addStr("errors", "ClassBody: (" + nodeName +
+						") Invalid Child Type. Node " + i + " of type " + childNode.getType() + ".");
+			}
+		}
+		
+		if (initNodeCount == 0) {
+			tART.addStr("warnings", "ClassBody: ("+ nodeName +
+					") No Init State found.");
+		}
+		if (initNodeCount > 1) {
+			tART.addStr("errors", "ClassBody: ("+ nodeName +
+					") Multiple Init States found.");
+		}
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitClassNode(h2PNodes.ClassNode)
 	 */
 	public AcceptReturnType visitClassNode(ClassNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitClassNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = tNode.getID();
+		
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "Class: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasClassBodyNode()) {
+				tART.addStr("errors", "Class: (" + nodeName + ") Has has children but no body.");
+			} else {
+				tART.merge(tNode.subnode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitCompositeStateBodyNode(h2PNodes.CompositeStateBodyNode)
 	 */
 	public AcceptReturnType visitCompositeStateBodyNode(CompositeStateBodyNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitCompositeStateBodyNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		int transitionCount = 0;	
+		int initNodeCount = 0;
+		int historyNodeCount = 0;
+		
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		for (int i = 0; i < tNode.children.size(); i++) {
+			boolean validChild = false;
+			aNode childNode = (aNode)tNode.children.get(i);
+			if (childNode.getType().equals("InitNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+				initNodeCount++;
+			}
+			if (childNode.getType().equals("ActionNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (childNode.getType().equals("HistoryNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+				historyNodeCount++;
+			}
+			if (childNode.getType().equals("TransitionNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+				transitionCount++;
+			}
+			if (childNode.getType().equals("StateNode") || 
+				childNode.getType().equals("CompositeStateNode") ||
+				childNode.getType().equals("ConcurrentCompositeNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (!validChild) {
+				tART.addStr("errors", "CompositeStateBody: (" + nodeName +
+						") Invalid Child Type. Node " + i + " of type " + childNode.getType() + ".");
+			}
+		}
+		
+		if (initNodeCount == 0) {
+			tART.addStr("warnings", "CompositeStateBody: ("+ nodeName +
+					") No Init State found.");
+		}
+		if (initNodeCount > 1) {
+			tART.addStr("errors", "CompositeStateBody: ("+ nodeName +
+					") Multiple Init States found.");
+		}
+		if (transitionCount == 0) {
+			tART.addStr("warnings", "CompositeStateBody: ("+ nodeName +
+					") No outgoing Transitions found.");
+		}
+		
+		return tART;
+
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitCompositeStateNode(h2PNodes.CompositeStateNode)
 	 */
 	public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitCompositeStateNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "CompositeState: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasBodyNode()) {
+				tART.addStr("errors", "CompositeState: (" + nodeName + ") Has has children but no body.");
+			} else {
+				tART.merge(tNode.bodyNode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeBodyNode(h2PNodes.ConcurrentCompositeBodyNode)
 	 */
 	public AcceptReturnType visitConcurrentCompositeBodyNode(ConcurrentCompositeBodyNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitConcurrentCompositeBodyNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		for (int i = 0; i < tNode.children.size(); i++) {
+			boolean validChild = false;
+			aNode childNode = (aNode)tNode.children.get(i);
+			if (childNode.getType().equals("CompositeStateNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (!validChild) {
+				tART.addStr("errors", "ConcurrentCompositeBody: (" + nodeName +
+						") Invalid Child Type. Node " + i + " of type " + childNode.getType() + ".");
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeNode(h2PNodes.ConcurrentCompositeNode)
 	 */
 	public AcceptReturnType visitConcurrentCompositeNode(ConcurrentCompositeNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitConcurrentCompositeNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "ConcurrentComposite: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasBodyNode()) {
+				tART.addStr("errors", "ConcurrentComposite: (" + nodeName + ") Has has children but no body.");
+			} else {
+				tART.merge(tNode.bodyNode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
@@ -136,7 +284,50 @@ public class ASTErrorChecker extends aVisitor {
 	 */
 	public AcceptReturnType visitInitNode(InitNode tNode) {
 		// TODO Auto-generated method stub
-		return super.visitInitNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+
+		//TODO:
+		/*
+		 *     my $found=UniversalClass->IfinParent($parentbodyref,"StateNode",$initID);
+    if ($found eq 0)
+    {
+        $found=UniversalClass->IfinParent($parentbodyref,"CStateNode",$initID);
+        if ($found eq 0)
+        {
+            $found=UniversalClass->IfinParent($parentbodyref,"CCStateNode",$initID);
+            if ($found eq 0)
+            {
+                $counterror=$counterror+1;
+                my $parentID=$parentbodyref->{parent}->{ID};
+                
+                if ($parentbodyref eq 'classbodyNode')
+                {
+                    UniversalClass->printMsg("Error",$parentbodyref->{parent},
+                                 "State [$initID] not found");
+                }
+                else #($parentbodyref eq 'cstatebodyNode')
+                {
+                    my $classref=UniversalClass->SearchUpForDest($theinitNode,"ClassNode");
+                    UniversalClass->printMsg("Error",$classref,$parentbodyref->{parent},
+                                 "State [$initID] not found");
+                }
+            }
+        }       
+    }
+
+		 */
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "Init: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasTransitionBodyNode()) {
+				tART.addStr("errors", "Init: (" + nodeName + ") Has has children but no transition.");
+			} else {
+				tART.merge(tNode.subnode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
@@ -175,16 +366,48 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitModelBodyNode(h2PNodes.ModelBodyNode)
 	 */
 	public AcceptReturnType visitModelBodyNode(ModelBodyNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitModelBodyNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		
+		String nodeName = tNode.getParent().getID();
+		for (int i = 0; i < tNode.children.size(); i++) {
+			boolean validChild = false;
+			aNode childNode = (aNode)tNode.children.get(i);
+			if (childNode.getType().equals("ClassNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (childNode.getType().equals("DriverFileNode")) {
+				validChild = true;				
+			}
+			if (childNode.getType().equals("NullNode")) {
+				validChild = true;				
+			}
+			if (!validChild) {
+				tART.addStr("errors", "ModelBody: (" + nodeName +
+						") Invalid Child Type. Node " + i + " of type " + childNode.getType() + ".");
+			}
+		}
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitModelNode(h2PNodes.ModelNode)
 	 */
 	public AcceptReturnType visitModelNode(ModelNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitModelNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = tNode.getID();
+		
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "Model: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasModelBodyNode()) {
+				tART.addStr("errors", "Model: (" + nodeName + ") Has has children but no body.");
+			} else {
+				tART.merge(tNode.subnode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
@@ -215,16 +438,57 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitStateBodyNode(h2PNodes.StateBodyNode)
 	 */
 	public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitStateBodyNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		int transitionCount = 0;
+		
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		for (int i = 0; i < tNode.children.size(); i++) {
+			boolean validChild = false;
+			aNode childNode = (aNode)tNode.children.get(i);
+			if (childNode.getType().equals("TransitionNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+				transitionCount++;
+			}
+			if (childNode.getType().equals("ActionNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (childNode.getType().equals("TimeInvariantNode")) {
+				validChild = true;
+				tART.merge(childNode.accept(this));
+			}
+			if (!validChild) {
+				tART.addStr("errors", "StateBody: (" + nodeName +
+						") Invalid Child Type. Node " + i + " of type " + childNode.getType() + ".");
+			}
+		}
+		
+		if (transitionCount == 0) {
+			tART.addStr("warnings", "StateBody: ("+ nodeName +
+					") No outgoing Transitions found.");
+		}
+		return tART;
 	}
 
 	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitStateNode(h2PNodes.StateNode)
 	 */
 	public AcceptReturnType visitStateNode(StateNode tNode) {
-		// TODO Auto-generated method stub
-		return super.visitStateNode(tNode);
+		AcceptReturnType tART = new AcceptReturnType();
+		String nodeName = searchUpForDest (tNode, "ClassNode").getID() + "." + tNode.getParent().getID();
+		
+		// the model only has one child: a body node.
+		if (tNode.children.size() > 1) {
+			tART.addStr("errors", "State: (" + nodeName + ") Has too many children.");
+			if (!tNode.hasBodyNode()) {
+				tART.addStr("errors", "State: (" + nodeName + ") Has has children but no body.");
+			} else {
+				tART.merge(tNode.bodyNode.accept(this));
+			}
+		}
+		
+		return tART;
 	}
 
 	/* (non-Javadoc)
@@ -268,119 +532,3 @@ public class ASTErrorChecker extends aVisitor {
 	}
 
 }
-
-/*
-
-#Called by ASTVisitorForPromela.pm/sub visitstatebodyNode()
-sub outputTransitions
-{
-    my ( $class, $thisvisitor, $outputState, $transeventlist, $mtypelist, $iftarget, $thisstatebodynode ) = @_;
-
-    #head of transitions in this statebodyNode
-    #           atomic {if :: !t?[free] -> t!free :: else skip fi;}
-    #           if
-    @$outputState = visitstatebodyNodePak->TransitionHeadOutput(@$outputState);
-
-    #2, visit @transeventlist and generate the body of transitions in this statebodyNode
-    my $event;
-    my $transitionlist = '';    #a pointer to an array
-    my $newent;
-    my $guard;
-    my $actions;
-    my $messages;
-    my $countguard = 0;         #used to count how many guards one event category has
-    my @outputTrans;
-
-    #added 04-04-03 To fix non-determinism
-    my $iffirst = 0;
-
-    #added 04-04-03
-    foreach $ent (@$transeventlist)  {
-        $event          = $ent->{event};
-        $transitionlist = $ent->{transitionlist};
-
-        #according to different categories output to @outputState
-        if ( $event eq 'EMPTYTRANS' )
-        {
-            @$outputState = visitstatebodyNodePak->EMPTYTRANSoutputState( $thisstatebodynode, $transitionlist, @$outputState );
-        } else  {
-            if ( $event eq 'NOEVENT' ) {  #push(@$outputState,"        :: atomic{1 -> ");
-            } else  {
-                $event->Accept($thisvisitor);    #@outputTrans holds the result of this eventNode
-                @outputTrans = ASTVisitorForPromela->PassoutputTrans;
-                if ( $event->{eventtype} eq 'normal' )
-                {
-                    my $localret =
-                      UniversalClass->FindLocalDestNode( $thisstatebodynode, "SignalNode", $event->{eventname}, "name" );
-                    if ( $localret eq '' )
-                    {
-                        push( @$outputState, "        :: atomic{evt??$event->{eventname},eval(_pid) -> " );
-                    } else  {
-                        @$outputState = UniversalClass->jointwoarrays( \@outputTrans, $outputState );
-                    }
-                } else {
-                    @$outputState = UniversalClass->jointwoarrays( \@outputTrans, $outputState );
-                }
-            } /* IF NOEVENT * /
-
-            @$outputState =
-              visitstatebodyNodePak->outputINPredicateZero( $iftarget, $thisstatebodynode, @$outputState );
-            $countguard = 0;
-
-            $iffirst = 1;
-
-            foreach $newent (@$transitionlist)    #$newent is a TransNode
-            {
-
-                ( $countguard, @$outputState ) =
-                  visitstatebodyNodePak->outputGuard( $newent->{tran}, $newent->{tran}->{guard},
-                                                      $countguard, $event, @$outputState );
-
-                if ( ( $countguard eq 0 ) )
-                {                                 #there is no guard at all, so nondeterminism
-                    if ( $event eq 'NOEVENT' )
-                    {
-
-                        my $statetimeinvariant = ASTVisitorForPromela->GetstatetimeinvariantAndUndef();
-                        if ( $statetimeinvariant eq '' )
-                        {
-                            push( @$outputState, "        :: atomic{1 -> " );
-                        } else  {
-                            push( @$outputState, "        :: atomic{Timer_V.$statetimeinvariant -> " );
-                        }
-
-                    } else {
-                        if ( $iffirst ne 1 )
-                        {
-                            $event->Accept($thisvisitor);    #@outputTrans holds the result of this eventNode
-                            @outputTrans = ASTVisitorForPromela->PassoutputTrans;
-                            @$outputState = UniversalClass->jointwoarrays( \@outputTrans, $outputState );
-                        }
-                    }
-                } /* If countguard eq 0 * /
-                $iffirst = $iffirst + 1;
-
-                @$outputState =
-                  visitstatebodyNodePak->outputActionsMsgs( $thisvisitor, 'Actions', $newent->{tran}->{actions},
-                                                            $countguard, @$outputState );
-
-                @$outputState =
-                  visitstatebodyNodePak->outputActionsMsgs( $thisvisitor, 'Msgs', $newent->{tran}->{messages},
-                                                            $countguard, @$outputState );
-
-                @$outputState = visitstatebodyNodePak->output_dest(        $thisstatebodynode, $newent->{dest}, $newent->{desttype},
-                                                               $countguard,        $mtypelist,      @$outputState );
-            } /* foreach newend * /
-
-            @$outputState =
-              visitstatebodyNodePak->output_guardEnd( $countguard, $event, $thisstatebodynode, @$outputState );
-        } /* if EmptyTrans * /
-    }
-
-    my $tempdest = $thisstatebodynode->{parent}->{ID};
-    @$outputState = visitstatebodyNodePak->TransitionEndOutput( $thisstatebodynode, @$outputState );
-
-    return @$outputState;
-}
-
-*/

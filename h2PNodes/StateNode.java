@@ -39,5 +39,9 @@ public class StateNode extends aNode {
 			bodyNode = (StateBodyNode)newChild;
 		}
 	}
+	
+	public boolean hasBodyNode (){
+		return (bodyNode != null);
+	}
 
 }

@@ -2313,13 +2313,35 @@ public class Hil2PromelaVisitor extends aVisitor {
     }
 
     public String sbnhGetTransitionDescriptionAction (TransitionNode transNode) {
-    	return "printf(\"" + escapeStr (transNode.getDescription()) + "\");";
+    	String descStr = transNode.getDescription();
+    	String puttyString = "";
+    	String coutString = "";
+    	
+    	for (int i = 0; i < descStr.length(); i ++ ) {
+			puttyString += ", ";
+    		coutString += "%c";
+    		char c = descStr.charAt(i);
+    		puttyString += "'"; 
+    		if (c == '\\') {
+    			puttyString += "\\"; 
+    		}
+    		if (c == '\'') {
+    			puttyString += "\\"; 
+    		}
+    		puttyString += c + "'";
+    	}
+    	coutString = '"' + coutString + '"';
+    	// String tempStr =  "printf(\" \", (\"" + escapeStr (descStr) + "\"));";
+    	String tempStr =  "printf(" + coutString + puttyString + ");";
+    	
+    	return tempStr;
     }
+    
     public AcceptReturnType sbnhOutput_Dest (StateBodyNode tNode, TransitionNode transNode, int countGuard, boolean checkMTypeList) {
         String desc = "";
         String dest = "";
         String destType = "";
-        String tmp = "";
+        //String tmp = "";
         
         if (transNode != null) {
             dest = transNode.getDestination();

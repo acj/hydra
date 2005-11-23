@@ -45,4 +45,7 @@ public class CompositeStateNode extends aNode {
 		}
 	}
 
+	public boolean hasBodyNode() {
+		return (bodyNode != null);
+	}
 }

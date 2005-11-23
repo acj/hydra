@@ -39,5 +39,9 @@ public class ConcurrentCompositeNode extends aNode {
 			bodyNode = (ConcurrentCompositeBodyNode) newChild;
 		}
 	}
+	
+	public boolean hasBodyNode() {
+		return (bodyNode != null);
+	}
 
 }
