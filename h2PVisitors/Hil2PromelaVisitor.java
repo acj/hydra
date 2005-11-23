@@ -58,6 +58,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	
 	protected boolean pedantic;
     protected boolean printTransitionEntry;
+    protected boolean simpleTransitionPrint;
 	
 	
 	// TODO don't forget to implement SetNever!
@@ -71,6 +72,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		
 		pedantic = true;
         printTransitionEntry = true;
+        simpleTransitionPrint = true;
 		
 		int i, increment = 3;
 		tabVec.addElement(new Integer(0));
@@ -2332,7 +2334,11 @@ public class Hil2PromelaVisitor extends aVisitor {
     	}
     	coutString = '"' + coutString + '"';
     	// String tempStr =  "printf(\" \", (\"" + escapeStr (descStr) + "\"));";
+    	
     	String tempStr =  "printf(" + coutString + puttyString + ");";
+    	if (!simpleTransitionPrint) {
+    		tempStr = "printf (" + '"' + escapeStr(descStr) + '"' + ");";
+    	}
     	
     	return tempStr;
     }
