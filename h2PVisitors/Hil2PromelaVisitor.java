@@ -72,7 +72,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		
 		pedantic = true;
         printTransitionEntry = true;
-        simpleTransitionPrint = true;
+        simpleTransitionPrint = false;
 		
 		int i, increment = 3;
 		tabVec.addElement(new Integer(0));

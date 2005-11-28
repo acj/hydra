@@ -64,7 +64,7 @@ s1A:          atomic{skip; printf("in state ClassA.s1A\n");
         s1A_G:
         if
         :: atomic{ClassA_q?start -> 
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '7', 'A', ' ', '(', 'e', 'v', 't', ':', 's', 't', 'a', 'r', 't', '(', ')', ')');goto s7A; skip;}
+           printf ("Transition to ClassA.s7A (evt:start())");goto s7A; skip;}
         fi;
 /* State s2A */
 s2A:          atomic{skip; printf("in state ClassA.s2A\n");
@@ -74,7 +74,7 @@ s2A:          atomic{skip; printf("in state ClassA.s2A\n");
         if
         :: atomic{ClassA_q?ackA -> 
            ClassC_q!operation1C;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '3', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'C', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '1', 'C', ')');goto s3A; skip;}
+           printf ("Transition to ClassA.s3A (evt:ackA()^ClassC.operation1C)");goto s3A; skip;}
         fi;
 /* State s3A */
 s3A:          atomic{skip; printf("in state ClassA.s3A\n");
@@ -85,7 +85,7 @@ s3A:          atomic{skip; printf("in state ClassA.s3A\n");
         if
         :: atomic{ClassA_q?ackA -> 
            ClassB_q!operation2B;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '8', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'B', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '2', 'B', ')');goto s8A; skip;}
+           printf ("Transition to ClassA.s8A (evt:ackA()^ClassB.operation2B)");goto s8A; skip;}
         fi;
 /* State s4A */
 s4A:          atomic{skip; printf("in state ClassA.s4A\n");
@@ -95,7 +95,7 @@ s4A:          atomic{skip; printf("in state ClassA.s4A\n");
         if
         :: atomic{ClassA_q?ackA -> 
            ClassB_q!operation3B;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '5', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'B', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '3', 'B', ')');goto s5A; skip;}
+           printf ("Transition to ClassA.s5A (evt:ackA()^ClassB.operation3B)");goto s5A; skip;}
         fi;
 /* State s5A */
 s5A:          atomic{skip; printf("in state ClassA.s5A\n");
@@ -105,7 +105,7 @@ s5A:          atomic{skip; printf("in state ClassA.s5A\n");
         if
         :: atomic{ClassA_q?ackA -> 
            ClassC_q!operation3C;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '6', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'C', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '3', 'C', ')');goto s6A; skip;}
+           printf ("Transition to ClassA.s6A (evt:ackA()^ClassC.operation3C)");goto s6A; skip;}
         fi;
 /* State s6A */
 s6A:          atomic{skip; printf("in state ClassA.s6A\n");
@@ -117,7 +117,7 @@ s6A:          atomic{skip; printf("in state ClassA.s6A\n");
         :: atomic{ClassA_q?ackA -> 
            if
            :: atomic{ClassA_V.attr1A==0 ->
-              printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '7', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '[', 'a', 't', 't', 'r', '1', 'A', '=', '0', ']', ')');goto s7A; skip;}
+              printf ("Transition to ClassA.s7A (evt:ackA()[attr1A=0])");goto s7A; skip;}
            :: else -> goto s6A_G; skip;
            fi}
         fi;
@@ -130,7 +130,7 @@ s7A:          atomic{skip; printf("in state ClassA.s7A\n");
         if
         :: atomic{1 -> 
            ClassB_q!operation1B;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '2', 'A', ' ', '(', '^', 'C', 'l', 'a', 's', 's', 'B', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '1', 'B', ')');goto s2A; skip;}
+           printf ("Transition to ClassA.s2A (^ClassB.operation1B)");goto s2A; skip;}
         fi;
 /* State s8A */
 s8A:          atomic{skip; printf("in state ClassA.s8A\n");
@@ -140,7 +140,7 @@ s8A:          atomic{skip; printf("in state ClassA.s8A\n");
         if
         :: atomic{ClassA_q?ackA -> 
            ClassC_q!operation2C;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'A', '.', 's', '4', 'A', ' ', '(', 'e', 'v', 't', ':', 'a', 'c', 'k', 'A', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'C', '.', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '2', 'C', ')');goto s4A; skip;}
+           printf ("Transition to ClassA.s4A (evt:ackA()^ClassC.operation2C)");goto s4A; skip;}
         fi;
 exit:      skip
 }
@@ -162,7 +162,7 @@ s1B:          atomic{skip; printf("in state ClassB.s1B\n");
         if
         :: atomic{ClassB_q?operation1B -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'B', '.', 's', '2', 'B', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '1', 'B', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s2B; skip;}
+           printf ("Transition to ClassB.s2B (evt:operation1B()^ClassA.ackA)");goto s2B; skip;}
         fi;
 /* State s2B */
 s2B:          atomic{skip; printf("in state ClassB.s2B\n");
@@ -172,7 +172,7 @@ s2B:          atomic{skip; printf("in state ClassB.s2B\n");
         if
         :: atomic{ClassB_q?operation2B -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'B', '.', 's', '3', 'B', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '2', 'B', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s3B; skip;}
+           printf ("Transition to ClassB.s3B (evt:operation2B()^ClassA.ackA)");goto s3B; skip;}
         fi;
 /* State s3B */
 s3B:          atomic{skip; printf("in state ClassB.s3B\n");
@@ -183,7 +183,7 @@ s3B:          atomic{skip; printf("in state ClassB.s3B\n");
         if
         :: atomic{ClassB_q?operation3B -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'B', '.', 's', '1', 'B', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '3', 'B', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s1B; skip;}
+           printf ("Transition to ClassB.s1B (evt:operation3B()^ClassA.ackA)");goto s1B; skip;}
         fi;
 exit:      skip
 }
@@ -204,7 +204,7 @@ s1C:          atomic{skip; printf("in state ClassC.s1C\n");
         if
         :: atomic{ClassC_q?operation1C -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'C', '.', 's', '2', 'C', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '1', 'C', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s2C; skip;}
+           printf ("Transition to ClassC.s2C (evt:operation1C()^ClassA.ackA)");goto s2C; skip;}
         fi;
 /* State s2C */
 s2C:          atomic{skip; printf("in state ClassC.s2C\n");
@@ -214,7 +214,7 @@ s2C:          atomic{skip; printf("in state ClassC.s2C\n");
         if
         :: atomic{ClassC_q?operation2C -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'C', '.', 's', '3', 'C', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '2', 'C', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s3C; skip;}
+           printf ("Transition to ClassC.s3C (evt:operation2C()^ClassA.ackA)");goto s3C; skip;}
         fi;
 /* State s3C */
 s3C:          atomic{skip; printf("in state ClassC.s3C\n");
@@ -224,7 +224,7 @@ s3C:          atomic{skip; printf("in state ClassC.s3C\n");
         if
         :: atomic{ClassC_q?operation3C -> 
            ClassA_q!ackA;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', 'C', 'l', 'a', 's', 's', 'C', '.', 's', '1', 'C', ' ', '(', 'e', 'v', 't', ':', 'o', 'p', 'e', 'r', 'a', 't', 'i', 'o', 'n', '3', 'C', '(', ')', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 'a', 'c', 'k', 'A', ')');goto s1C; skip;}
+           printf ("Transition to ClassC.s1C (evt:operation3C()^ClassA.ackA)");goto s1C; skip;}
         fi;
 exit:      skip
 }
@@ -243,7 +243,7 @@ s1:           atomic{skip; printf("in state _SYSTEMCLASS_.s1\n");
         if
         :: atomic{1 -> 
            run ClassA();
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', '_', 'S', 'Y', 'S', 'T', 'E', 'M', 'C', 'L', 'A', 'S', 'S', '_', '.', 's', '2', ' ', '(', '/', 'n', 'e', 'w', ' ', '(', 'C', 'l', 'a', 's', 's', 'A', ')', ')');goto s2; skip;}
+           printf ("Transition to _SYSTEMCLASS_.s2 (/new (ClassA))");goto s2; skip;}
         fi;
 /* State s2 */
 s2:           atomic{skip; printf("in state _SYSTEMCLASS_.s2\n");
@@ -253,7 +253,7 @@ s2:           atomic{skip; printf("in state _SYSTEMCLASS_.s2\n");
         if
         :: atomic{_SYSTEMCLASS__q?ready -> 
            run ClassB();
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', '_', 'S', 'Y', 'S', 'T', 'E', 'M', 'C', 'L', 'A', 'S', 'S', '_', '.', 's', '3', ' ', '(', 'e', 'v', 't', ':', 'r', 'e', 'a', 'd', 'y', '(', ')', '/', 'n', 'e', 'w', ' ', '(', 'C', 'l', 'a', 's', 's', 'B', ')', ')');goto s3; skip;}
+           printf ("Transition to _SYSTEMCLASS_.s3 (evt:ready()/new (ClassB))");goto s3; skip;}
         fi;
 /* State s3 */
 s3:           atomic{skip; printf("in state _SYSTEMCLASS_.s3\n");
@@ -263,7 +263,7 @@ s3:           atomic{skip; printf("in state _SYSTEMCLASS_.s3\n");
         if
         :: atomic{_SYSTEMCLASS__q?ready -> 
            run ClassC();
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', '_', 'S', 'Y', 'S', 'T', 'E', 'M', 'C', 'L', 'A', 'S', 'S', '_', '.', 's', '4', ' ', '(', 'e', 'v', 't', ':', 'r', 'e', 'a', 'd', 'y', '(', ')', '/', 'n', 'e', 'w', ' ', '(', 'C', 'l', 'a', 's', 's', 'C', ')', ')');goto s4; skip;}
+           printf ("Transition to _SYSTEMCLASS_.s4 (evt:ready()/new (ClassC))");goto s4; skip;}
         fi;
 /* State s4 */
 s4:           atomic{skip; printf("in state _SYSTEMCLASS_.s4\n");
@@ -273,7 +273,7 @@ s4:           atomic{skip; printf("in state _SYSTEMCLASS_.s4\n");
         if
         :: atomic{1 -> 
            ClassA_q!start;
-           printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 'T', 'r', 'a', 'n', 's', 'i', 't', 'i', 'o', 'n', ' ', 't', 'o', ' ', '_', 'S', 'Y', 'S', 'T', 'E', 'M', 'C', 'L', 'A', 'S', 'S', '_', '.', 's', '5', ' ', '(', '^', 'C', 'l', 'a', 's', 's', 'A', '.', 's', 't', 'a', 'r', 't', ')');goto s5; skip;}
+           printf ("Transition to _SYSTEMCLASS_.s5 (^ClassA.start)");goto s5; skip;}
         fi;
 /* State s5 */
 s5:           atomic{skip; printf("in state _SYSTEMCLASS_.s5\n");
