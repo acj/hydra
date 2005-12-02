@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="C:/apps/sandbox/xmi2Promela/xmi2Promela.jar"/>
-<options buildIfNeeded="true" compress="true" descriptionLocation="/xmi2Promela/xmi2Promela.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" useSourceFolders="false"/>
-<manifest generateManifest="true" mainClassHandleIdentifier="=xmi2Promela/&lt;{PromelaTest1.java[PromelaTest1" manifestLocation="/rtSpecTool/promelaParser/promelaParser" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
-<sealing sealJar="false">
-<packagesToSeal/>
-<packagesToUnSeal/>
-</sealing>
-</manifest>
-<selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-<javaElement handleIdentifier="=xmi2Promela/&lt;h2PVisitors"/>
-<file path="/xmi2Promela/.classpath"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;h2PVisitors.Parser"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;h2PNodes"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;h2PFoundation"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;xmi2hil"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;"/>
-<javaElement handleIdentifier="=xmi2Promela/&lt;xmiParser"/>
-</selectedElements>
+    <jar path="D:/!sandbox/rtSpecTool/jars/xmi2Promela.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/xmi2Promela/xmi2Promela.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" useSourceFolders="false"/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=xmi2Promela/&lt;{PromelaTest1.java[PromelaTest1" manifestLocation="/rtSpecTool/promelaParser/promelaParser" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=xmi2Promela/&lt;h2PVisitors"/>
+        <file path="/xmi2Promela/.classpath"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;h2PVisitors.Parser"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;h2PNodes"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;h2PFoundation"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;xmi2hil"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;"/>
+        <javaElement handleIdentifier="=xmi2Promela/&lt;xmiParser"/>
+    </selectedElements>
 </jardesc>

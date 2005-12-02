@@ -386,12 +386,12 @@ public class Hil2PromelaVisitor extends aVisitor {
         	if (entity.getID().equals(tNode.getID())) {
         		if (entity.getType().equals("CompositeStateNode")) {
         			// found++;  //unused
-        			tmpART.addStr("Init", "        goto (exit1) to_" + tNode.getID() + "; skip;};");
+        			tmpART.addStr("Init", "        goto to_" + tNode.getID() + "; skip;};");
         			i = aParent.children.size(); // break out of for loop
         		}
                 if (entity.getType().equals("ConcurrentCompositeStateNode")) {
                     // found++;  //unused
-                    tmpART.addStr("Init", "        goto  (exit2) to_" + tNode.getID() + "; skip;};");
+                    tmpART.addStr("Init", "        goto to_" + tNode.getID() + "; skip;};");
                     i = aParent.children.size(); // break out of for loop
                 }
         		if (entity.getType().equals("StateNode")){
