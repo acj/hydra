@@ -69,6 +69,10 @@ public class NodeUtilityClass {
 		return result;
 	}
 	
+	/*
+	 * NOTE! The parameters in this function are slightly different from the UniversalClass.FindLocalDestNode
+	 * version! Namely the entryName and NodeId parameters are switched!
+	 * */
 	public aNode FindLocalDestNode (aNode tNode, String nodeType, String entryName, String nodeEntryVal) {
 		
 		ClassBodyNode searchNode = (ClassBodyNode)searchUpForDest(tNode, "ClassBodyNode");
@@ -175,4 +179,36 @@ public class NodeUtilityClass {
       }
       return tmpStr;   
     }
+    
+    public aNode ifInParentAsNode(aNode parentObject, String searchType, String varName, String searchName) {
+    	
+    	for (int i = 0; i < parentObject.children.size(); i++) {
+    		aNode childNode = (aNode) parentObject.children.get(i);
+    		if ((childNode.getType().equals(searchType)) && (childNode.getNodeVal(varName).equals(searchName))) {
+    			return childNode;
+    		}
+    	}
+    	return null;
+    }
+    
+    public aNode ifInParentAsNode(aNode parentObject, String searchType, String searchName) {
+    	return ifInParentAsNode(parentObject, searchType, "ID", searchName);
+    }
+    
+    public boolean ifInParent(aNode parentObject, String searchType, String varName, String searchName) {
+    	/*
+    	for (int i = 0; i < parentObject.children.size(); i++) {
+    		aNode childNode = (aNode) parentObject.children.get(i);
+    		if ((childNode.getType().equals(searchType)) && (childNode.getID().equals(searchName))) {
+    			return true;
+    		}
+    	}
+    	return false;*/
+    	return (ifInParentAsNode(parentObject, searchType, varName, searchName) != null);
+    }
+    
+    public boolean ifInParent(aNode parentObject, String searchType, String searchName) {
+    	return ifInParent(parentObject, searchType, "ID", searchName);
+    }
+    
 }

@@ -29,7 +29,7 @@ public class CompositeStateBodyNode extends aNode {
      * @param theID
      */
     public CompositeStateBodyNode() {
-        super(noID(), "CompositeStateBodyNode");
+        super(noID(), "CompositeStateBodyNode", true);
         // TODO Auto-generated constructor stub
         transitionNodeChildren = new Vector();
     }

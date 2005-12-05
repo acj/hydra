@@ -127,4 +127,12 @@ public class WorldUtilNode extends aNode {
 		// T ODO Auto-generated method stub
 		return;
 	}
+
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName(boolean, boolean, boolean)
+	 */
+	public String getNodeName(boolean withClassName, boolean withModelName, boolean withID) {
+		return this.getID();
+	}
+
 }

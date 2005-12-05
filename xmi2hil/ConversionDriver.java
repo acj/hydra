@@ -10,6 +10,7 @@ import h2PFoundation.AcceptReturnType;
 import h2PFoundation.NodeUtilityClass;
 import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
+import h2PVisitors.ASTErrorChecker;
 import h2PVisitors.Parser.ParseException;
 import h2PVisitors.Parser.UMLParser1;
 
@@ -34,10 +35,12 @@ public class ConversionDriver extends NodeUtilityClass {
     Hil2PromelaVisitor funkyVisitor;
     UMLParser1 tHILParser;
     StringBuffer hilIntermediate;
+    AcceptReturnType errors;
     String promelaOutput = "";
     String inputFilename = "";
     File sourceFile = null;
     boolean isSilent = false;
+    boolean ignoreErrors = false;
     
 	/**
 	 * 
@@ -45,7 +48,7 @@ public class ConversionDriver extends NodeUtilityClass {
 	public ConversionDriver() {
 		super();
 		// TODO Auto-generated constructor stub
-        
+		errors = new AcceptReturnType();
 	}
     
     public ConversionDriver(String theInputFilename) {
@@ -102,13 +105,41 @@ public class ConversionDriver extends NodeUtilityClass {
         rootNode = new WorldUtilNode();
         tHILParser = new UMLParser1(dataStream);
         tHILParser.setRootNode(rootNode);
+        ASTErrorChecker errorChecker = new ASTErrorChecker();       
         funkyVisitor = new Hil2PromelaVisitor();
 
         tHILParser.spec(); // parse the HIL file
-        promelaOutput = rootNode.accept(funkyVisitor).defV(); // visit!
-
+        // check for errors.
+        errors = rootNode.accept(errorChecker); // visit!
+        String tErrors = errors.getStr("errors");
+        String tWarnings = errors.getStr("warnings");
+        if (tErrors.length() > 0) {
+        	promelaOutput = "";
+        	if (!isSilent) {
+        		println("There are Errors in the model:");
+        		println(tErrors);
+        	}
+        	if (ignoreErrors) {
+        		// ignore errors, visit anyway.
+                promelaOutput = rootNode.accept(funkyVisitor).defV(); // visit!        		
+        	}
+        } else {
+          // visit only on no errors.
+          promelaOutput = rootNode.accept(funkyVisitor).defV(); // visit!
+        }
+        if (tWarnings.length() > 0) {
+        	if (!isSilent) {
+        		println("");
+        		println("There are Warnings in the model:");
+        		println(tWarnings);
+        	}
+        }
     }
 
+    public boolean hasErrors() {
+    	return (errors.getStr("errors").length() > 0);
+    }
+    
     public boolean save(String filename) {       
         AcceptReturnType outputString = new AcceptReturnType(promelaOutput);
         boolean retval = true;
@@ -172,5 +203,19 @@ public class ConversionDriver extends NodeUtilityClass {
 	public void setSourceFile(File sourceFile) {
 		this.sourceFile = sourceFile;
         this.inputFilename = sourceFile.toString();
+	}
+
+	/**
+	 * @return Returns the ignoreErrors.
+	 */
+	public boolean isIgnoreErrors() {
+		return ignoreErrors;
+	}
+
+	/**
+	 * @param ignoreErrors The ignoreErrors to set.
+	 */
+	public void setIgnoreErrors(boolean ignoreErrors) {
+		this.ignoreErrors = ignoreErrors;
 	}
 }

@@ -21,7 +21,7 @@ public class ClassBodyNode extends aNode {
      * @param theID
      */
     public ClassBodyNode() {
-        super(noID(), "ClassBodyNode");
+        super(noID(), "ClassBodyNode", true);
         // TODO Auto-generated constructor stub
     }
     

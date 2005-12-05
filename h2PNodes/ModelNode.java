@@ -43,5 +43,14 @@ public class ModelNode extends aNode {
 			hasModelBodyNodeBoolean = true;
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName()
+	 */
+	public String getNodeName() {
+		// TODO Auto-generated method stub
+		return super.getNodeName(false, false);
+	}
+
 	
 }

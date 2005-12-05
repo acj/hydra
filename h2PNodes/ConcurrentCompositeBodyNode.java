@@ -24,7 +24,7 @@ public class ConcurrentCompositeBodyNode extends aNode {
      * @param theID
      */
     public ConcurrentCompositeBodyNode() {
-        super(noID(), "ConcurrentCompositeBodyNode");
+        super(noID(), "ConcurrentCompositeBodyNode", true);
         // TODO Auto-generated constructor stub
     }
     

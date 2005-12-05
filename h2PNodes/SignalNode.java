@@ -56,4 +56,12 @@ public class SignalNode extends aNode {
 		return super.getNodeVal(valName);
 	}
 
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName(boolean, boolean, boolean)
+	 */
+	public String getNodeName(boolean withClassName, boolean withModelName, boolean withID) {
+		return super.getNodeName(withClassName, withModelName, false) + this.getName();
+	}
+
+
 }

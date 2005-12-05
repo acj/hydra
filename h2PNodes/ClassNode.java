@@ -46,4 +46,13 @@ public class ClassNode extends aNode {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName()
+	 */
+	public String getNodeName() {
+		// TODO Auto-generated method stub
+		return super.getNodeName(false, true);
+	}
+
+
 }

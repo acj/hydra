@@ -26,7 +26,7 @@ public class StateBodyNode extends aNode {
      * @param theID
      */
     public StateBodyNode() {
-        super(noID(), "StateBodyNode");
+        super(noID(), "StateBodyNode", true);
         // TODO Auto-generated constructor stub
         transitionNodeChildren = new Vector();
         actionNodeChildren = new Vector();

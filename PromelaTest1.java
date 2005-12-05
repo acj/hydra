@@ -75,7 +75,9 @@ public class PromelaTest1 {
         nuc.println("***** Warning: All processes active! *******\n");
 	    try {
             cvd.convert();
-            cvd.save(outputFilename);
+            if (!cvd.hasErrors()) { // save file only if error free
+              cvd.save(outputFilename);
+            }
             /*
             outputString = new AcceptReturnType(cvd.promelaOutput);
             if (outputString.defV().length() > 0) {

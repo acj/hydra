@@ -1,0 +1,92 @@
+Formalize as promela ;
+Model XDEModel{
+Class ClassA {
+	InstanceVar bool attr1A := 0 ;
+	Signal ackA( ) ;
+	Signal operation1A( ) ;
+	Signal operation2A( ) ;
+	Signal operation3A( ) ;
+	Signal start( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1A ;
+	State s1A  {
+		Transition "start" to s7A ;
+	}
+	State s2A  {
+		Transition "ackA^ClassC.operation1C" to s3A ;
+	}
+	State s3A  {
+	Action "entry/attr1A:=1" ;
+		Transition "ackA^ClassB.operation2B" to s8A ;
+	}
+	State s4A  {
+		Transition "ackA^ClassB.operation3B" to s5A ;
+	}
+	State s5A  {
+		Transition "ackA^ClassC.operation3C" to s6A ;
+	}
+	State s6A  {
+	Action "entry/attr1A:=1" ;
+		Transition "ackA[attr1A=0]" to s7A ;
+	}
+	State s7A  {
+	Action "entry/attr1A:=0" ;
+		Transition "^ClassB.operation1B" to s2A ;
+	}
+	State s8A  {
+		Transition "ackA^ClassC.operation2C" to s4A ;
+	}
+}
+Class ClassB {
+	InstanceVar bool attr1B := 0 ;
+	Signal operation1B( ) ;
+	Signal operation2B( ) ;
+	Signal operation3B( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1B ;
+	State s1B  {
+	Action "entry/attr1B:=0" ;
+		Transition "operation1B^ClassA.ackA" to s2B ;
+	}
+	State s2B  {
+		Transition "operation2B^ClassA.ackA" to s3B ;
+	}
+	State s3B  {
+	Action "entry/attr1B:=1" ;
+		Transition "operation3B^ClassA.ackA" to s1B ;
+	}
+}
+Class ClassC {
+	InstanceVar bool attr1C := 0 ;
+	Signal operation1C( ) ;
+	Signal operation2C( ) ;
+	Signal operation3C( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1C ;
+	State s1C  {
+		Transition "operation1C^ClassA.ackA" to s2C ;
+	}
+	State s2C  {
+		Transition "operation2C^ClassA.ackA" to s3C ;
+	}
+	State s3C  {
+		Transition "operation3C^ClassA.ackA" to s1C ;
+	}
+}
+Class _SYSTEMCLASS_ {
+	Signal ready( ) ;
+	Initial  "" s1 ;
+	State s1  {
+		Transition "/new(ClassA)" to s2 ;
+	}
+	State s2  {
+		Transition "ready/new(ClassB)" to s3 ;
+	}
+	State s3  {
+		Transition "ready/new(ClassC)" to s4 ;
+	}
+	State s4  {
+		Transition "^ClassA.start" to s5 ;
+	}
+	State s5  {
+	}
+}
+
+}

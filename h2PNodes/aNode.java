@@ -28,6 +28,7 @@ public abstract class aNode extends NodeUtilityClass {
     protected boolean parentLives;
     protected String uniqueID = "";
     protected boolean usesParentID = false;
+    protected boolean bodyNode = false;
     
 	public Vector children = new Vector(); // generic children nodes
 	//TODO make these children *protected* and wrap them around functions!
@@ -41,6 +42,11 @@ public abstract class aNode extends NodeUtilityClass {
         parent = null;
         parentLives = false;
         formerParent = new Vector();
+	}
+
+	public aNode(String theID, String theClassType, boolean isBodyNode) {
+		this(theID, theClassType);
+		bodyNode = isBodyNode;
 	}
 
 	// Used to initialize nodes with no ID.
@@ -193,4 +199,60 @@ public abstract class aNode extends NodeUtilityClass {
     public aNode searchUpForDest(String destType) {
       return searchUpForDest(this, destType);   
     }
+    
+    public String getNodeName (boolean withClassName, boolean withModelName, boolean withID) {
+    	String tempName = "";
+    	
+    	if (this.isBodyNode()) {
+    		if (this.hasParent()) {
+    			return this.getParent().getNodeName(withClassName, withModelName, withID);
+    		}
+    	}
+    	if (withModelName) {
+    		if ((!this.getType().equals("ModelNode")) && (!this.getType().equals("ModelBodyNode"))) {
+    			aNode mNode = searchUpForDest (this, "ModelNode");
+    			if (mNode != null) {
+    				tempName += mNode.getID() + ".";
+    			}
+    		}
+    	}
+    	if (withClassName) {
+    		if ((!this.getType().equals("ClassNode")) && (!this.getType().equals("ClassBodyNode"))) {
+    			aNode cNode = searchUpForDest (this, "ClassNode");
+    			if (cNode != null) {
+    				tempName += cNode.getID() + ".";
+    			}
+    		}
+    	}
+    	if (withID) {
+    		tempName += this.getID();
+    	}
+    	return tempName;
+    }
+    
+    public String getNodeName (boolean withClassName, boolean withModelName) {
+    	return getNodeName(withClassName, withModelName, true);
+    }
+    
+    public String getNodeName (boolean withClassName) {
+    	return getNodeName(withClassName, false, true);
+    	
+    }
+    public String getNodeName () {
+    	return getNodeName(true, false, true);    	
+    }
+
+	/**
+	 * @return Returns the bodyNode.
+	 */
+	public boolean isBodyNode() {
+		return bodyNode;
+	}
+
+	/**
+	 * @param bodyNode The bodyNode to set.
+	 */
+	protected void setBodyNode(boolean bodyNode) {
+		this.bodyNode = bodyNode;
+	}
 }

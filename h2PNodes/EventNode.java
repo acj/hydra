@@ -68,4 +68,16 @@ public class EventNode extends aNode {
         }
         return tmpStr;
 	}
+	
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName(boolean, boolean, boolean)
+	 */
+	public String getNodeName(boolean withClassName, boolean withModelName, boolean withID) {
+		if (this.hasParent()) {
+			return this.getParent().getNodeName(withClassName, withModelName, withID);
+		} else {
+			return super.getNodeName(withClassName, withModelName, withID);
+		}
+	}
+
 }

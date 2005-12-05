@@ -30,7 +30,7 @@ public class TransitionBodyNode extends aNode {
 	 * @param theID
 	 */
 	public TransitionBodyNode(String theGuard) {
-		super(noID(), "TransitionBodyNode");
+		super(noID(), "TransitionBodyNode", true);
 		// TODO Auto-generated constructor stub
 		guard = theGuard;
 		// transitionList = new Vector();
@@ -98,4 +98,8 @@ public class TransitionBodyNode extends aNode {
         }
         return tmpStr + ")";
 	}
+
+	/* (non-Javadoc)
+	 * @see h2PNodes.aNode#getNodeName()
+	 */
 }
