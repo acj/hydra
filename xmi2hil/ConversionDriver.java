@@ -37,10 +37,12 @@ public class ConversionDriver extends NodeUtilityClass {
     StringBuffer hilIntermediate;
     AcceptReturnType errors;
     String promelaOutput = "";
+    protected String hilIntermediateFilename = "";
     String inputFilename = "";
     File sourceFile = null;
     boolean isSilent = false;
     boolean ignoreErrors = false;
+    boolean makeHilIntermediate = false;
     
 	/**
 	 * 
@@ -98,6 +100,10 @@ public class ConversionDriver extends NodeUtilityClass {
         while (it.hasNext()) {
             hilIntermediate.append(((String) it.next()) + "\n");
         }
+        // write the hil to an intermediate file if requested
+        if (this.isMakeHilIntermediate()) {
+        	save (this.getHilIntermediateFilename(), hilIntermediate.toString());
+        }
 
         // Finally convert the hil to a promela file
         Reader dataStream = new StringReader (hilIntermediate.toString());
@@ -113,6 +119,7 @@ public class ConversionDriver extends NodeUtilityClass {
         errors = rootNode.accept(errorChecker); // visit!
         String tErrors = errors.getStr("errors");
         String tWarnings = errors.getStr("warnings");
+        promelaOutput = "";
         if (tErrors.length() > 0) {
         	promelaOutput = "";
         	if (!isSilent) {
@@ -140,8 +147,12 @@ public class ConversionDriver extends NodeUtilityClass {
     	return (errors.getStr("errors").length() > 0);
     }
     
-    public boolean save(String filename) {       
-        AcceptReturnType outputString = new AcceptReturnType(promelaOutput);
+    public boolean save(String filename) {
+    	return save(filename, promelaOutput);
+    }
+    
+    public boolean save(String filename, String dataOutputStr) {       
+        AcceptReturnType outputString = new AcceptReturnType(dataOutputStr);
         boolean retval = true;
         
         if (filename.length() > 0) {
@@ -153,7 +164,11 @@ public class ConversionDriver extends NodeUtilityClass {
     }
     
     public boolean save (File f) {
-        AcceptReturnType outputString = new AcceptReturnType(promelaOutput);
+    	return save(f, promelaOutput);
+    }
+    
+    public boolean save (File f, String dataOutputStr) {
+        AcceptReturnType outputString = new AcceptReturnType(dataOutputStr);
         boolean retval = true;
         // File source=new File(inputFilename);
         
@@ -217,5 +232,26 @@ public class ConversionDriver extends NodeUtilityClass {
 	 */
 	public void setIgnoreErrors(boolean ignoreErrors) {
 		this.ignoreErrors = ignoreErrors;
+	}
+
+	public boolean isMakeHilIntermediate() {
+		return makeHilIntermediate;
+	}
+
+	public void setMakeHilIntermediate(boolean makeHilIntermediate) {
+		this.makeHilIntermediate = makeHilIntermediate;
+	}
+
+	public String getHilIntermediateFilename() {
+		return hilIntermediateFilename;
+	}
+
+	public void setHilIntermediateFilename(String hilIntermediateFilename) {
+		if (hilIntermediateFilename.length() > 0) {
+		    makeHilIntermediate = true;
+		} else {
+			makeHilIntermediate = false;
+		}
+		this.hilIntermediateFilename = hilIntermediateFilename;
 	}
 }

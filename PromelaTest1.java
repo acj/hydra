@@ -38,6 +38,7 @@ public class PromelaTest1 {
         ConversionDriver cvd;
 		String filename = "";
         String outputFilename = "";
+        String hilIntFilename = "";
         NodeUtilityClass nuc = new NodeUtilityClass();
 //       boolean outputToFile = false;
 //        AcceptReturnType outputString; // = new AcceptReturnType();
@@ -66,6 +67,9 @@ public class PromelaTest1 {
         	if (args.length > 1) {
         		outputFilename = args[1];
         	}
+        	if (args.length > 2) {
+        		hilIntFilename = args[2];
+        	}
         }
         
         cvd = new ConversionDriver(filename);
@@ -74,6 +78,7 @@ public class PromelaTest1 {
         nuc.println("***** Warning: Contains Hack around Process Termination Bug! *******\n");
         nuc.println("***** Warning: All processes active! *******\n");
 	    try {
+	    	cvd.setHilIntermediateFilename(hilIntFilename);
             cvd.convert();
             if (!cvd.hasErrors()) { // save file only if error free
               cvd.save(outputFilename);
