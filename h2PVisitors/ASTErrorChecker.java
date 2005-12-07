@@ -425,9 +425,10 @@ public class ASTErrorChecker extends aVisitor {
 	 */
 	public AcceptReturnType visitMessageNode(MessageNode tNode) {
 		AcceptReturnType tART = new AcceptReturnType();
-		TransitionBodyNode tBody = (TransitionBodyNode) searchUpForDest(tNode, "TransitionBodyNode");
+		// TransitionBodyNode tBody = (TransitionBodyNode) searchUpForDest(tNode, "TransitionBodyNode");
 		aNode modelBodyRef = searchUpForDest (tNode, "ModelBodyNode");
 		aNode classBodyRef = searchUpForDest (tNode, "ClassBodyNode");
+		aNode destClassBodyRef = classBodyRef;
 		String nodeName = tNode.getNodeName();
 
 		if (tNode.getClassName().length() > 0) { // found bug in original code! (related to line below)
@@ -441,7 +442,7 @@ public class ASTErrorChecker extends aVisitor {
 				// Actually, such a bug: 1. would never execute because of above,
 				// and 2. this is actually the body node it "cycled" through.
 				if (targetClass.hasClassBodyNode()) {
-					classBodyRef = targetClass.subnode;
+					destClassBodyRef = targetClass.subnode;
 				} else {
 					  tART.addStr("errors", "Message: (" + nodeName + ") Target Class [" + tNode.getClassName() 
 							  + "] has no body.");				
@@ -453,21 +454,23 @@ public class ASTErrorChecker extends aVisitor {
 			}
 		} 
 		
-		if (tNode.getIntVarName().length() > 0) {
-			if (!ifInParent(classBodyRef, "InstanceVariableNode", "var", tNode.getIntVarName())) {
-				  tART.addStr("errors", "Message: (" + nodeName + ") in Class [" + tNode.getClassName() 
-						  + "] instance variable \"" + tNode.getIntVarName() + "\" undeclared.");				
-			}
-		}
-		
 		// there is a bug in the non-external-class version of this test
 		// that looks for an IntVar instead of the signal!
 		// Note: This part was moved here to remove redundancy, all that the first test does
 		// now is find the right class!
 		if (tNode.getSignalName().length() > 0) {
-			if (!ifInParent(classBodyRef, "SignalNode", "name", tNode.getSignalName())) {
+			if (!ifInParent(destClassBodyRef, "SignalNode", "name", tNode.getSignalName())) {
 				  tART.addStr("errors", "Message: (" + nodeName + ") in Class [" + tNode.getClassName() 
 						  + "] signal \"" + tNode.getSignalName() + "\" does not exist.");				
+			}
+		}
+		
+		if (tNode.getIntVarName().length() > 0) {
+			if (!ifInParent(classBodyRef, "InstanceVariableNode", "var", tNode.getIntVarName())) {
+				if (!isNum(tNode.getIntVarName())) { // check to make sure it's not a #.
+					  tART.addStr("errors", "Message: (" + nodeName + ") instance variable \"" 
+							  + tNode.getIntVarName() + "\" undeclared.");
+				}
 			}
 		}
 		
@@ -736,8 +739,6 @@ public class ASTErrorChecker extends aVisitor {
 				parentType.equals("ActionNode")) {
 				  tART.addStr("errors", "TransitionBody: (" + nodeName + ") the " + parentType 
 						  + " [" + tNode.getParent().getID() + "] cannot have a guard.");
-			} else {
-				tART.merge(tNode.eventNodeChild.accept(this));
 			}
 			
 		}

@@ -211,4 +211,24 @@ public class NodeUtilityClass {
     	return ifInParent(parentObject, searchType, "ID", searchName);
     }
     
+    // returns true if a string represents an integer.    
+    public boolean isNum (String str) {
+    	int pos = 0;
+    	char c;
+    	
+    	if (str.length() == 0) { return false; }
+    	if (str.charAt(0) == '-') {
+    		if (str.length() == 1) {
+    			return false;
+    		}
+    		pos = 1;
+    	}
+    	for (int i = pos; i < str.length(); i++) {
+    		c = str.charAt(i);
+    		if ((c < '0') || (c > '9')) {
+    			return false; // not a number.
+    		}
+    	}
+    	return true;
+    }
 }
