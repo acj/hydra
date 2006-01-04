@@ -261,7 +261,12 @@ public class ToHilVisitor extends Visitor {
 		data = new ArrayList();
 
 		data.add("Formalize as promela ;");
-		data.add("Model " + e.name + "{");
+		
+		//Need to remove spaces from the name, otherwise Hydra gives an error
+		//Replace spaces with _
+		String modelName=e.name;
+		modelName=modelName.replaceAll(" ","_");
+		data.add("Model " + modelName + "{");
 
 		Iterator it = e.ownedElement.values().iterator();
 		while (it.hasNext()) {
