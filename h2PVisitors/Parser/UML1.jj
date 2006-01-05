@@ -126,8 +126,8 @@ TOKEN: /* main items */
 
 // TODO the negative causes problems in lexing, the negative 
 // numbers will have to be moved directly into the parser!
-// |   < #CONSTANT: ("-")? ( <DIGIT> )+ >
-|   < #CONSTANT: ( <DIGIT> )+ >
+|   < #CONSTANT: ("-")? ( <DIGIT> )+ >
+// |   < #CONSTANT: ( <DIGIT> )+ >
 |   < #DIGIT: ["0" - "9"] >
 |   < #LETTER: ["A"-"Z"] | ["a"-"z"] >
 |  <NUM: <CONSTANT> >
