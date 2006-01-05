@@ -360,9 +360,11 @@ public class ToHilVisitor extends Visitor {
 
 	/** @modelguid {47DF82AB-E4D1-4A83-ABD0-DD89EEFBF9F7} */
 	private String preprocessAction(String action) {
-
 		// Remove all blanks
 		action = action.replaceAll(" ", "");
+		
+		//Replace all %, that we used for division because of XDE problems, with /
+		action = action.replaceAll("%", "/");
 
 		StringTokenizer st = new StringTokenizer(action, " ;");
 		StringBuffer actionString = new StringBuffer();
