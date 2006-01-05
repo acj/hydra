@@ -1979,17 +1979,24 @@ public class Hil2PromelaVisitor extends aVisitor {
     }
     
 	protected String mbnhTimerProcessOutput (AcceptReturnType tmpinfo) {
-		String tmpStr = "";
+		String entries[] = tmpinfo.getStrSplit("TimerList");
 		
-        //TODO 
-		/* commented out, please fix comment in lines 1&2 if reinstated.
-		tmpStr += mbnhPut (0, "/* This is the timer process * /");
-		tmpStr += mbnhPut (0, "/* It increments timers and unlocks waiting processes * /");
+		//Check if we have timers in the model
+		//If yes, output the timer process
+		if(entries==null || entries.length==0)
+		{
+			return "";
+		}
+		//else
+		
+		String tmpStr = "";
+		tmpStr += mbnhPut (0, "/* This is the timer process */");
+		tmpStr += mbnhPut (0, "/* It increments timers and unlocks waiting processes */");
 		tmpStr += mbnhPut (0, "active proctype Timer()");
 		tmpStr += mbnhPut (0, "{");
 		tmpStr += mbnhPut (0, "        do");
 		tmpStr += mbnhPut (0, "        :: atomic{timeout ->");
-		String entries[] = tmpinfo.getStrSplit("TimerList");
+		
 		
 		for (int i = 0; i < entries.length; i++) {
 			tmpStr += mbnhPut (0, "                             if");
@@ -2011,7 +2018,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpStr += mbnhPut (0, "         od");
 		tmpStr += mbnhPut (0, "}");
 		tmpStr += mbnhPut (0, "");
-		*/
 		
 		return tmpStr;
 	}
