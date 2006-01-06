@@ -154,23 +154,25 @@ public class ToHilVisitor extends Visitor {
 			if (e.entry != null) {
 				String entryAction = e.entry.script.body;
 				if (entryAction != null && !entryAction.equals("")) {
-					data.add("\tAction \"entry/" + entryAction + "\" ;");
+					entryAction=preprocessAction(entryAction);
+					data.add("\tAction \"entry" + entryAction + "\" ;");
 				}
 			}
 
 			if (e.exit != null) {
 				String exitAction = e.entry.script.body;
 				if (exitAction != null && !exitAction.equals("")) {
-					data.add("\tAction \"exit/" + exitAction + "\" ;");
+					exitAction=preprocessAction(exitAction);
+					data.add("\tAction \"exit" + exitAction + "\" ;");
 				}
 			}
 
 			// Attach the timeinvariants
 			// WARNING assumes that the costraint is a time invariant
-			// only processes the first constraint for now
+			// only processes one (the first) constraint 
 			if (e.constraint.size() != 0) {
 				Constraint constr = (Constraint) e.constraint.get(0);
-				data.add("\t\tInvariant \"timeinvar / {" + constr.body.body + "} \" ;");
+				data.add("\t\tInvariant \"timeinvar/ {" + constr.body.body + "} \" ;");
 			}
 
 			// Generate the transitions
