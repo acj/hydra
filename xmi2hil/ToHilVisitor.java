@@ -172,7 +172,7 @@ public class ToHilVisitor extends Visitor {
 			// only processes one (the first) constraint 
 			if (e.constraint.size() != 0) {
 				Constraint constr = (Constraint) e.constraint.get(0);
-				data.add("\t\tInvariant \"timeinvar/ {" + constr.body.body + "} \" ;");
+				data.add("\t\tInvariant \"timeinvar / {" + constr.body.body + "} \" ;");
 			}
 
 			// Generate the transitions
