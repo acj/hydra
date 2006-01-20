@@ -2090,7 +2090,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		//SK: Timer_T does not need a timerwait
 		//tmpStr += strln("        bool timerwait;");
 		//SK: Added a propTimer to be able to analyze real-time properties
-		tmpStr += strln("short propTimer=1;");
+		tmpStr += strln("short propTimer=-1;");
 
 		/*
 		 * tmpStr += tmpART.getStr("TimerInstVar"); tmpART.removeStrKey("TimerInstVar");
