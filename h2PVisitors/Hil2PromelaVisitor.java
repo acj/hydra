@@ -1971,7 +1971,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		entries = newEntries;
 
 		String tmpStr = "";
-		tmpStr += mbnhPut(0, "#define UPPERBOUND 20");
+		tmpStr += mbnhPut(0, "#define UPPERBOUND 25");
 		tmpStr += mbnhPut(0, "/* This is the timer process */");
 		tmpStr += mbnhPut(0, "/* It increments timers and unlocks waiting processes */");
 		tmpStr += mbnhPut(0, "active proctype Timer()");
