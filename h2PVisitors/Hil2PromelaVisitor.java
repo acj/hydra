@@ -2495,7 +2495,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent, AcceptReturnType hasGuardParam) {
+	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent, AcceptReturnType hasGuardParam, boolean isFirstGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 		String guardString = transRef.getGuard();
 
@@ -2510,7 +2510,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		Boolean hg = new Boolean (true);
 		hasGuardParam.addSingle("default", hg);
 
-		if ((hasEvent) /* && (cg.intValue() == 1)*/) { //redundant, guard already known to exist 1-30-06 KL
+		if ((hasEvent) && isFirstGuard /* && (cg.intValue() == 1)*/) { //redundant, guard already known to exist 1-30-06 KL
 			tmpART.addStr("State", "           if");
 		}
 
@@ -2678,6 +2678,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				// int countGuardVal = 0;
 				boolean hasGuard = false; 					// 1-30-06 KL countGuard -> hasGuard
 				AcceptReturnType hasGuardParam = new AcceptReturnType();
+				//boolean firstGuard = true; // firstguard fix 
 
 				Vector tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
@@ -2689,7 +2690,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 //					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
 					//countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
 
-					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam));
+					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam, j==0));
 					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
 
 					if (!hasGuard) {
@@ -2810,7 +2811,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		int tNodeCount = tNode.transitionNodeChildren.size(); // number of Transition h2PNodes
-		if (tNode.getParent().getID().equals("Wait")) {
+		if (tNode.getParent().getID().equals("DownRamping")) { // debug code previously: Wait.
 			int x = 1;
 			
 		}
