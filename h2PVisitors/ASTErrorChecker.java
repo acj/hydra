@@ -103,10 +103,12 @@ public class ASTErrorChecker extends aVisitor {
 				validChild = true;
 				tART.merge(childNode.accept(this));
 			}
+			/* commented out: only states can have one time invariant
 			if (childNode.getType().equals("TimeInvariantNode")) {
 				validChild = true;
 				tART.merge(childNode.accept(this));
 			}
+			*/
 			if (childNode.getType().equals("InstanceVariableNode")) {
 				validChild = true;				
 			}
@@ -580,6 +582,7 @@ public class ASTErrorChecker extends aVisitor {
 	public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
 		AcceptReturnType tART = new AcceptReturnType();
 		int transitionCount = 0;
+		int timeInvarCount = 0;
 		
 		String nodeName = tNode.getNodeName();
 		for (int i = 0; i < tNode.children.size(); i++) {
@@ -597,6 +600,7 @@ public class ASTErrorChecker extends aVisitor {
 			if (childNode.getType().equals("TimeInvariantNode")) {
 				validChild = true;
 				tART.merge(childNode.accept(this));
+				timeInvarCount++;
 			}
 			if (!validChild) {
 				tART.addStr("errors", "StateBody: (" + nodeName +
@@ -607,6 +611,10 @@ public class ASTErrorChecker extends aVisitor {
 		if (transitionCount == 0) {
 			tART.addStr("warnings", "StateBody: ("+ nodeName +
 					") No outgoing Transitions found.");
+		}
+		if (timeInvarCount > 1) {
+			tART.addStr("errors", "StateBody: (" + nodeName +
+				") Only 1 time invariant allowed per state.  " + timeInvarCount + " found.");
 		}
 		return tART;
 	}

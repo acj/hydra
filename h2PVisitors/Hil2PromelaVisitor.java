@@ -251,15 +251,17 @@ public class Hil2PromelaVisitor extends aVisitor {
 				String classRefID = searchUpForDest(tNode, "ClassNode").getID();
 
 				String tmpStateTimeInvariant = stateTimeInvariant;
-				stateTimeInvariant = ""; // "undef" //TODO correct? and why?
+				// stateTimeInvariant = ""; // "undef" //TODO correct? and why? removed see line below
+				// 1-30-06 KL, fixed bug with time invariant. state Time invariants cleared at end of state visitor.
 				/*
 				 * --> my $statetimeinvariant=ASTVisitorForPromela->GetstatetimeinvariantAndUndef();
 				 * 
 				 */
 				if (tmpStateTimeInvariant.length() > 0) {
 					// push(@outputState," :: atomic{Timer_V.$statetimeinvariant && $temp1?$eventname ->");
-					tmpStr += strln("        :: atomic{Timer_V." + tmpStateTimeInvariant + " && " + classRefID + "_q?"
-							+ tNode.getName() + " ->");
+					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
+							+ tNode.getName() + " -> Timer_V." + tmpStateTimeInvariant + " -> ");
+					//tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> ");
 				} else {
 					// push(@outputState," :: atomic{$temp1?$eventname ->");
 					// one part has a trailing space, two part does not!
@@ -2302,8 +2304,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	// This is the old method call and is now obsolete... it will be phased out eventually.
 	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, String dest, /* String optlDestID, */String destType,
-			int countGuard, boolean checkMTypeList) {
-		return sbnhOutput_Dest(tNode, "", dest, destType, countGuard, checkMTypeList);
+			boolean hasGuard, boolean checkMTypeList) {
+		return sbnhOutput_Dest(tNode, "", dest, destType, hasGuard, checkMTypeList);
 	}
 
 	public String sbnhGetTransitionDescriptionAction(TransitionNode transNode) {
@@ -2335,7 +2337,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tempStr;
 	}
 
-	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, TransitionNode transNode, int countGuard,
+	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, TransitionNode transNode, boolean hasGuard,
 			boolean checkMTypeList) {
 		String desc = "";
 		String dest = "";
@@ -2352,7 +2354,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (!printTransitionEntry) {
 			desc = ""; // for comparison.
 		}
-		return sbnhOutput_Dest(tNode, desc, dest, destType, countGuard, checkMTypeList);
+		return sbnhOutput_Dest(tNode, desc, dest, destType, hasGuard, checkMTypeList);
 	}
 
 	// TODO eliminate checkMTypeList
@@ -2360,11 +2362,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 																									 * String
 																									 * optlDestID,
 																									 */
-			String destType, int countGuard, boolean checkMTypeList) {
+			String destType, boolean hasGuard, boolean checkMTypeList) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (destType.equals("SS")) {
-			if (countGuard == 0) {
+			if (!hasGuard) {					// 1-30-06 KL countGuard -> hasGuard
 				tmpART.addStr("State", "           " + transNodeDesc + "goto " + dest + "; skip;}");
 			} else {
 				tmpART.addStr("State", "              " + transNodeDesc + "goto " + dest + "; skip;}");
@@ -2372,7 +2374,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			return tmpART;
 		}
 		if (destType.equals("CS")) {
-			if (countGuard == 0) {
+			if (!hasGuard) {
 				tmpART.addStr("State", "           " + transNodeDesc + "goto to_" + dest + "; skip;}");
 			} else {
 				tmpART.addStr("State", "              " + transNodeDesc + "goto to_" + dest + "; skip;}");
@@ -2399,7 +2401,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			// and has been left as such.
 			globalOutputs.addStr("mTypeList", "st_" + dest);
 		}
-		if (countGuard == 0) {
+		if (!hasGuard) {
 			tmpART.addStr("State", "           wait!_pid,st_" + dest + "; " + temp3.getID() + "_C!1; " + transNodeDesc
 					+ "goto exit; skip;}");
 		} else {
@@ -2493,7 +2495,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent, AcceptReturnType countGuard) {
+	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent, AcceptReturnType hasGuardParam) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 		String guardString = transRef.getGuard();
 
@@ -2501,11 +2503,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 			return tmpART;
 		}
 
-		Integer cg = (Integer) countGuard.getSingle("default");
+		// there IS a guard!
+		/*Integer cg = (Integer) countGuard.getSingle("default");
 		cg = new Integer(cg.intValue() + 1);
-		countGuard.addSingle("default", cg);
+		*/
+		Boolean hg = new Boolean (true);
+		hasGuardParam.addSingle("default", hg);
 
-		if ((hasEvent) && (cg.intValue() == 1)) {
+		if ((hasEvent) /* && (cg.intValue() == 1)*/) { //redundant, guard already known to exist 1-30-06 KL
 			tmpART.addStr("State", "           if");
 		}
 
@@ -2540,7 +2545,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputActionMsgs(aNode nodeRef, int countGuard) {
+	public AcceptReturnType sbnhOutputActionMsgs(aNode nodeRef, boolean hasGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (nodeRef != null) {
@@ -2552,7 +2557,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.removeStrKey("default");
 			String tmpStr;
 			for (int i = 0; i < entities.length; i++) {
-				if (countGuard == 0) {
+				if (!hasGuard) { // no guard
 					tmpStr = "   " + entities[i];
 				} else {
 					tmpStr = "      " + entities[i];
@@ -2564,10 +2569,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuardEnd(StateBodyNode tNode, boolean hasEvent, EventNode event, int countGuard) {
+	public AcceptReturnType sbnhOutputGuardEnd(StateBodyNode tNode, boolean hasEvent, EventNode event, boolean hasGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
-		if (countGuard != 0) {
+		// 1-30-06 KL countGuard -> hasGuard
+		if (hasGuard) {
 			if (hasEvent) {
 				if (event.getEventType().equals("when")) {
 					String returnValue = "";
@@ -2629,7 +2635,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 				for (int j = 0; j < tlvec.size(); j++) {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
 					String stTimeInvariant = stateTimeInvariant.substring(0); // TODO undef!?
-					stateTimeInvariant = ""; // TODO may be source of error!
+					// stateTimeInvariant = ""; // TODO may be source of error! removed as source of bug, see below
+					// 1-30-06 KL fixed time invariant bug.
 					tmpStr = "        :: atomic{" + transitionMarkerStr;
 					if (stTimeInvariant.length() == 0) {
 						tmpStr += "1 -> ";
@@ -2643,11 +2650,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 					// 0, false));
 					// TODO: passing the mTypeList as false made weird stuff, not sure what's going on but this
 					// should fix it.
-					anART.merge(sbnhOutput_Dest(tNode, transNode, 0, true));
+					// 1-30-06 KL countGuard -> hasGuard
+					anART.merge(sbnhOutput_Dest(tNode, transNode, false, true));
 				}
 			}
 			if (evtNode != null) { // will only happen if neither of the two options above are true.
-				anART.merge(evtNode.accept(this));
+				anART.merge(evtNode.accept(this)); //(part of iffirst != 1)
 				if (evtNode.getEventType().equals("normal")) {
 					aNode localRet = FindLocalDestNode(tNode, "SignalNode", "name", evtNode.getName());
 					if (localRet != null) {
@@ -2665,23 +2673,29 @@ public class Hil2PromelaVisitor extends aVisitor {
 				anART.merge(sbnhOutputINPredicateZero(tNode, ifTarget));
 
 				// int iffirst = 1;
-				AcceptReturnType countGuard = new AcceptReturnType();
-				countGuard.addSingle("default", new Integer(0));
-				int countGuardVal = 0;
+				//AcceptReturnType countGuard = new AcceptReturnType();
+				//countGuard.addSingle("default", new Integer(0));
+				// int countGuardVal = 0;
+				boolean hasGuard = false; 					// 1-30-06 KL countGuard -> hasGuard
+				AcceptReturnType hasGuardParam = new AcceptReturnType();
 
 				Vector tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
+					hasGuardParam.addSingle("default", new Boolean(false));
 
 					// Yes I just realized i'm doing this the hard way, but no matter!
 					// (the countGuard can be kept OUTSIDE of outputguard! sheesh. someday.
-					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
-					countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
+//					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
+					//countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
 
-					if (countGuardVal == 0) {
+					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam));
+					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
+
+					if (!hasGuard) {
 						if (evtNodeSrc.equals("NOEVENT")) {
 							String stTimeInvariant = stateTimeInvariant; // TODO undef!?
-							stateTimeInvariant = "";
+							// stateTimeInvariant = ""; 1-30-06 KL fixed time invariant bug
 
 							tmpStr = "        :: atomic{" + transitionMarkerStr;
 							if (stTimeInvariant.length() == 0) {
@@ -2698,16 +2712,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 						}
 					}
 
-					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.actionsChild, countGuardVal));
-					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.messagesChild, countGuardVal));
+					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.actionsChild, hasGuard));
+					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.messagesChild, hasGuard));
 
 					// code modified 11/10/05
 					// anART.merge(sbnhOutput_Dest(tNode, transNode.getDestination(), transNode.getDestinationType(),
 					// countGuardVal, true));
-					anART.merge(sbnhOutput_Dest(tNode, transNode, countGuardVal, true));
+					anART.merge(sbnhOutput_Dest(tNode, transNode, hasGuard, true));
 				}
 
-				anART.merge(sbnhOutputGuardEnd(tNode, !evtNodeSrc.equals("NOEVENT"), evtNode, countGuardVal));
+				anART.merge(sbnhOutputGuardEnd(tNode, !evtNodeSrc.equals("NOEVENT"), evtNode, hasGuard));
 
 			}
 
@@ -2796,6 +2810,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		int tNodeCount = tNode.transitionNodeChildren.size(); // number of Transition h2PNodes
+		if (tNode.getParent().getID().equals("Wait")) {
+			int x = 1;
+			
+		}
 
 		// T ODO call $iftarget = visitstatebodyNodePak->ifINPredicateTarget( $thisstatebodynode, \@INPredicateTarget );
 		boolean inPredicateTarget = sbnhIfINPredicateTarget(tNode, (AcceptReturnType) globalOutputs
@@ -2864,6 +2882,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.addStrln("State", tmpStr);
 			sbnhOutputTransitions(tNode, tmpART, transitionEventList, inPredicateTarget);
 		}
+		// 1-30-06 state time invariant bug fix: clear STI at end of visitor only.
+		stateTimeInvariant = "";
+		
 
 		return tmpART; // output to @outputState
 	}
