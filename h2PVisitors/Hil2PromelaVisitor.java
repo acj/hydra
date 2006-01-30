@@ -2677,6 +2677,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				//countGuard.addSingle("default", new Integer(0));
 				// int countGuardVal = 0;
 				boolean hasGuard = false; 					// 1-30-06 KL countGuard -> hasGuard
+				boolean hasGuards = false;
 				AcceptReturnType hasGuardParam = new AcceptReturnType();
 				//boolean firstGuard = true; // firstguard fix 
 
@@ -2692,6 +2693,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam, j==0));
 					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
+					hasGuards = hasGuards || hasGuard;
 
 					if (!hasGuard) {
 						if (evtNodeSrc.equals("NOEVENT")) {
@@ -2722,7 +2724,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					anART.merge(sbnhOutput_Dest(tNode, transNode, hasGuard, true));
 				}
 
-				anART.merge(sbnhOutputGuardEnd(tNode, !evtNodeSrc.equals("NOEVENT"), evtNode, hasGuard));
+				anART.merge(sbnhOutputGuardEnd(tNode, !evtNodeSrc.equals("NOEVENT"), evtNode, hasGuards));
 
 			}
 
