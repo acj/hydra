@@ -4,7 +4,7 @@
  */
 
 options {
-  LOOKAHEAD=2;
+  LOOKAHEAD=3;
   CHOICE_AMBIGUITY_CHECK = 2;
   OTHER_AMBIGUITY_CHECK = 1;
   DEBUG_PARSER = false;
@@ -17,7 +17,7 @@ options {
   USER_TOKEN_MANAGER = false;
   USER_CHAR_STREAM = false;
   SANITY_CHECK = true;
-//  FORCE_LA_CHECK = true;
+  FORCE_LA_CHECK = true;
   STATIC = false;
 }
 
