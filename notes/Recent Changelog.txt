@@ -3,3 +3,40 @@ Log of changes beginning on 2-1-06
 
 Most recent changes are listed first.
 
+1/30/06
+-------
+
+Hil2PromelaVisitor.java (Rev 1.15->1.17):
+in public void sbnhOutputTransitions():
+- hasGuards boolean variable created to let sbnhOutputGuardEnd() know
+  that there is at least one guard present in the even being processed.
+
+Hil2PromelaVisitor.java (Rev 1.14->1.15):
+- added hasGuard to:
+  "public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef,
+  boolean hasEvent, AcceptReturnType hasGuardParam, boolean isFirstGuard)"
+
+Hil2PromelaVisitor.java (Rev 1.13->1.14):
+- Fixed bug with state time invariants where the global stateTimeInvariant
+  variable was getting cleared before the State visitor that needed it
+  was done using it.
+    * visitEventNode() after "String tmpStateTimeInvariant" declaration.
+    * sbnhOutputTransitions after "String stTimeInvariant" declaration both after
+      "for (int j = 0; j < tlvec.size(); j++)" and "if (evtNodeSrc.equals("NOEVENT"))"
+    * new clear statement added to end of "visitStateBodyNode".
+
+
+- Fixed bug in state Time invariant code generation which generated
+  invalid Promela code when handling event read statements:
+    * visitEventNode() after "if (tmpStateTimeInvariant.length() > 0)"
+      which follows "String tmpStateTimeInvariant" declaration mentioned above.
+
+- Fixed bug in which Guards were being printed where there was no need to do so.
+  Solved by creating the hasGuard variable and making it local in scope only for 
+  each transition for a given event. 
+    * created code in sbnhOutputTransitions for non-empty transition handler
+    * "public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, String 
+      dest, /* String optlDestID, */String destType,boolean hasGuard, boolean
+      checkMTypeList)" and all other sbnhOutput_Dest overridden declarations.
+    * Also modified: sbnhOutputActionMsgs, sbnhOutputGuardEnd
+
