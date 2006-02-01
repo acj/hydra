@@ -2691,6 +2691,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 //					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
 					//countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
 
+					//TODO verify j==0 and hasGuard use.
 					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam, j==0));
 					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
 					hasGuards = hasGuards || hasGuard;
@@ -2709,6 +2710,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 							anART.addStr("State", tmpStr);
 						} else {
 							if (j != 0) {
+								//TODO THIS code needs some serious looking-at.
 								anART.merge(evtNode.accept(this));
 								anART.moveStrKey("Trans", "State");
 							}
