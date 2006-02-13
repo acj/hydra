@@ -3,6 +3,13 @@ Log of changes beginning on 2-1-06
 
 Most recent changes are listed first.
 
+2/13/06
+Hil2PromelaVisitor.java (Rev 1.17->1.18):
+in public String sbnhGetTransitionDescriptionAction(TransitionNode transNode):
+- added a space (" ") to the end of the description string in order to have it
+be separated from other lines when printed out by the promela.
+
+
 1/30/06
 -------
 
