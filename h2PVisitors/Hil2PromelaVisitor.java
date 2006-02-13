@@ -2309,7 +2309,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	}
 
 	public String sbnhGetTransitionDescriptionAction(TransitionNode transNode) {
-		String descStr = transNode.getDescription();
+		String descStr = transNode.getDescription() + " "; // 2-13-06 KL added space to separate information.
 		String puttyString = "";
 		String coutString = "";
 

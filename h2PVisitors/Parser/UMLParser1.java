@@ -15,7 +15,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     }
 
   final public void spec() throws ParseException, ParseException {
-    if (jj_2_1(2)) {
+    if (jj_2_1(3)) {
       jj_consume_token(FORMALIZE);
       jj_consume_token(AS);
       language();
@@ -27,13 +27,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final public void language() throws ParseException, ParseException {
-    if (jj_2_2(2)) {
+    if (jj_2_2(3)) {
       jj_consume_token(PROMELA);
-    } else if (jj_2_3(2)) {
+    } else if (jj_2_3(3)) {
       jj_consume_token(SMV);
-    } else if (jj_2_4(2)) {
+    } else if (jj_2_4(3)) {
       jj_consume_token(ALLOY);
-    } else if (jj_2_5(2)) {
+    } else if (jj_2_5(3)) {
       jj_consume_token(VHDL);
     } else {
       jj_consume_token(-1);
@@ -47,7 +47,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   Token t;
   String ModelID = "";
     jj_consume_token(MODEL);
-    if (jj_2_6(2)) {
+    if (jj_2_6(3)) {
       t = jj_consume_token(ID);
                       ModelID = t.image;
     } else {
@@ -69,7 +69,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     while (true) {
       childNode = modelstmt();
             rootNode.addChildToNode(tNode, childNode);
-      if (jj_2_7(2)) {
+      if (jj_2_7(3)) {
         ;
       } else {
         break label_1;
@@ -84,18 +84,18 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   String tID = "";
   ClassNode cNode = null;
   ClassBodyNode cbNode = null;
-    if (jj_2_9(2)) {
+    if (jj_2_9(3)) {
       jj_consume_token(DRIVERFILE);
       t = jj_consume_token(ID);
       jj_consume_token(SEMICOLON);
                            tID = t.image;
     {if (true) return new DriverFileNode(tID);}
-    } else if (jj_2_10(2)) {
+    } else if (jj_2_10(3)) {
       jj_consume_token(CLASS);
       t = jj_consume_token(ID);
                tID = t.image;
       jj_consume_token(LCURLY);
-      if (jj_2_8(2)) {
+      if (jj_2_8(3)) {
         cbNode = classbody();
       } else {
         ;
@@ -103,14 +103,14 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
       jj_consume_token(RCURLY);
         cNode = new ClassNode(tID);
         {if (true) return rootNode.addChildToNode(cNode, cbNode);}
-    } else if (jj_2_11(2)) {
+    } else if (jj_2_11(3)) {
       jj_consume_token(ASSOCIATION);
       jj_consume_token(ID);
       jj_consume_token(LCURLY);
       assocbody();
       jj_consume_token(RCURLY);
       {if (true) return null;}
-    } else if (jj_2_12(2)) {
+    } else if (jj_2_12(3)) {
       jj_consume_token(AGGREGATION);
       jj_consume_token(ID);
       jj_consume_token(LCURLY);
@@ -131,7 +131,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     while (true) {
       childNode = classstmt();
                   rootNode.addChildToNode(tNode, childNode);
-      if (jj_2_13(2)) {
+      if (jj_2_13(3)) {
         ;
       } else {
         break label_2;
@@ -143,28 +143,28 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final public aNode classstmt() throws ParseException, ParseException {
         aNode tNode;
-    if (jj_2_14(2)) {
+    if (jj_2_14(3)) {
       tNode = signal();
                            {if (true) return tNode;}
-    } else if (jj_2_15(2)) {
+    } else if (jj_2_15(3)) {
       tNode = cstate();
                            {if (true) return tNode;}
-    } else if (jj_2_16(2)) {
+    } else if (jj_2_16(3)) {
       tNode = ccstate();
                             {if (true) return tNode;}
-    } else if (jj_2_17(2)) {
+    } else if (jj_2_17(3)) {
       tNode = init();
                          {if (true) return tNode;}
-    } else if (jj_2_18(2)) {
+    } else if (jj_2_18(3)) {
       tNode = join();
                          {if (true) return tNode;}
-    } else if (jj_2_19(2)) {
+    } else if (jj_2_19(3)) {
       tNode = state();
                           {if (true) return tNode;}
-    } else if (jj_2_20(2)) {
+    } else if (jj_2_20(3)) {
       tNode = instvar();
                             {if (true) return tNode;}
-    } else if (jj_2_21(2)) {
+    } else if (jj_2_21(3)) {
       jj_consume_token(AGSUBCONST);
       jj_consume_token(ADORNS);
       jj_consume_token(ID);
@@ -172,13 +172,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
       agsubbody();
       jj_consume_token(RCURLY);
            {if (true) return null;}
-    } else if (jj_2_22(2)) {
+    } else if (jj_2_22(3)) {
       jj_consume_token(GENERALIZATION);
       jj_consume_token(LCURLY);
       genbody();
       jj_consume_token(RCURLY);
         {if (true) return null;}
-    } else if (jj_2_23(2)) {
+    } else if (jj_2_23(3)) {
       ordconst();
                      {if (true) return null;}
     } else {
@@ -195,9 +195,9 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     jj_consume_token(SIGNAL);
     t = jj_consume_token(ID);
              signame = t.image;
-    if (jj_2_25(2)) {
+    if (jj_2_25(3)) {
       jj_consume_token(LPARENS);
-      if (jj_2_24(2)) {
+      if (jj_2_24(3)) {
         t = jj_consume_token(ID);
                sigtype = t.image;
       } else {
@@ -221,7 +221,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     t = jj_consume_token(ID);
                    tID = t.image;
     jj_consume_token(LCURLY);
-    if (jj_2_26(2)) {
+    if (jj_2_26(3)) {
       csBody = cstatebody();
     } else {
       ;
@@ -239,7 +239,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     while (true) {
       childNode = cstatestmt();
                   rootNode.addChildToNode(tNode, childNode);
-      if (jj_2_27(2)) {
+      if (jj_2_27(3)) {
         ;
       } else {
         break label_3;
@@ -251,28 +251,28 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final public aNode cstatestmt() throws ParseException, ParseException {
         aNode tNode;
-    if (jj_2_28(2)) {
+    if (jj_2_28(3)) {
       tNode = state();
                           {if (true) return tNode;}
-    } else if (jj_2_29(2)) {
+    } else if (jj_2_29(3)) {
       tNode = init();
                          {if (true) return tNode;}
-    } else if (jj_2_30(2)) {
+    } else if (jj_2_30(3)) {
       tNode = cstate();
                            {if (true) return tNode;}
-    } else if (jj_2_31(2)) {
+    } else if (jj_2_31(3)) {
       tNode = join();
                          {if (true) return tNode;}
-    } else if (jj_2_32(2)) {
+    } else if (jj_2_32(3)) {
       tNode = history();
                             {if (true) return tNode;}
-    } else if (jj_2_33(2)) {
+    } else if (jj_2_33(3)) {
       tNode = ccstate();
                             {if (true) return tNode;}
-    } else if (jj_2_34(2)) {
+    } else if (jj_2_34(3)) {
       tNode = transition();
                                {if (true) return tNode;}
-    } else if (jj_2_35(2)) {
+    } else if (jj_2_35(3)) {
       tNode = actofstate();
                                {if (true) return tNode;}
     } else {
@@ -291,7 +291,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     t = jj_consume_token(ID);
                    tID = t.image;
     jj_consume_token(LCURLY);
-    if (jj_2_36(2)) {
+    if (jj_2_36(3)) {
       childNode = statebody();
     } else {
       ;
@@ -309,7 +309,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     while (true) {
       childNode = statestmt();
                   rootNode.addChildToNode(tNode, childNode);
-      if (jj_2_37(2)) {
+      if (jj_2_37(3)) {
         ;
       } else {
         break label_4;
@@ -321,10 +321,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final public aNode statestmt() throws ParseException, ParseException {
         aNode tNode;
-    if (jj_2_38(2)) {
+    if (jj_2_38(3)) {
       tNode = transition();
                                {if (true) return tNode;}
-    } else if (jj_2_39(2)) {
+    } else if (jj_2_39(3)) {
       tNode = actofstate();
                                {if (true) return tNode;}
     } else {
@@ -340,9 +340,9 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         String tID = "";
         aNode childNode = null;
     jj_consume_token(TRANS);
-    if (jj_2_41(2)) {
+    if (jj_2_41(3)) {
       jj_consume_token(DQUOTE);
-      if (jj_2_40(2)) {
+      if (jj_2_40(3)) {
         childNode = transitionbody();
       } else {
         ;
@@ -366,10 +366,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String invTypeName = "";
         String invExpression = "";
-    if (jj_2_43(2)) {
+    if (jj_2_43(3)) {
       jj_consume_token(ACTION);
       jj_consume_token(DQUOTE);
-      if (jj_2_42(2)) {
+      if (jj_2_42(3)) {
         childNode = transitionbody();
       } else {
         ;
@@ -378,7 +378,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
       jj_consume_token(SEMICOLON);
                 actNode = new ActionNode ("noID");
                 {if (true) return rootNode.addChildToNode (actNode, childNode);}
-    } else if (jj_2_44(2)) {
+    } else if (jj_2_44(3)) {
       jj_consume_token(INVARIANT);
       jj_consume_token(DQUOTE);
       t = jj_consume_token(INVTYPENAME);
@@ -419,7 +419,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     while (true) {
       childNode = ccstatestmt();
                   rootNode.addChildToNode(tNode, childNode);
-      if (jj_2_45(2)) {
+      if (jj_2_45(3)) {
         ;
       } else {
         break label_5;
@@ -442,9 +442,9 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String tID = "";
     jj_consume_token(INIT);
-    if (jj_2_47(2)) {
+    if (jj_2_47(3)) {
       jj_consume_token(DQUOTE);
-      if (jj_2_46(2)) {
+      if (jj_2_46(3)) {
         childNode = transitionbody();
       } else {
         ;
@@ -485,9 +485,9 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String tID = "";
     jj_consume_token(HISTORY);
-    if (jj_2_49(2)) {
+    if (jj_2_49(3)) {
       jj_consume_token(DQUOTE);
-      if (jj_2_48(2)) {
+      if (jj_2_48(3)) {
         childNode = transitionbody();
       } else {
         ;
@@ -514,7 +514,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                    vType = t.image;
     t = jj_consume_token(ID);
                    tVar = t.image;
-    if (jj_2_50(2)) {
+    if (jj_2_50(3)) {
       jj_consume_token(ASSIGNOP);
       initVal = numid();
     } else {
@@ -527,10 +527,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final public String numid() throws ParseException, ParseException {
         Token t;
-    if (jj_2_51(2)) {
+    if (jj_2_51(3)) {
       t = jj_consume_token(ID);
                    {if (true) return t.image;}
-    } else if (jj_2_52(2)) {
+    } else if (jj_2_52(3)) {
       t = jj_consume_token(NUM);
                     {if (true) return t.image;}
     } else {
@@ -549,7 +549,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     jj_consume_token(LBRACKET);
     jj_consume_token(ID);
     jj_consume_token(RBRACKET);
-    if (jj_2_53(2)) {
+    if (jj_2_53(3)) {
       ordconst();
     } else {
       ;
@@ -592,50 +592,50 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         String theGuard = "";
         aNode theTransitionActionsNode = null;
         aNode theMessagesNode = null;
-    if (jj_2_60(2)) {
+    if (jj_2_60(3)) {
       theEventNode = event();
-      if (jj_2_54(2)) {
+      if (jj_2_54(3)) {
         theGuard = guard();
       } else {
         ;
       }
-      if (jj_2_55(2)) {
+      if (jj_2_55(3)) {
         jj_consume_token(SLASH);
         theTransitionActionsNode = actions();
       } else {
         ;
       }
-      if (jj_2_56(2)) {
+      if (jj_2_56(3)) {
         jj_consume_token(CARET);
         theMessagesNode = messages();
       } else {
         ;
       }
-    } else if (jj_2_61(2)) {
+    } else if (jj_2_61(3)) {
       //			( theEventNode = event() )?
                               theGuard = guard();
-      if (jj_2_57(2)) {
+      if (jj_2_57(3)) {
         jj_consume_token(SLASH);
         theTransitionActionsNode = actions();
       } else {
         ;
       }
-      if (jj_2_58(2)) {
+      if (jj_2_58(3)) {
         jj_consume_token(CARET);
         theMessagesNode = messages();
       } else {
         ;
       }
-    } else if (jj_2_62(2)) {
+    } else if (jj_2_62(3)) {
       jj_consume_token(SLASH);
       theTransitionActionsNode = actions();
-      if (jj_2_59(2)) {
+      if (jj_2_59(3)) {
         jj_consume_token(CARET);
         theMessagesNode = messages();
       } else {
         ;
       }
-    } else if (jj_2_63(2)) {
+    } else if (jj_2_63(3)) {
       jj_consume_token(CARET);
       theMessagesNode = messages();
     } else {
@@ -654,10 +654,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String eventName = "";
         String eventWhenVar = "";
-    if (jj_2_67(2)) {
+    if (jj_2_67(3)) {
       t = jj_consume_token(ID);
                      eventName = t.image;
-      if (jj_2_64(2)) {
+      if (jj_2_64(3)) {
         jj_consume_token(LPARENS);
         t = jj_consume_token(ID);
                        eventWhenVar = t.image;
@@ -666,12 +666,12 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         ;
       }
           {if (true) return new EventNode (eventName, "normal", eventWhenVar);}
-    } else if (jj_2_68(2)) {
+    } else if (jj_2_68(3)) {
       jj_consume_token(WHEN);
       jj_consume_token(LPARENS);
-      if (jj_2_65(2)) {
+      if (jj_2_65(3)) {
         eventWhenVar = complexguard();
-      } else if (jj_2_66(2)) {
+      } else if (jj_2_66(3)) {
         t = jj_consume_token(ID);
                                    eventWhenVar = t.image;
       } else {
@@ -694,7 +694,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     retVal = expra();
     label_6:
     while (true) {
-      if (jj_2_69(2)) {
+      if (jj_2_69(3)) {
         ;
       } else {
         break label_6;
@@ -715,7 +715,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     retVal = gdterm();
     label_7:
     while (true) {
-      if (jj_2_70(2)) {
+      if (jj_2_70(3)) {
         ;
       } else {
         break label_7;
@@ -732,17 +732,17 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final public String gdterm() throws ParseException, ParseException {
         Token t;
         String retVal = "";
-    if (jj_2_71(2)) {
+    if (jj_2_71(3)) {
       retVal = pred();
           {if (true) return retVal;}
-    } else if (jj_2_72(2)) {
+    } else if (jj_2_72(3)) {
       // there is no <ID> term here?
                 t = jj_consume_token(NOT);
                       retVal += t.image;
       t = jj_consume_token(ID);
                       retVal += t.image;
           {if (true) return retVal;}
-    } else if (jj_2_73(2)) {
+    } else if (jj_2_73(3)) {
       jj_consume_token(LPARENS);
       retVal = complexguard();
       jj_consume_token(RPARENS);
@@ -768,7 +768,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                                rootNode.addChildToNode(tNode, childNode);
     label_8:
     while (true) {
-      if (jj_2_74(2)) {
+      if (jj_2_74(3)) {
         ;
       } else {
         break label_8;
@@ -786,27 +786,27 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String content;
         aNode childNode;
-    if (jj_2_75(2)) {
+    if (jj_2_75(3)) {
       jj_consume_token(NEW);
       jj_consume_token(LPARENS);
       t = jj_consume_token(ID);
                      content = t.image;
       jj_consume_token(RPARENS);
           {if (true) return new TransitionActionNode ("newaction", content);}
-    } else if (jj_2_76(2)) {
+    } else if (jj_2_76(3)) {
       jj_consume_token(SEND);
       jj_consume_token(LPARENS);
       childNode = message();
       jj_consume_token(RPARENS);
                 tNode = new TransitionActionNode ("sendmsg");
                 {if (true) return rootNode.addChildToNode(tNode, childNode);}
-    } else if (jj_2_77(2)) {
+    } else if (jj_2_77(3)) {
       tNode = printstmt();
                               {if (true) return tNode;}
-    } else if (jj_2_78(2)) {
+    } else if (jj_2_78(3)) {
       tNode = assignstmt();
                                {if (true) return tNode;}
-    } else if (jj_2_79(2)) {
+    } else if (jj_2_79(3)) {
       tNode = function();
                              {if (true) return tNode;}
     } else {
@@ -823,7 +823,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                                 rootNode.addChildToNode(tNode, childNode);
     label_9:
     while (true) {
-      if (jj_2_80(2)) {
+      if (jj_2_80(3)) {
         ;
       } else {
         break label_9;
@@ -843,11 +843,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         String varname = "";
     t = jj_consume_token(ID);
                    signalname = t.image;
-    if (jj_2_82(2)) {
+    if (jj_2_82(3)) {
       jj_consume_token(PERIOD);
       t = jj_consume_token(ID);
                       classname = signalname;  signalname = t.image;
-      if (jj_2_81(2)) {
+      if (jj_2_81(3)) {
         jj_consume_token(LPARENS);
         varname = numid();
         jj_consume_token(RPARENS);
@@ -883,14 +883,14 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                             retVal += temp;
     label_10:
     while (true) {
-      if (jj_2_83(2)) {
+      if (jj_2_83(3)) {
         ;
       } else {
         break label_10;
       }
-      if (jj_2_84(2)) {
+      if (jj_2_84(3)) {
         t = jj_consume_token(PLUS);
-      } else if (jj_2_85(2)) {
+      } else if (jj_2_85(3)) {
         t = jj_consume_token(MINUS);
       } else {
         jj_consume_token(-1);
@@ -912,14 +912,14 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                              retVal += temp;
     label_11:
     while (true) {
-      if (jj_2_86(2)) {
+      if (jj_2_86(3)) {
         ;
       } else {
         break label_11;
       }
-      if (jj_2_87(2)) {
+      if (jj_2_87(3)) {
         t = jj_consume_token(TIMES);
-      } else if (jj_2_88(2)) {
+      } else if (jj_2_88(3)) {
         t = jj_consume_token(SLASH);
       } else {
         jj_consume_token(-1);
@@ -936,20 +936,20 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final public String actterm() throws ParseException, ParseException {
         Token t;
         String retVal = "";
-    if (jj_2_92(2)) {
+    if (jj_2_92(3)) {
       // LOOKAHEAD(functioninassign())
               retVal = functioninassign();
                                       {if (true) return retVal;}
-    } else if (jj_2_93(2)) {
-      if (jj_2_89(2)) {
+    } else if (jj_2_93(3)) {
+      if (jj_2_89(3)) {
         jj_consume_token(MINUS);
                             retVal += "-";
       } else {
         ;
       }
-      if (jj_2_90(2)) {
+      if (jj_2_90(3)) {
         t = jj_consume_token(ID);
-      } else if (jj_2_91(2)) {
+      } else if (jj_2_91(3)) {
         t = jj_consume_token(NUM);
       } else {
         jj_consume_token(-1);
@@ -957,7 +957,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
       }
                     retVal += t.image;
             {if (true) return retVal;}
-    } else if (jj_2_94(2)) {
+    } else if (jj_2_94(3)) {
       jj_consume_token(LPARENS);
       retVal = stmtpm();
       jj_consume_token(RPARENS);
@@ -977,7 +977,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     jj_consume_token(LPARENS);
     t = jj_consume_token(PRINTEXPRESSION);
                                 content = t.image;
-    if (jj_2_95(2)) {
+    if (jj_2_95(3)) {
       jj_consume_token(COMMA);
       parmlistStr = parmlist();
     } else {
@@ -1021,7 +1021,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
                         retVal += temp;
     label_12:
     while (true) {
-      if (jj_2_96(2)) {
+      if (jj_2_96(3)) {
         ;
       } else {
         break label_12;
@@ -1037,13 +1037,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final public String parm() throws ParseException, ParseException {
         Token t;
         String temp;
-    if (jj_2_97(2)) {
+    if (jj_2_97(3)) {
       t = jj_consume_token(ID);
                    {if (true) return t.image;}
-    } else if (jj_2_98(2)) {
+    } else if (jj_2_98(3)) {
       t = jj_consume_token(NUM);
                     {if (true) return t.image;}
-    } else if (jj_2_99(2)) {
+    } else if (jj_2_99(3)) {
       temp = pred();
                         {if (true) return temp;}
     } else {
@@ -1057,7 +1057,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         Token t;
         String retVal = "";
         String temp = "";
-    if (jj_2_100(2)) {
+    if (jj_2_100(3)) {
       temp = stmtpm();
                                   retVal += temp;
       t = jj_consume_token(COMPARE_OP);
@@ -1065,7 +1065,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
       temp = numid();
                                  retVal += temp;
              {if (true) return retVal;}
-    } else if (jj_2_101(2)) {
+    } else if (jj_2_101(3)) {
       t = jj_consume_token(IN);
                            retVal += t.image;
       jj_consume_token(LPARENS);
@@ -1788,23 +1788,25 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_36() {
-    if (jj_3R_29()) return true;
+    if (jj_3R_31()) return true;
     return false;
   }
 
-  final private boolean jj_3R_49() {
+  final private boolean jj_3R_51() {
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_3R_53()) return true;
     return false;
   }
 
-  final private boolean jj_3R_34() {
+  final private boolean jj_3R_36() {
     if (jj_scan_token(EXPRESSION)) return true;
     return false;
   }
 
-  final private boolean jj_3R_22() {
+  final private boolean jj_3R_23() {
     if (jj_scan_token(INSTVAR)) return true;
+    if (jj_scan_token(ID)) return true;
     if (jj_scan_token(ID)) return true;
     return false;
   }
@@ -1819,9 +1821,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_21() {
+  final private boolean jj_3R_22() {
     if (jj_scan_token(STATE)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
@@ -1830,51 +1833,69 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
+  final private boolean jj_3R_13() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_2()) {
+    jj_scanpos = xsp;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3_4()) {
+    jj_scanpos = xsp;
+    if (jj_3_5()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
   final private boolean jj_3_2() {
     if (jj_scan_token(PROMELA)) return true;
     return false;
   }
 
-  final private boolean jj_3R_45() {
+  final private boolean jj_3R_48() {
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_3R_53()) return true;
     return false;
   }
 
   final private boolean jj_3_73() {
     if (jj_scan_token(LPARENS)) return true;
-    if (jj_3R_38()) return true;
+    if (jj_3R_40()) return true;
     return false;
   }
 
   final private boolean jj_3_35() {
-    if (jj_3R_28()) return true;
+    if (jj_3R_30()) return true;
     return false;
   }
 
   final private boolean jj_3_34() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_29()) return true;
     return false;
   }
 
   final private boolean jj_3_48() {
-    if (jj_3R_31()) return true;
+    if (jj_3R_33()) return true;
     return false;
   }
 
   final private boolean jj_3_1() {
     if (jj_scan_token(FORMALIZE)) return true;
     if (jj_scan_token(AS)) return true;
+    if (jj_3R_13()) return true;
     return false;
   }
 
   final private boolean jj_3_33() {
-    if (jj_3R_18()) return true;
+    if (jj_3R_19()) return true;
     return false;
   }
 
   final private boolean jj_3_32() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_28()) return true;
     return false;
   }
 
@@ -1885,7 +1906,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_31() {
-    if (jj_3R_20()) return true;
+    if (jj_3R_21()) return true;
     return false;
   }
 
@@ -1900,16 +1921,16 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final private boolean jj_3_95() {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_51()) return true;
+    if (jj_3R_53()) return true;
     return false;
   }
 
   final private boolean jj_3_30() {
-    if (jj_3R_17()) return true;
+    if (jj_3R_18()) return true;
     return false;
   }
 
-  final private boolean jj_3R_40() {
+  final private boolean jj_3R_42() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_71()) {
@@ -1923,16 +1944,16 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_29() {
-    if (jj_3R_19()) return true;
+    if (jj_3R_20()) return true;
     return false;
   }
 
   final private boolean jj_3_71() {
-    if (jj_3R_41()) return true;
+    if (jj_3R_43()) return true;
     return false;
   }
 
-  final private boolean jj_3R_25() {
+  final private boolean jj_3R_27() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_28()) {
@@ -1961,37 +1982,39 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_28() {
-    if (jj_3R_21()) return true;
+    if (jj_3R_22()) return true;
     return false;
   }
 
-  final private boolean jj_3R_26() {
+  final private boolean jj_3R_28() {
     if (jj_scan_token(HISTORY)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_49()) jj_scanpos = xsp;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  final private boolean jj_3R_43() {
+  final private boolean jj_3R_46() {
     if (jj_scan_token(PRINT)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_scan_token(PRINTEXPRESSION)) return true;
     return false;
   }
 
   final private boolean jj_3_27() {
-    if (jj_3R_25()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
   final private boolean jj_3_70() {
     if (jj_scan_token(AND)) return true;
-    if (jj_3R_40()) return true;
+    if (jj_3R_42()) return true;
     return false;
   }
 
-  final private boolean jj_3R_24() {
+  final private boolean jj_3R_26() {
     Token xsp;
     if (jj_3_27()) return true;
     while (true) {
@@ -2001,8 +2024,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_39() {
-    if (jj_3R_40()) return true;
+  final private boolean jj_3R_41() {
+    if (jj_3R_42()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_70()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -2011,9 +2039,10 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_20() {
+  final private boolean jj_3R_21() {
     if (jj_scan_token(JOIN)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(FROM)) return true;
     return false;
   }
 
@@ -2024,7 +2053,8 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final private boolean jj_3_94() {
     if (jj_scan_token(LPARENS)) return true;
-    if (jj_3R_50()) return true;
+    if (jj_3R_52()) return true;
+    if (jj_scan_token(RPARENS)) return true;
     return false;
   }
 
@@ -2034,29 +2064,35 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_26() {
-    if (jj_3R_24()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
   final private boolean jj_3_69() {
     if (jj_scan_token(OR)) return true;
-    if (jj_3R_39()) return true;
+    if (jj_3R_41()) return true;
     return false;
   }
 
-  final private boolean jj_3R_38() {
-    if (jj_3R_39()) return true;
+  final private boolean jj_3R_40() {
+    if (jj_3R_41()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_69()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
-  final private boolean jj_3R_17() {
+  final private boolean jj_3R_18() {
     if (jj_scan_token(CSTATE)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
   final private boolean jj_3_46() {
-    if (jj_3R_31()) return true;
+    if (jj_3R_33()) return true;
     return false;
   }
 
@@ -2078,11 +2114,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_65() {
-    if (jj_3R_38()) return true;
+    if (jj_3R_40()) return true;
     return false;
   }
 
-  final private boolean jj_3R_48() {
+  final private boolean jj_3R_50() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_92()) {
@@ -2096,7 +2132,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_92() {
-    if (jj_3R_49()) return true;
+    if (jj_3R_51()) return true;
     return false;
   }
 
@@ -2109,12 +2145,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_19() {
+  final private boolean jj_3R_20() {
     if (jj_scan_token(INIT)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_47()) jj_scanpos = xsp;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
@@ -2140,7 +2177,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     jj_scanpos = xsp;
     if (jj_3_88()) return true;
     }
-    if (jj_3R_48()) return true;
+    if (jj_3R_50()) return true;
     return false;
   }
 
@@ -2153,13 +2190,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_32() {
-    if (jj_3R_17()) return true;
+  final private boolean jj_3R_34() {
+    if (jj_3R_18()) return true;
     return false;
   }
 
-  final private boolean jj_3R_47() {
-    if (jj_3R_48()) return true;
+  final private boolean jj_3R_49() {
+    if (jj_3R_50()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -2168,26 +2205,37 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_16() {
+  final private boolean jj_3R_17() {
     if (jj_scan_token(SIGNAL)) return true;
     if (jj_scan_token(ID)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_25()) jj_scanpos = xsp;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
   final private boolean jj_3_68() {
     if (jj_scan_token(WHEN)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_65()) {
+    jj_scanpos = xsp;
+    if (jj_3_66()) return true;
+    }
     return false;
   }
 
   final private boolean jj_3_64() {
     if (jj_scan_token(LPARENS)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(RPARENS)) return true;
     return false;
   }
 
   final private boolean jj_3_23() {
-    if (jj_3R_23()) return true;
+    if (jj_3R_25()) return true;
     return false;
   }
 
@@ -2204,15 +2252,16 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_22() {
     if (jj_scan_token(GENERALIZATION)) return true;
     if (jj_scan_token(LCURLY)) return true;
+    if (jj_3R_24()) return true;
     return false;
   }
 
   final private boolean jj_3_45() {
-    if (jj_3R_32()) return true;
+    if (jj_3R_34()) return true;
     return false;
   }
 
-  final private boolean jj_3R_37() {
+  final private boolean jj_3R_39() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_67()) {
@@ -2237,34 +2286,35 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     jj_scanpos = xsp;
     if (jj_3_85()) return true;
     }
-    if (jj_3R_47()) return true;
+    if (jj_3R_49()) return true;
     return false;
   }
 
   final private boolean jj_3_21() {
     if (jj_scan_token(AGSUBCONST)) return true;
     if (jj_scan_token(ADORNS)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
   final private boolean jj_3_20() {
-    if (jj_3R_22()) return true;
+    if (jj_3R_23()) return true;
     return false;
   }
 
   final private boolean jj_3_19() {
-    if (jj_3R_21()) return true;
+    if (jj_3R_22()) return true;
     return false;
   }
 
   final private boolean jj_3_59() {
     if (jj_scan_token(CARET)) return true;
-    if (jj_3R_36()) return true;
+    if (jj_3R_38()) return true;
     return false;
   }
 
-  final private boolean jj_3R_50() {
-    if (jj_3R_47()) return true;
+  final private boolean jj_3R_52() {
+    if (jj_3R_49()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -2274,26 +2324,26 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_18() {
-    if (jj_3R_20()) return true;
+    if (jj_3R_21()) return true;
     return false;
   }
 
   final private boolean jj_3_17() {
-    if (jj_3R_19()) return true;
+    if (jj_3R_20()) return true;
     return false;
   }
 
   final private boolean jj_3_16() {
-    if (jj_3R_18()) return true;
+    if (jj_3R_19()) return true;
     return false;
   }
 
   final private boolean jj_3_15() {
-    if (jj_3R_17()) return true;
+    if (jj_3R_18()) return true;
     return false;
   }
 
-  final private boolean jj_3R_15() {
+  final private boolean jj_3R_16() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_14()) {
@@ -2328,69 +2378,71 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_14() {
-    if (jj_3R_16()) return true;
+    if (jj_3R_17()) return true;
     return false;
   }
 
   final private boolean jj_3_58() {
     if (jj_scan_token(CARET)) return true;
-    if (jj_3R_36()) return true;
+    if (jj_3R_38()) return true;
     return false;
   }
 
   final private boolean jj_3_57() {
     if (jj_scan_token(SLASH)) return true;
-    if (jj_3R_35()) return true;
+    if (jj_3R_37()) return true;
     return false;
   }
 
-  final private boolean jj_3R_18() {
+  final private boolean jj_3R_19() {
     if (jj_scan_token(CCSTATE)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
   final private boolean jj_3_63() {
     if (jj_scan_token(CARET)) return true;
-    if (jj_3R_36()) return true;
+    if (jj_3R_38()) return true;
     return false;
   }
 
   final private boolean jj_3_56() {
     if (jj_scan_token(CARET)) return true;
-    if (jj_3R_36()) return true;
+    if (jj_3R_38()) return true;
     return false;
   }
 
   final private boolean jj_3_55() {
     if (jj_scan_token(SLASH)) return true;
-    if (jj_3R_35()) return true;
+    if (jj_3R_37()) return true;
     return false;
   }
 
-  final private boolean jj_3R_44() {
+  final private boolean jj_3R_47() {
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(ASSIGNOP)) return true;
+    if (jj_3R_52()) return true;
     return false;
   }
 
   final private boolean jj_3_13() {
-    if (jj_3R_15()) return true;
+    if (jj_3R_16()) return true;
     return false;
   }
 
   final private boolean jj_3_54() {
-    if (jj_3R_34()) return true;
+    if (jj_3R_36()) return true;
     return false;
   }
 
   final private boolean jj_3_62() {
     if (jj_scan_token(SLASH)) return true;
-    if (jj_3R_35()) return true;
+    if (jj_3R_37()) return true;
     return false;
   }
 
-  final private boolean jj_3R_14() {
+  final private boolean jj_3R_15() {
     Token xsp;
     if (jj_3_13()) return true;
     while (true) {
@@ -2401,7 +2453,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_61() {
-    if (jj_3R_34()) return true;
+    if (jj_3R_36()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_57()) jj_scanpos = xsp;
@@ -2412,12 +2464,13 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final private boolean jj_3_81() {
     if (jj_scan_token(LPARENS)) return true;
-    if (jj_3R_33()) return true;
+    if (jj_3R_35()) return true;
+    if (jj_scan_token(RPARENS)) return true;
     return false;
   }
 
   final private boolean jj_3_60() {
-    if (jj_3R_37()) return true;
+    if (jj_3R_39()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_54()) jj_scanpos = xsp;
@@ -2431,26 +2484,33 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_82() {
     if (jj_scan_token(PERIOD)) return true;
     if (jj_scan_token(ID)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_81()) jj_scanpos = xsp;
     return false;
   }
 
   final private boolean jj_3_42() {
-    if (jj_3R_31()) return true;
+    if (jj_3R_33()) return true;
     return false;
   }
 
   final private boolean jj_3_44() {
     if (jj_scan_token(INVARIANT)) return true;
     if (jj_scan_token(DQUOTE)) return true;
+    if (jj_scan_token(INVTYPENAME)) return true;
     return false;
   }
 
-  final private boolean jj_3R_46() {
+  final private boolean jj_3R_45() {
     if (jj_scan_token(ID)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_82()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_31() {
+  final private boolean jj_3R_33() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_60()) {
@@ -2469,10 +2529,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_12() {
     if (jj_scan_token(AGGREGATION)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
-  final private boolean jj_3R_28() {
+  final private boolean jj_3R_30() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_43()) {
@@ -2485,49 +2546,61 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_43() {
     if (jj_scan_token(ACTION)) return true;
     if (jj_scan_token(DQUOTE)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_42()) jj_scanpos = xsp;
+    if (jj_scan_token(ENDQUOTE)) return true;
     return false;
   }
 
   final private boolean jj_3_11() {
     if (jj_scan_token(ASSOCIATION)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
   final private boolean jj_3_8() {
-    if (jj_3R_14()) return true;
+    if (jj_3R_15()) return true;
     return false;
   }
 
   final private boolean jj_3_80() {
     if (jj_scan_token(CARET)) return true;
-    if (jj_3R_46()) return true;
+    if (jj_3R_45()) return true;
     return false;
   }
 
-  final private boolean jj_3R_36() {
-    if (jj_3R_46()) return true;
+  final private boolean jj_3R_38() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_80()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
   final private boolean jj_3_10() {
     if (jj_scan_token(CLASS)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(LCURLY)) return true;
     return false;
   }
 
   final private boolean jj_3_101() {
     if (jj_scan_token(IN)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
   final private boolean jj_3_40() {
-    if (jj_3R_31()) return true;
+    if (jj_3R_33()) return true;
     return false;
   }
 
-  final private boolean jj_3R_13() {
+  final private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_9()) {
@@ -2546,6 +2619,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_9() {
     if (jj_scan_token(DRIVERFILE)) return true;
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
@@ -2559,11 +2633,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_79() {
-    if (jj_3R_45()) return true;
+    if (jj_3R_48()) return true;
     return false;
   }
 
-  final private boolean jj_3R_41() {
+  final private boolean jj_3R_43() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_100()) {
@@ -2574,43 +2648,51 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_100() {
-    if (jj_3R_50()) return true;
+    if (jj_3R_52()) return true;
     if (jj_scan_token(COMPARE_OP)) return true;
+    if (jj_3R_35()) return true;
     return false;
   }
 
   final private boolean jj_3_78() {
-    if (jj_3R_44()) return true;
+    if (jj_3R_47()) return true;
     return false;
   }
 
-  final private boolean jj_3R_23() {
+  final private boolean jj_3R_25() {
     if (jj_scan_token(ORDCONST)) return true;
     if (jj_scan_token(ADORNS)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
   final private boolean jj_3_77() {
-    if (jj_3R_43()) return true;
+    if (jj_3R_46()) return true;
     return false;
   }
 
-  final private boolean jj_3R_27() {
+  final private boolean jj_3R_29() {
     if (jj_scan_token(TRANS)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_41()) jj_scanpos = xsp;
     if (jj_scan_token(TO)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
   final private boolean jj_3_7() {
-    if (jj_3R_13()) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_24() {
+    if (jj_scan_token(SUPER)) return true;
     return false;
   }
 
   final private boolean jj_3_99() {
-    if (jj_3R_41()) return true;
+    if (jj_3R_43()) return true;
     return false;
   }
 
@@ -2622,10 +2704,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_76() {
     if (jj_scan_token(SEND)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_3R_45()) return true;
     return false;
   }
 
-  final private boolean jj_3R_52() {
+  final private boolean jj_3R_54() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_97()) {
@@ -2644,11 +2727,11 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_39() {
-    if (jj_3R_28()) return true;
+    if (jj_3R_30()) return true;
     return false;
   }
 
-  final private boolean jj_3R_30() {
+  final private boolean jj_3R_32() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_38()) {
@@ -2659,17 +2742,17 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_38() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_29()) return true;
     return false;
   }
 
   final private boolean jj_3_96() {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_52()) return true;
+    if (jj_3R_54()) return true;
     return false;
   }
 
-  final private boolean jj_3R_42() {
+  final private boolean jj_3R_44() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_75()) {
@@ -2691,11 +2774,12 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private boolean jj_3_75() {
     if (jj_scan_token(NEW)) return true;
     if (jj_scan_token(LPARENS)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
   final private boolean jj_3_53() {
-    if (jj_3R_23()) return true;
+    if (jj_3R_25()) return true;
     return false;
   }
 
@@ -2705,16 +2789,21 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   final private boolean jj_3_37() {
-    if (jj_3R_30()) return true;
+    if (jj_3R_32()) return true;
     return false;
   }
 
-  final private boolean jj_3R_51() {
-    if (jj_3R_52()) return true;
+  final private boolean jj_3R_53() {
+    if (jj_3R_54()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_96()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
-  final private boolean jj_3R_29() {
+  final private boolean jj_3R_31() {
     Token xsp;
     if (jj_3_37()) return true;
     while (true) {
@@ -2729,7 +2818,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
     return false;
   }
 
-  final private boolean jj_3R_33() {
+  final private boolean jj_3R_35() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_51()) {
@@ -2746,18 +2835,18 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
 
   final private boolean jj_3_74() {
     if (jj_scan_token(SEMICOLON)) return true;
-    if (jj_3R_42()) return true;
+    if (jj_3R_44()) return true;
     return false;
   }
 
-  final private boolean jj_3R_35() {
-    if (jj_3R_42()) return true;
+  final private boolean jj_3R_37() {
+    if (jj_3R_44()) return true;
     return false;
   }
 
   final private boolean jj_3_50() {
     if (jj_scan_token(ASSIGNOP)) return true;
-    if (jj_3R_33()) return true;
+    if (jj_3R_35()) return true;
     return false;
   }
 
