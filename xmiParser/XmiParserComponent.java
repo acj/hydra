@@ -28,6 +28,7 @@ import umlModel.Parameter;
 import umlModel.State;
 import umlModel.StateMachine;
 import umlModel.StateVertex;
+import umlModel.Stereotype;
 import umlModel.StubState;
 import umlModel.SubmachineState;
 import umlModel.Transition;
@@ -652,6 +653,9 @@ public class XmiParserComponent {
 			else if (node.getNodeName().equals("UML:State.entry"))
 				processStateEntry(node, prevElement);
 
+			else if (node.getNodeName().equals("UML:ModelElement.stereotype"))
+				processStereotype(node, prevElement);
+			
 			else if (node.getNodeName().equals("UML:State.exit"))
 				processStateExit(node, prevElement);
 
@@ -683,6 +687,23 @@ public class XmiParserComponent {
 		node.getParentNode().removeChild(node);
 
 		return newElement;
+	}
+
+	private void processStereotype(Node node, ModelElement prevElement) {
+		Node stNode = node.getFirstChild();
+		while (!stNode.getNodeName().equals("UML:Stereotype")) {
+			node.removeChild(stNode);
+			stNode = node.getFirstChild();
+		}
+		
+		NamedNodeMap attributes = node.getAttributes();
+		
+		String stID = attributes.getNamedItem("xmi.id").getNodeValue();
+		Stereotype stereotype=(Stereotype) myResolver.getElementWithId(stID);
+
+		//Create associations
+		stereotype.extendedElement.add(prevElement);
+		prevElement.stereotype.add(stereotype);
 	}
 
 	private void processPseudoState(Node node, ModelElement prevElement) {

@@ -2882,10 +2882,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   private int jj_gc = 0;
 
   public UMLParser1(java.io.InputStream stream) {
-     this(stream, null);
-  }
-  public UMLParser1(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new UMLParser1TokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -2895,10 +2892,7 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   }
 
   public void ReInit(java.io.InputStream stream) {
-     ReInit(stream);
-  }
-  public void ReInit(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -3101,7 +3095,6 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
   final private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 101; i++) {
-    try {
       JJCalls p = jj_2_rtns[i];
       do {
         if (p.gen > jj_gen) {
@@ -3212,7 +3205,6 @@ public class UMLParser1 extends NodeUtilityClass implements UMLParser1Constants 
         }
         p = p.next;
       } while (p != null);
-      } catch(LookaheadSuccess ls) { }
     }
     jj_rescan = false;
   }

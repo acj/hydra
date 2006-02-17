@@ -21,6 +21,7 @@ import umlModel.Operation;
 import umlModel.Parameter;
 import umlModel.PseudoState;
 import umlModel.StateMachine;
+import umlModel.Stereotype;
 import umlModel.StubState;
 import umlModel.SubmachineState;
 import umlModel.SynchState;
@@ -29,18 +30,15 @@ import umlModel.UMLClass;
 import umlModel.UninterpretedAction;
 
 /**
- * 
  * @modelguid {CB41373F-1775-48D2-9C9B-DB3F95611D56}
  */
 public class XmiIdResolver {
 	/**
-	 * 
 	 * @modelguid {67E74CF8-8190-42DD-8F4C-C03B6B3CAB88}
 	 */
 	private java.util.HashMap modelElements;
 
 	/**
-	 * 
 	 * @modelguid {F84ADA02-4CEB-4D60-B5AD-9B7113E5A10E}
 	 */
 	public XmiIdResolver() {
@@ -48,15 +46,15 @@ public class XmiIdResolver {
 		modelElements = new HashMap();
 	}
 
-    public boolean isVerbose = true;
+	public boolean isVerbose = true;
+
 	/**
-	 * 
 	 * @modelguid {FDEB2A4E-C466-4E3F-85E6-ED18B72EA458}
 	 */
 	public void readModelElements(Document doc) {
-        if (isVerbose) {
-        	System.out.println("Creating model elements");
-        }
+		if (isVerbose) {
+			System.out.println("Creating model elements");
+		}
 
 		Node root = doc.getDocumentElement();
 		int whattoshow = NodeFilter.SHOW_ALL;
@@ -66,7 +64,7 @@ public class XmiIdResolver {
 		DocumentTraversal traversal = (DocumentTraversal) doc;
 		NodeIterator nit = traversal.createNodeIterator(root, whattoshow, nodefilter, expandreferences);
 
-		//Traverse the DOM tree in DFS and create model elements for the IDs
+		// Traverse the DOM tree in DFS and create model elements for the IDs
 		Node thisNode = nit.nextNode();
 
 		while (thisNode != null) {
@@ -162,67 +160,74 @@ public class XmiIdResolver {
 					// A new constraint (uses for the time invariants)
 					Constraint newConst = new Constraint();
 					newElement = newConst;
-					
+
 				} else if (thisNode.getNodeName().equals("UML:SubmachineState")) {
 					// A submachine state
-					SubmachineState newSms=new SubmachineState();
-					newElement=newSms;
-					
+					SubmachineState newSms = new SubmachineState();
+					newElement = newSms;
+
+				} else if (thisNode.getNodeName().equals("UML:Stereotype")) {
+					// A stereotype
+					Stereotype newStype = new Stereotype();
+					newElement = newStype;
+
 				} else if (thisNode.getNodeName().equals("UML:FinalState")) {
 					// A final state
-					FinalState newFS=new FinalState();
+					FinalState newFS = new FinalState();
 					newElement = newFS;
-					
+
 				} else if (thisNode.getNodeName().equals("UML:StubState")) {
 					// A stub state
 					StubState newSS = new StubState();
 					newElement = newSS;
-					
+
 					newSS.referenceState = attributes.getNamedItem("referenceState").getNodeValue();
 
 				} else if (thisNode.getNodeName().equals("UML:SynchState")) {
 					// A synch syate (bound attribute not used by XDE)
-					SynchState newSS=new SynchState();
+					SynchState newSS = new SynchState();
 					newElement = newSS;
 				}
 
-				//Add these basic values to all elements and add element to the hashmap with its ID as the key
+				// Add these basic values to all elements and add element to the hashmap with its ID as the key
 				if (newElement != null) {
 					if (attributes.getNamedItem("name") != null) {
 						newElement.name = attributes.getNamedItem("name").getNodeValue();
 					}
 
-					if (attributes.getNamedItem("isSpecification") != null) {
-						newElement.isSpecification =
-							parseBoolean(attributes.getNamedItem("isSpecification").getNodeValue());
-					}
+					// TODO Copy and paste it to all other elements, had to take it out because stereotype does not have
+					// it
+					// if (attributes.getNamedItem("isSpecification") != null) {
+					// newElement.isSpecification = parseBoolean(attributes.getNamedItem("isSpecification")
+					// .getNodeValue());
+					// }
 
 					if (attributes.getNamedItem("xmi.id") != null) {
 						newElement.xmiID = attributes.getNamedItem("xmi.id").getNodeValue();
 					}
 
+					// Put in hash list
 					modelElements.put(newElement.xmiID, newElement);
 				} else {
-					//System.err.println("Failed to identify " + thisNode.toString());
+					// System.err.println("Failed to identify " + thisNode.toString());
 				}
 			}
 
-			//Iterate to the next node
+			// Iterate to the next node
 			thisNode = nit.nextNode();
 		}
-        if (isVerbose) {
-        	System.out.println("Model element creation finished");
-        }
+		if (isVerbose) {
+			System.out.println("Model element creation finished");
+		}
 	}
 
 	/** @modelguid {421DA8A2-0A0B-485D-B02E-DE7D286FEED7} */
 	private boolean parseBoolean(String name) {
-		//Borrowed from JRE 5.0
+		// Borrowed from JRE 5.0
 		return ((name != null) && name.equalsIgnoreCase("true"));
 	}
 
 	/**
-	 * 
 	 * @modelguid {0F57EFC3-CF9B-4617-B24F-A3A5CBF0C9E6}
 	 */
 	public ModelElement getElementWithId(String id) {
@@ -232,10 +237,10 @@ public class XmiIdResolver {
 		returnValue = (ModelElement) modelElements.get(id);
 
 		if (returnValue == null) {
-			//System.err.println("Faile to resolve id" + id);
+			// System.err.println("Faile to resolve id" + id);
 			return null;
 		}
-		//else
+		// else
 		return returnValue;
 
 	}
@@ -249,10 +254,10 @@ public class XmiIdResolver {
 		}
 
 		if (returnValue == null) {
-			//System.err.println("Failde to resolve " + node.toString());
+			// System.err.println("Failde to resolve " + node.toString());
 			return null;
 		}
-		//else
+		// else
 		return returnValue;
 
 	}

@@ -201,10 +201,7 @@ public class genericLex1 extends NodeUtilityClass implements genericLex1Constant
   private int jj_gc = 0;
 
   public genericLex1(java.io.InputStream stream) {
-     this(stream, null);
-  }
-  public genericLex1(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new genericLex1TokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -214,10 +211,7 @@ public class genericLex1 extends NodeUtilityClass implements genericLex1Constant
   }
 
   public void ReInit(java.io.InputStream stream) {
-     ReInit(stream);
-  }
-  public void ReInit(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -414,7 +408,6 @@ public class genericLex1 extends NodeUtilityClass implements genericLex1Constant
   final private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 6; i++) {
-    try {
       JJCalls p = jj_2_rtns[i];
       do {
         if (p.gen > jj_gen) {
@@ -430,7 +423,6 @@ public class genericLex1 extends NodeUtilityClass implements genericLex1Constant
         }
         p = p.next;
       } while (p != null);
-      } catch(LookaheadSuccess ls) { }
     }
     jj_rescan = false;
   }

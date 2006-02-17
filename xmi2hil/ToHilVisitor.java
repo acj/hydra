@@ -24,6 +24,7 @@ import umlModel.SimpleState;
 import umlModel.State;
 import umlModel.StateMachine;
 import umlModel.StateVertex;
+import umlModel.Stereotype;
 import umlModel.Transition;
 import umlModel.UMLClass;
 import umlModel.UninterpretedAction;
@@ -118,7 +119,7 @@ public class ToHilVisitor extends Visitor {
 	 */
 	public void visitClass(UMLClass e) {
 		// super.visitClass(e);
-
+		
 		data.add("Class " + e.name + " {");
 
 		// Iterate the features, i.e. attributes and operations
@@ -462,7 +463,7 @@ public class ToHilVisitor extends Visitor {
 	 */
 	public void visitTransition(Transition e) {
 		// super.visitTransition(e);
-
+	
 		String trigger = "";
 		String guard = "";
 		String action = "";
