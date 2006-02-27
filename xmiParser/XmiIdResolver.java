@@ -1,5 +1,6 @@
 package xmiParser;
 
+
 import java.util.HashMap;
 
 import org.w3c.dom.Document;
@@ -170,6 +171,7 @@ public class XmiIdResolver {
 					// A stereotype
 					Stereotype newStype = new Stereotype();
 					newElement = newStype;
+					newStype.name = attributes.getNamedItem("name").getNodeValue();
 
 				} else if (thisNode.getNodeName().equals("UML:FinalState")) {
 					// A final state

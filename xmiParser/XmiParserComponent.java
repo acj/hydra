@@ -696,7 +696,7 @@ public class XmiParserComponent {
 			stNode = node.getFirstChild();
 		}
 		
-		NamedNodeMap attributes = node.getAttributes();
+		NamedNodeMap attributes = stNode.getAttributes();
 		
 		String stID = attributes.getNamedItem("xmi.id").getNodeValue();
 		Stereotype stereotype=(Stereotype) myResolver.getElementWithId(stID);
