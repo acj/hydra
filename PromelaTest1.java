@@ -4,10 +4,6 @@
 import h2PFoundation.NodeUtilityClass;
 import h2PVisitors.Parser.ParseException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import xmi2hil.ConversionDriver;
 
 /*
