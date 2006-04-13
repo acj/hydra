@@ -39,10 +39,8 @@ import h2PVisitors.Parser.genericLex1;
 import java.util.Vector;
 
 /**
- * @author karli
- * 
- * TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code
- * Templates
+ * @author karli TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
+ *         Style - Code Templates
  */
 public class Hil2PromelaVisitor extends aVisitor {
 	protected String stateTimeInvariant = "";
@@ -230,15 +228,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 			// is there a BUG in this code??? --> [$event ne 'exit']
 
 			/*
-			 * perl TODO
-			 * 
-			 * !!! What is the purpose of this snippet if it actually does nothing?
-			 * 
-			 * #output to @outputAction if ( ( $event->{eventname} ne 'entry' ) && ( $event ne 'exit' ) ) { #Bad event
-			 * name #warn "Warning: In ActionNode bad event name $event!" } elsif ( $event->{eventname} eq 'entry' ) {
-			 * #entry actions #Actions are atomic } elsif ( $event->{eventname} eq 'exit' ) { #exit actions #Actions are
-			 * atomic }
-			 * 
+			 * perl TODO !!! What is the purpose of this snippet if it actually does nothing? #output to @outputAction
+			 * if ( ( $event->{eventname} ne 'entry' ) && ( $event ne 'exit' ) ) { #Bad event name #warn "Warning: In
+			 * ActionNode bad event name $event!" } elsif ( $event->{eventname} eq 'entry' ) { #entry actions #Actions
+			 * are atomic } elsif ( $event->{eventname} eq 'exit' ) { #exit actions #Actions are atomic }
 			 */
 			tmpART.addStrln("Action", tmpStr);
 		}
@@ -255,13 +248,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 				// 1-30-06 KL, fixed bug with time invariant. state Time invariants cleared at end of state visitor.
 				/*
 				 * --> my $statetimeinvariant=ASTVisitorForPromela->GetstatetimeinvariantAndUndef();
-				 * 
 				 */
 				if (tmpStateTimeInvariant.length() > 0) {
 					// push(@outputState," :: atomic{Timer_V.$statetimeinvariant && $temp1?$eventname ->");
-					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
-							+ tNode.getName() + " -> Timer_V." + tmpStateTimeInvariant + " -> ");
-					//tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> ");
+					tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> Timer_V."
+							+ tmpStateTimeInvariant + " -> ");
+					// tmpStr += strln(" :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> ");
 				} else {
 					// push(@outputState," :: atomic{$temp1?$eventname ->");
 					// one part has a trailing space, two part does not!
@@ -281,17 +273,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 							+ "_V." + tNode.getVariable());
 					tmpStr += strln("                   -> ");
 					/*
-					 * perl
-					 * 
-					 * @outputTrans = visiteventNodePak->TwoPartEventOutput( $thiseventnode, @outputTrans );
+					 * perl @outputTrans = visiteventNodePak->TwoPartEventOutput( $thiseventnode, @outputTrans );
 					 */
 				} /*
-					 * else {
-					 *  // original code moved outside of if/then to avoid duplication!
-					 *  // do nothing, nothing to do! /* perl
-					 * 
-					 * @outputTrans = visiteventNodePak->OnePartEventOutput( $thiseventnode, @outputTrans );
-					 *  }
+					 * else { // original code moved outside of if/then to avoid duplication! // do nothing, nothing to
+					 * do! /* perl @outputTrans = visiteventNodePak->OnePartEventOutput( $thiseventnode, @outputTrans ); }
 					 */
 			}
 			if (tNode.getEventType().equals("when")) {
@@ -301,17 +287,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 				/*
 				 * ExprYaccForPromelaPak->PassRef($thiseventnode); my $returnvalue =
 				 * ExprYaccForPromela->Parse("when($whenvar)");
-				 * 
 				 */
 				retVal = pinpv.ExpressionParser.Parse_Me(tNode, "when(" + tNode.getWhenVariable() + ")");
 				tmpStr += strln("        :: atomic{" + retVal + " -> ");
 			}
 			/*
-			 * perl
-			 * 
-			 * #1st, ready ===> :: _SYSTEMCLASS__q?ready -> t?free; #2nd, carspeed(setspd) ===> ::
+			 * perl #1st, ready ===> :: _SYSTEMCLASS__q?ready -> t?free; #2nd, carspeed(setspd) ===> ::
 			 * atomic{Control_q?carspeed ->Control_carspeed_p1?Control_V.setspd} -> t?free;
-			 * 
 			 */
 			tmpART.addStrln("Trans", tmpStr);
 		}
@@ -380,7 +362,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 			 * (done) array join order is as follows: outputInit += "/ Initial actions.../" then
 			 * UniversalClass->jointwoarrays effectively appends the output from the TransitionBodyNode *after* the live
 			 * above.
-			 * 
 			 */
 
 		}
@@ -444,7 +425,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		 */
 
 		if ((tNode.getInitValue().length() > 0)) { // TODO comparison may not be totally correct, type may need
-													// changing.
+			// changing.
 
 			aNode instanceVariableReference = FindLocalDestNode(tNode, "InstanceVariableNode", "var", tNode.getVar());
 
@@ -458,7 +439,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART; // outputs to a whole bunch of things!
 		/*
 		 * perl AST::visitInstVarNode
-		 * 
 		 */
 	}
 
@@ -496,11 +476,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 					String temp1, temp2;
 
 					/*
-					 * temp1 = " ".$temp1.$temp2.$temp3; temp2 = $msgintvarname."; ".$temp5.$msgsignalname."};"
-					 * 
-					 * my $temp1="atomic"."{"; * my $temp2=$msgclassname."_"; my $temp3=$msgsignalname."_p1!"; * my
+					 * temp1 = " ".$temp1.$temp2.$temp3; temp2 = $msgintvarname."; ".$temp5.$msgsignalname."};" my
+					 * $temp1="atomic"."{"; * my $temp2=$msgclassname."_"; my $temp3=$msgsignalname."_p1!"; * my
 					 * $ClassParent=$classref->{ID}; my $temp4=$ClassParent."_V."; * my $temp5=$msgclassname."_q!";
-					 * 
 					 */
 
 					// fixed version
@@ -511,14 +489,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 					// [0-9]+)
 					char testAt = tNode.getIntVarName().toUpperCase().charAt(0);
 					if ((testAt >= '0') && (testAt <= '9') || (testAt == '-')) { // IntVarName is a number
-					// push(@outputmessage," $temp1$temp2$temp3$msgintvarname; $temp5$msgsignalname};");
+						// push(@outputmessage," $temp1$temp2$temp3$msgintvarname; $temp5$msgsignalname};");
 						tmpStr += strln(temp1 + temp2);
 					} else { // IntVarName is an ID
-					// push(@outputmessage," $temp1$temp2$temp3$temp4$msgintvarname; $temp5$msgsignalname};");
+						// push(@outputmessage," $temp1$temp2$temp3$temp4$msgintvarname; $temp5$msgsignalname};");
 						tmpStr += strln(temp1 + destCN.getID() + "_V." + temp2);
 					}
 					/*
-					 * 
 					 * sub outputThreePartmessage (done)
 					 */
 
@@ -970,10 +947,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 			/*
 			 * String temp100 = tmpART.getStr("CState"); // TODO comparison algorithm may not be correct. // I think
-			 * there's one like it, further down. String comparison = " if";
-			 * 
-			 * if (!temp100.substring(temp100.length() - comparison.length()).equals(comparison)) { // Inline
-			 * CStateEndOutput tmpART.addStr("CState", " fi;"); }
+			 * there's one like it, further down. String comparison = " if"; if (!temp100.substring(temp100.length() -
+			 * comparison.length()).equals(comparison)) { // Inline CStateEndOutput tmpART.addStr("CState", " fi;"); }
 			 */
 			String CS_entities[] = tmpART.getStrSplit("CState");
 			String temp100 = CS_entities[CS_entities.length - 1];
@@ -1020,11 +995,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 			if (!tmpART.getStr("found").equals("true")) {
 				/*
-				 * 
 				 * my $classref = UniversalClass->SearchUpForDest( $ent, "ClassNode" ); UniversalClass->printMsg(
 				 * "Warning", $classref, $ent, "join missing (these threads can never be joined" );
-				 * 
-				 * 
 				 */
 				aNode classRef = searchUpForDest(ccNode, "ClassNode");
 				println("Warning: In Class [" + classRef.getID() + "], $object [" + ccNode.getID()
@@ -1171,7 +1143,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 				/*
 				 * T O D O implement -> visitclassbodyNodePak->OutputCCState( $ent, \@mtypelist, \@outputCCStateIDint,
 				 * \@outputCCStateIDmtype, \@outputWholeState );
-				 * 
 				 */
 				tmpART.merge(cbnhOutputCCState((ConcurrentCompositeNode) childNode, true));
 			}
@@ -1184,18 +1155,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 
 		/*
-		 * 
-		 * T O D O implement ->
-		 * 
-		 * #First to form @GlobaloutputInstVar @GlobaloutputInstVar = visitclassbodyNodePak->FormGlobaloutputInstVar(
-		 * $theclassbodynode, \@GlobaloutputInstVarBody, \@INPredicateTarget, \@GlobaloutputInstVar );
-		 * 
-		 * 
-		 *  // DONE proctype. #@GlobaloutputSignal will be output in visitmodelbodyNode because it holds all the content
-		 * of SignalNodes in this Class. #To form the proctype output of this class to @outputClass @outputClass =
-		 * visitclassbodyNodePak->Proctype( $theclassbodynode, \@outputClass, \@outputCStateID, \@outputCCStateIDint,
-		 * \@outputCCStateIDmtype, \@outputInstVar, \@outputInit, \@outputWholeState );
-		 * 
+		 * T O D O implement -> #First to form @GlobaloutputInstVar @GlobaloutputInstVar =
+		 * visitclassbodyNodePak->FormGlobaloutputInstVar( $theclassbodynode, \@GlobaloutputInstVarBody,
+		 * \@INPredicateTarget, \@GlobaloutputInstVar ); // DONE proctype. #@GlobaloutputSignal will be output in
+		 * visitmodelbodyNode because it holds all the content of SignalNodes in this Class. #To form the proctype
+		 * output of this class to @outputClass @outputClass = visitclassbodyNodePak->Proctype( $theclassbodynode,
+		 * \@outputClass, \@outputCStateID, \@outputCCStateIDint, \@outputCCStateIDmtype, \@outputInstVar, \@outputInit,
+		 * \@outputWholeState );
 		 */
 		AcceptReturnType INPredicateTarget;
 		INPredicateTarget = (AcceptReturnType) globalOutputs.getSingle("INPredicateTarget");
@@ -1235,8 +1201,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	public void csbhPushDownToStateNode(CompositeStateBodyNode tNode, StateNode SNode) {
 		/*
-		 * if (CSNode.children.size() > 0) { // this state node has children!
-		 *  }
+		 * if (CSNode.children.size() > 0) { // this state node has children! }
 		 */
 		// Note: code modified to remove redunancies...
 		// children are added anyway so just create body node if needed.
@@ -1461,13 +1426,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		/*
 		 * This is taken care of by CompositeStateNode.transitionNodeChildren ( $countTransNode, @OutgoingTransitionlist ) =
-		 * visitcstatebodyNodePak->getOutgoingTransitions($thiscstatebodynode);
-		 * 
-		 * Yes! i checked the function and that's EXACTLY what it does! (T ODO: problem?)
-		 *  -> getOutgoingTransitions basically returns a list of all of the transitions in a composite state body node,
-		 * because *all* of its transitions are outgoing. This is already handled by the cStateNode's
-		 * transitionNodeChildren Vector.
-		 * 
+		 * visitcstatebodyNodePak->getOutgoingTransitions($thiscstatebodynode); Yes! i checked the function and that's
+		 * EXACTLY what it does! (T ODO: problem?) -> getOutgoingTransitions basically returns a list of all of the
+		 * transitions in a composite state body node, because *all* of its transitions are outgoing. This is already
+		 * handled by the cStateNode's transitionNodeChildren Vector.
 		 */
 
 		/*
@@ -1539,25 +1501,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 				/*
 				 * T O D O implement -> @outputWholeState = visitcstatebodyNodePak->StateBlock( $ent, $ifHistory,
 				 * \@outputWholeState, \@outputState );
-				 * 
 				 */
 				csbhStateBlock(childNode, tNode.hasHistoryNode(), tmpART);
 			}
 		}
 
 		/*
-		 * T ODO
-		 * 
-		 * 
-		 * #********************** #Part 4: #To form the output of this CStateNode to @GlobaloutputCState
+		 * T ODO #********************** #Part 4: #To form the output of this CStateNode to @GlobaloutputCState
 		 * #********************** @GlobaloutputCState = visitcstatebodyNodePak->CProctype( $thiscstatebodynode,
 		 * \@GlobaloutputCState, \@outputCStateID, \@outputCCStateIDint, \@outputCCStateIDmtype,
 		 * \@CStateoutputActionEntry, \@CStateoutputActionExit, \@outputInit, \@outputHistory, \@HistorySelect,
-		 * \@outputWholeState );
-		 * 
-		 * #To output @GlobaloutputCState to @outputClass, if any @outputClass = UniversalClass->jointwoarrays(
-		 * \@GlobaloutputCState, \@outputClass );
-		 * 
+		 * \@outputWholeState ); #To output @GlobaloutputCState to @outputClass, if any @outputClass =
+		 * UniversalClass->jointwoarrays( \@GlobaloutputCState, \@outputClass );
 		 */
 		csbhCProcType(tNode, tmpART);
 		tmpART.moveStrKey("CState", "Class");
@@ -1575,7 +1530,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		/*
 		 * perl AST::visitcstatebodyNode
-		 * 
 		 */
 	}
 
@@ -1596,9 +1550,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		/***************************************************************************************************************
 		 * **important According to perl source StateNode might be an illegal type for children, while ActionNode is
-		 * definitely an illegal type for children. However this code is commented out.
-		 * 
-		 * Strict Type checking might be necessary.
+		 * definitely an illegal type for children. However this code is commented out. Strict Type checking might be
+		 * necessary.
 		 */
 
 	}
@@ -1682,12 +1635,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	/*
 	 * # Reused # Put (lvl, @list) write a string out indented according to level. If the # string has a label, it is
-	 * placed at the left. If the string is over # 72 chars, it is split to a next line indented at lvl+1.
-	 *  # If Put, lvl=0 follows a PutNR, the string is placed on the right # end of the previous PutNR and if folded,
-	 * folded at the PutNR lvl+1
-	 *  # If multiple Puts are req'd, do this: PutNR lvl,text for the first with # lvl set to what is req'd. The do
-	 * PutNR 0,text as many times as needed, # then Put 0,text.
-	 * 
+	 * placed at the left. If the string is over # 72 chars, it is split to a next line indented at lvl+1. # If Put,
+	 * lvl=0 follows a PutNR, the string is placed on the right # end of the previous PutNR and if folded, folded at the
+	 * PutNR lvl+1 # If multiple Puts are req'd, do this: PutNR lvl,text for the first with # lvl set to what is req'd.
+	 * The do PutNR 0,text as many times as needed, # then Put 0,text.
 	 */
 	protected String mbnhPut(int level, String txt) {
 		String out, x;
@@ -1903,8 +1854,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		 * TODO #SK 10/23/05 Temporarily removed the event dispatcher because ti gives me headaches and has no use # For
 		 * Karli: I think you need to figure out what this dispatcher is actually good for. My guess if for some type of
 		 * internal
-		 * 
-		 * 
 		 */
 		/*
 		 * commented out, please fix comment in line 3 if reinstated. tmpStr += mbnhPut (0, ""); tmpStr += mbnhPut (0,
@@ -2066,11 +2015,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 				tmpART.moveStrKey("InstVarGlobal", "InstVarSignal");
 				tmpART.moveStrKey("Signal", "InstVarSignal");
 				/*
-				 * perl T ODO (nothing should need to be done)
-				 * 
-				 * #output @outputClass to @outputWholeClass @outputWholeClass = UniversalClass->jointwoarrays(
-				 * \@outputClass, \@outputWholeClass );
-				 * 
+				 * perl T ODO (nothing should need to be done) #output @outputClass to @outputWholeClass
+				 * @outputWholeClass = UniversalClass->jointwoarrays( \@outputClass, \@outputWholeClass );
 				 */
 			}
 			if (childNode.getType().equals("DriverFileNode")) {
@@ -2089,9 +2035,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// into two separate implementations for FormTimingInstVar and FormGlobaloutputInstVar
 		String tmpStr = "";
 		tmpStr += strln("typedef Timer_T {");
-		//SK: Timer_T does not need a timerwait
-		//tmpStr += strln("        bool timerwait;");
-		//SK: Added a propTimer to be able to analyze real-time properties
+		// SK: Timer_T does not need a timerwait
+		// tmpStr += strln(" bool timerwait;");
+		// SK: Added a propTimer to be able to analyze real-time properties
 		tmpStr += strln("short propTimer=-1;");
 
 		/*
@@ -2324,14 +2270,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 			if (c == '\'') {
 				puttyString += "\\";
 			}
-			puttyString += c + "'";
+			puttyString += c + "\\n\"";
 		}
 		coutString = '"' + coutString + '"';
 		// String tempStr = "printf(\" \", (\"" + escapeStr (descStr) + "\"));";
 
 		String tempStr = "printf(" + coutString + puttyString + ");";
 		if (!simpleTransitionPrint) {
-			tempStr = "printf (" + '"' + escapeStr(descStr) + '"' + ");";
+			tempStr = "printf (" + '"' + escapeStr(descStr) + "\\n\"" + ");";
 		}
 
 		return tempStr;
@@ -2362,11 +2308,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 																									 * String
 																									 * optlDestID,
 																									 */
-			String destType, boolean hasGuard, boolean checkMTypeList) {
+	String destType, boolean hasGuard, boolean checkMTypeList) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (destType.equals("SS")) {
-			if (!hasGuard) {					// 1-30-06 KL countGuard -> hasGuard
+			if (!hasGuard) { // 1-30-06 KL countGuard -> hasGuard
 				tmpART.addStr("State", "           " + transNodeDesc + "goto " + dest + "; skip;}");
 			} else {
 				tmpART.addStr("State", "              " + transNodeDesc + "goto " + dest + "; skip;}");
@@ -2495,7 +2441,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent, AcceptReturnType hasGuardParam, boolean isFirstGuard) {
+	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent,
+			AcceptReturnType hasGuardParam, boolean isFirstGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 		String guardString = transRef.getGuard();
 
@@ -2504,22 +2451,21 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 
 		// there IS a guard!
-		/*Integer cg = (Integer) countGuard.getSingle("default");
-		cg = new Integer(cg.intValue() + 1);
-		*/
-		Boolean hg = new Boolean (true);
+		/*
+		 * Integer cg = (Integer) countGuard.getSingle("default"); cg = new Integer(cg.intValue() + 1);
+		 */
+		Boolean hg = new Boolean(true);
 		hasGuardParam.addSingle("default", hg);
 
-		if ((hasEvent) && isFirstGuard /* && (cg.intValue() == 1)*/) { //redundant, guard already known to exist 1-30-06 KL
+		if ((hasEvent) && isFirstGuard /* && (cg.intValue() == 1) */) { // redundant, guard already known to exist
+																		// 1-30-06 KL
 			tmpART.addStr("State", "           if");
 		}
 
 		/*
 		 * T ODO implement #pass $newent->{tran} to ExprYaccForPromela.pm to let it get some ref
-		 * ExprYaccForPromelaPak->PassRef($transref);
-		 * 
-		 * #a parser to parse this guard and get the return string: $guardexpr my $guardexpr =
-		 * ExprYaccForPromela->Parse("$guardstring");
+		 * ExprYaccForPromelaPak->PassRef($transref); #a parser to parse this guard and get the return string:
+		 * $guardexpr my $guardexpr = ExprYaccForPromela->Parse("$guardstring");
 		 */
 		String guardExpr = "";
 		guardExpr = pinpv.ExpressionParser.Parse_Me(transRef, guardString);
@@ -2537,9 +2483,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		/*
 		 * if (stateTimeInvariant.length() == 0) { if (guardExpr.length() != 0) { tmpART.addStr("State", " :: atomic{" +
-		 * guardExpr + " ->"); } else {
-		 *  } } else { if (guardExpr.length() != 0) { tmpART.addStr("State", " :: atomic{$guardexpr ->"); } else {
-		 *  } }
+		 * guardExpr + " ->"); } else { } } else { if (guardExpr.length() != 0) { tmpART.addStr("State", " ::
+		 * atomic{$guardexpr ->"); } else { } }
 		 */
 
 		return tmpART;
@@ -2655,7 +2600,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			}
 			if (evtNode != null) { // will only happen if neither of the two options above are true.
-				anART.merge(evtNode.accept(this)); //(part of iffirst != 1)
+				anART.merge(evtNode.accept(this)); // (part of iffirst != 1)
 				if (evtNode.getEventType().equals("normal")) {
 					aNode localRet = FindLocalDestNode(tNode, "SignalNode", "name", evtNode.getName());
 					if (localRet != null) {
@@ -2673,13 +2618,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 				anART.merge(sbnhOutputINPredicateZero(tNode, ifTarget));
 
 				// int iffirst = 1;
-				//AcceptReturnType countGuard = new AcceptReturnType();
-				//countGuard.addSingle("default", new Integer(0));
+				// AcceptReturnType countGuard = new AcceptReturnType();
+				// countGuard.addSingle("default", new Integer(0));
 				// int countGuardVal = 0;
-				boolean hasGuard = false; 					// 1-30-06 KL countGuard -> hasGuard
+				boolean hasGuard = false; // 1-30-06 KL countGuard -> hasGuard
 				boolean hasGuards = false;
 				AcceptReturnType hasGuardParam = new AcceptReturnType();
-				//boolean firstGuard = true; // firstguard fix 
+				// boolean firstGuard = true; // firstguard fix
 
 				Vector tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
@@ -2688,11 +2633,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 					// Yes I just realized i'm doing this the hard way, but no matter!
 					// (the countGuard can be kept OUTSIDE of outputguard! sheesh. someday.
-//					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
-					//countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
+					// anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), countGuard));
+					// countGuardVal = ((Integer) countGuard.getSingle("default")).intValue();
 
-					//TODO verify j==0 and hasGuard use.
-					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam, j==0));
+					// TODO verify j==0 and hasGuard use.
+					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam,
+							j == 0));
 					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
 					hasGuards = hasGuards || hasGuard;
 
@@ -2710,7 +2656,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 							anART.addStr("State", tmpStr);
 						} else {
 							if (j != 0) {
-								//TODO THIS code needs some serious looking-at.
+								// TODO THIS code needs some serious looking-at.
 								anART.merge(evtNode.accept(this));
 								anART.moveStrKey("Trans", "State");
 							}
@@ -2732,13 +2678,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 			/*
 			 * if (tbNode.eventNodeChild == null) { //T ODO double check implementation, implement properly. // sub
-			 * EMPTYTRANSoutputState String stTimeInvariant = stateTimeInvariant; stateTimeInvariant = "";
-			 * 
-			 * for (int j = 0; j < tbNode.transitionList.size(); j++) { if (stTimeInvariant.length() == 0) {
-			 * anART.addStr("State", " :: atomic{1 -> "); } else { anART.addStr("State", " :: atomic{Timer_V." +
-			 * stTimeInvariant + " -> "); } // T ODO finish. anART.merge(sbnhOutput_Dest (tNode, "", "", false)); } }
-			 * else {
-			 *  }
+			 * EMPTYTRANSoutputState String stTimeInvariant = stateTimeInvariant; stateTimeInvariant = ""; for (int j =
+			 * 0; j < tbNode.transitionList.size(); j++) { if (stTimeInvariant.length() == 0) { anART.addStr("State", " ::
+			 * atomic{1 -> "); } else { anART.addStr("State", " :: atomic{Timer_V." + stTimeInvariant + " -> "); } // T
+			 * ODO finish. anART.merge(sbnhOutput_Dest (tNode, "", "", false)); } } else { }
 			 */
 
 		}
@@ -2817,7 +2760,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		int tNodeCount = tNode.transitionNodeChildren.size(); // number of Transition h2PNodes
 		if (tNode.getParent().getID().equals("DownRamping")) { // debug code previously: Wait.
 			int x = 1;
-			
+
 		}
 
 		// T ODO call $iftarget = visitstatebodyNodePak->ifINPredicateTarget( $thisstatebodynode, \@INPredicateTarget );
@@ -2889,7 +2832,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		// 1-30-06 state time invariant bug fix: clear STI at end of visitor only.
 		stateTimeInvariant = "";
-		
 
 		return tmpART; // output to @outputState
 	}
