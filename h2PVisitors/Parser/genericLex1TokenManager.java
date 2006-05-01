@@ -285,14 +285,12 @@ protected SimpleCharStream input_stream;
 private final int[] jjrounds = new int[1];
 private final int[] jjstateSet = new int[2];
 protected char curChar;
-public genericLex1TokenManager(SimpleCharStream stream)
-{
+public genericLex1TokenManager(SimpleCharStream stream){
    if (SimpleCharStream.staticFlag)
       throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
    input_stream = stream;
 }
-public genericLex1TokenManager(SimpleCharStream stream, int lexState)
-{
+public genericLex1TokenManager(SimpleCharStream stream, int lexState){
    this(stream);
    SwitchTo(lexState);
 }
