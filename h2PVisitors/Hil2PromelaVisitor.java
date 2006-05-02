@@ -483,12 +483,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 					// fixed version
 					// SK 050106 Flipped order of method name and parameter send to acvoid dead lock when rendezvous channels are used
-					temp1 = tNode.getClassName() + "_q!" + tNode.getSignalName() + ";" + "        "
-							+ tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
-					temp2 = tNode.getIntVarName() + "; ";
-					// temp1 = " " + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
-					// temp2 = tNode.getIntVarName() + "; " + tNode.getClassName() + "_q!" + tNode.getSignalName() +
-					// ";";
+//					temp1 = tNode.getClassName() + "_q!" + tNode.getSignalName() + ";" + "        "
+//							+ tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
+//					temp2 = tNode.getIntVarName() + "; ";
+					 temp1 = " " + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
+					 temp2 = tNode.getIntVarName() + "; " + tNode.getClassName() + "_q!" + tNode.getSignalName() +
+					 ";";
 
 					// #test if $msgintvarname is an ID (the first character is [A-Z][a-z]) or a NUM (all characters are
 					// [0-9]+)
@@ -498,7 +498,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 						tmpStr += strln(temp1 + temp2);
 					} else { // IntVarName is an ID
 						// push(@outputmessage," $temp1$temp2$temp3$temp4$msgintvarname; $temp5$msgsignalname};");
-						// SK 050106 Flipped temp1 and temp2 to get them in the right order in the output
+						// SK 050106 Added an atomic here
 						tmpStr += strln("atomic{" + temp1 + destCN.getID() + "_V." + temp2 + "};");
 					}
 					/*
@@ -582,7 +582,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			// WARNING: Don't revert this change without rearranging the order of the signal and parameter messages
 			// tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {" +
 			// tNode.getSignalType() + "};");
-			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[0] of {"
+			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[1] of {"
 					+ tNode.getSignalType() + "};");
 			/*
 			 * perl visitSignalNodePak->GlobaloutputSignal( $thissignalnode, @GlobaloutputSignal ):
@@ -739,9 +739,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		String classID = tNode.getParent().getID();
 
-		// SK 050106 Testing how feasible it is to make all channels rendezvous
+		// SK 050106 Reduced length of queue to 1
 		// tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
-		tmpART.addStr("Signal", "chan " + classID + "_q=[0] of {mtype};");
+		tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
 		tmpART.addStr("Signal", "chan " + classID + "_C=[0] of {bit};");
 
 		return tmpART;
@@ -1733,7 +1733,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// Commented out to be in par with Dispatcher output removal #KL
 		// tmpStr += mbnhPut (0, "chan evq=[10] of {mtype,int};");
 		// tmpStr += mbnhPut (0, "chan evt=[10] of {mtype,int};");
-		tmpStr += mbnhPut(0, "chan wait=[10] of {int,mtype};");
+		//SK 050106 Reduced quete to 1
+		tmpStr += mbnhPut(0, "chan wait=[1] of {int,mtype};");
 
 		return tmpStr;
 	}
