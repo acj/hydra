@@ -578,12 +578,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 			String className = tNode.getParent().getParent().getID();
 			// this code originally was not moved into the proper hash, that has been fixed.
 
-			// SK 050106 Testing how feasible it is to make all channels rendezvous
-			// WARNING: Don't revert this change without rearranging the order of the signal and parameter messages
-			// tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {" +
-			// tNode.getSignalType() + "};");
-			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[1] of {"
-					+ tNode.getSignalType() + "};");
+			 tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {" +
+			 tNode.getSignalType() + "};");
+
 			/*
 			 * perl visitSignalNodePak->GlobaloutputSignal( $thissignalnode, @GlobaloutputSignal ):
 			 */
@@ -740,8 +737,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String classID = tNode.getParent().getID();
 
 		// SK 050106 Reduced length of queue to 1
-		// tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
-		tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
+		 tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
+//		tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
 		tmpART.addStr("Signal", "chan " + classID + "_C=[0] of {bit};");
 
 		return tmpART;

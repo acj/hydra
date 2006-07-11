@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="D:/workspace31/drama/plugins/dramaCore/lib/xmi2Promela.jar"/>
+<jar path="D:/workspace32/drama/plugins/dramaCore/lib/xmi2Promela.jar"/>
 <options buildIfNeeded="true" compress="true" descriptionLocation="/xmi2Promela/xmi2Promela.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
 <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
 <selectedProjects/>

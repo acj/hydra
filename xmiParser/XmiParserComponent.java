@@ -535,8 +535,8 @@ public class XmiParserComponent {
 
 			// Get the operation of the call event and set it
 			if (ceAttrib.getNamedItem("operation") == null) {
-				System.err.println("Operation reference used in transition not defined! Typo in Model? Validate it!");
-				System.exit(0);
+				System.err.println("ERROR: Operation reference used in transition not defined! Typo in Model? Validate it!");
+				return null;
 			} else {
 				String operationID = ceAttrib.getNamedItem("operation").getNodeValue();
 				ce.operation = (Operation) myResolver.getElementWithId(operationID);
