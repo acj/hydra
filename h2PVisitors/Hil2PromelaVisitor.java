@@ -482,13 +482,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 					 */
 
 					// fixed version
-					// SK 050106 Flipped order of method name and parameter send to acvoid dead lock when rendezvous channels are used
-//					temp1 = tNode.getClassName() + "_q!" + tNode.getSignalName() + ";" + "        "
-//							+ tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
-//					temp2 = tNode.getIntVarName() + "; ";
-					 temp1 = " " + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
-					 temp2 = tNode.getIntVarName() + "; " + tNode.getClassName() + "_q!" + tNode.getSignalName() +
-					 ";";
+					// SK 050106 Flipped order of method name and parameter send to acvoid dead lock when rendezvous
+					// channels are used
+					// temp1 = tNode.getClassName() + "_q!" + tNode.getSignalName() + ";" + " "
+					// + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
+					// temp2 = tNode.getIntVarName() + "; ";
+					temp1 = " " + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
+					temp2 = tNode.getIntVarName() + "; " + tNode.getClassName() + "_q!" + tNode.getSignalName() + ";";
 
 					// #test if $msgintvarname is an ID (the first character is [A-Z][a-z]) or a NUM (all characters are
 					// [0-9]+)
@@ -578,8 +578,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			String className = tNode.getParent().getParent().getID();
 			// this code originally was not moved into the proper hash, that has been fixed.
 
-			 tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {" +
-			 tNode.getSignalType() + "};");
+			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {"
+					+ tNode.getSignalType() + "};");
 
 			/*
 			 * perl visitSignalNodePak->GlobaloutputSignal( $thissignalnode, @GlobaloutputSignal ):
@@ -737,8 +737,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String classID = tNode.getParent().getID();
 
 		// SK 050106 Reduced length of queue to 1
-		 tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
-//		tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
+		tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
+		// tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
 		tmpART.addStr("Signal", "chan " + classID + "_C=[0] of {bit};");
 
 		return tmpART;
@@ -831,8 +831,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 						String temp30 = csNode.getID() + "_C!1";
 						String temp40 = csNode.getID() + "_C?1";
 						if (isFromClassCall) {
-							tmpART.addStr("CCStateTemp1", "        " + temp20 + " = run " + csNode.getID() + "(none); "
-									+ temp30 + ";");
+							// SK 071206 Fixed to be compatible with the process termination bug workaround semantics
+							// tmpART.addStr("CCStateTemp1", " " + temp20 + " = run " + csNode.getID() + "(none); "
+							// + temp30 + ";");
+							tmpART.addStr("CCStateTemp1","\t" + csNode.getID()+"_start!1;");
 						} else {
 							// temp30 = csNode.getID() + "AnalyzeCCStateNode_V"; // <-- never used!
 							tmpART.addStr("CCStateTemp1", "        " + temp20 + " = run " + csNode.getID() + "(none);");
@@ -1730,7 +1732,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// Commented out to be in par with Dispatcher output removal #KL
 		// tmpStr += mbnhPut (0, "chan evq=[10] of {mtype,int};");
 		// tmpStr += mbnhPut (0, "chan evt=[10] of {mtype,int};");
-		//SK 050106 Reduced quete to 1
+		// SK 050106 Reduced quete to 1
 		tmpStr += mbnhPut(0, "chan wait=[1] of {int,mtype};");
 
 		return tmpStr;
