@@ -325,6 +325,12 @@ public class ToHilVisitor extends Visitor {
 
 		// Hydra does not care about return values
 		if (!e.kind.equals("return")) {
+			if(e.type==null)
+			{
+				System.err.println("ERROR: Paramater " + e.name + " has no type! Check the UML diagram!");
+				return;
+			}
+			//else
 			tempList.add(e.type.name);
 		}
 	}
