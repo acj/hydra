@@ -1936,7 +1936,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		entries = newEntries;
 
 		String tmpStr = "";
-		tmpStr += mbnhPut(0, "#define UPPERBOUND 25");
+		tmpStr += mbnhPut(0, "");
+		tmpStr += mbnhPut(0, "/* This UPPERBOUND is arbitrary, adjust accordingly */");
+		tmpStr += mbnhPut(0, "/* It is used to avoid the state space from going out of hand when there is a deadlock */");
+		tmpStr += mbnhPut(0, "#define UPPERBOUND 15");
 		tmpStr += mbnhPut(0, "/* This is the timer process */");
 		tmpStr += mbnhPut(0, "/* It increments timers and unlocks waiting processes */");
 		tmpStr += mbnhPut(0, "active proctype Timer()");
