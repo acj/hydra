@@ -158,7 +158,7 @@ public class XmiIdResolver {
 					newElement = newCE;
 
 				} else if (thisNode.getNodeName().equals("UML:Constraint")) {
-					// A new constraint (uses for the time invariants)
+					// A new constraint (used for the time invariants)
 					Constraint newConst = new Constraint();
 					newElement = newConst;
 
