@@ -1,0 +1,4 @@
++ Specify the XMI parser class as a command line argument (eg. Parser.XDE)
++ Allow each stage to be run independently:
+  * Convert XMI into HIL
+  * Convert HIL into Promela

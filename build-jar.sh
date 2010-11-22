@@ -2,7 +2,7 @@
 
 if [ -d "build" ]; then
 	cd build
-	jar -cf hydra.jar h2PFoundation h2PVisitors xmi2hil h2PNodes META-INF promelaParser umlModel xmiParser
+	jar -cfe ../hydra.jar MainDriver h2PFoundation h2PVisitors xmi2hil h2PNodes META-INF promelaParser umlModel xmiParser MainDriver.class
 	cd ..
 	exit 0;
 else
