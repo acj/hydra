@@ -1,9 +1,5 @@
-package test;
-
-//import h2PVisitors.*;
 import h2PFoundation.NodeUtilityClass;
 import h2PVisitors.Parser.ParseException;
-
 import xmi2hil.ConversionDriver;
 
 /*
@@ -21,7 +17,7 @@ import xmi2hil.ConversionDriver;
  * accept function is called with the instance of
  * Hil2PromelaVisitor as its visitor class.
  */
-public class PromelaTest1 {
+public class MainDriver {
 
 	/**
 	 * @param args
