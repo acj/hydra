@@ -1,0 +1,606 @@
+Formalize as promela ;
+Model LightController{
+Class BrightnessSensor {
+	InstanceVar bool checkBrightness := 0 ;
+	InstanceVar byte currentBrightness := 55 ;
+	Signal brightnessSensorProblem( ) ;
+	Signal getBrightnessSensorOperationalState( ) ;
+	Signal sysPowerOffBri( ) ;
+	Signal tempGetBriValue( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State Active  {
+	Action "entry/checkBrightness:=0" ;
+		Transition "tempGetBriValue^ComputingComponent.setCurrentBrightnessValue(currentBrightness)" to Active ;
+		Transition "sysPowerOffBri^Environment.receivedEnv" to s1 ;
+		Transition "brightnessSensorProblem" to s2 ;
+	}
+	State s1  {
+		Transition "sysPowerOffBri^Environment.receivedEnv" to s1 ;
+		Transition "getBrightnessSensorOperationalState/checkBrightness:=1" to s2 ;
+	}
+	State s2  {
+		Transition "sysPowerOffBri^Environment.receivedEnv" to s1 ;
+		Transition "[checkBrightness=0]" to s1 ;
+		Transition "[checkBrightness]^ComputingComponent.ccok" to Active ;
+	}
+}
+Class ComputingComponent {
+	InstanceVar bool controlTimerLong ;
+	InstanceVar bool controlTimerShort ;
+	InstanceVar byte currentBrightnessValue ;
+	InstanceVar bool currentMotionValue ;
+	InstanceVar byte faultID ;
+	InstanceVar bool initialization := 0 ;
+	InstanceVar bool lightStatus := 0 ;
+	InstanceVar bool normalState := 0 ;
+	InstanceVar bool partialState := 0 ;
+	InstanceVar byte valueCC ;
+	Signal ccok( ) ;
+	Signal globalFaultOccursCC( ) ;
+	Signal initOff( ) ;
+	Signal initOn( ) ;
+	Signal noEnvirMessage( ) ;
+	Signal noFaultMessage( ) ;
+	Signal noUserInput( ) ;
+	Signal powerOff( ) ;
+	Signal powerOn( ) ;
+	Signal presenceFaultMes( ) ;
+	Signal presenceUserIn( ) ;
+	Signal receivedCC( ) ;
+	Signal reserTimerShort( ) ;
+	Signal resetTimerLong( ) ;
+	Signal setCurrentBrightnessValue(byte ) ;
+	Signal setCurrentMotionValue(bool ) ;
+	Signal userInputCC( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" PowerOff ;
+	State Bridge1  {
+	Action "entry/normalState:=0;send(Environment.manualMode)" ;
+		Transition "" to PartialShutdown ;
+	}
+	State Bridge3  {
+	Action "entry/initialization:=0;send(UserInterface.normalMode)" ;
+		Transition "receivedCC" to NormalBehavior ;
+	}
+	State Bridge4  {
+	Action "entry/send(Environment.manualMode)" ;
+		Transition "" to PartialShutdown ;
+	}
+	CompositeState Initialize {
+	Initial  "" FirstSen ;
+	State CheckBriSen  {
+		Transition "ccok^BrightnessSensor.tempGetBriValue" to GetBrightness ;
+	}
+	State CheckMotSen  {
+		Transition "ccok^MotionSensor.tempGetMotValue" to GetMotion ;
+	}
+	State Final  {
+		Transition "[initialization=0]" to Bridge4 ;
+		Transition "[initialization=1]" to Bridge3 ;
+	}
+	State FirstSen  {
+		Transition "^MotionSensor.getMotionSensorOperationalState" to CheckMotSen ;
+	}
+	State GetBrightness  {
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)" to Initreq ;
+	}
+	State GetMotion  {
+		Transition "setCurrentMotionValue(currentMotionValue)" to SecondSen ;
+	}
+	State InitSetOff  {
+		Transition "" to Final ;
+	}
+	State InitSetOn  {
+		Transition "" to Final ;
+	}
+	State Initreq  {
+	Action "entry/send(Environment.initValueReq)" ;
+		Transition "initOff/initialization:=0" to InitSetOff ;
+		Transition "initOn/initialization:=1" to InitSetOn ;
+	}
+	State SecondSen  {
+		Transition "^BrightnessSensor.getBrightnessSensorOperationalState" to CheckBriSen ;
+	}
+	}
+	CompositeState NormalBehavior {
+		Transition "globalFaultOccursCC" to Bridge1 ;
+	Initial  "" Idle1 ;
+	State Bridge2  {
+		Transition "" to Idle1 ;
+	}
+	State Idle1  {
+	Action "entry/lightStatus:=0;normalState:=1;send(Detector.setLightStatusOff)" ;
+		Transition "receivedCC" to Synch7 ;
+	}
+	CompositeState Move {
+		Transition "userInputCC" to Bridge2 ;
+	Initial  "" CheckFault1 ;
+	State CheckEnvir1  {
+		Transition "presenceFaultMes^GlobalFaultHandler.readyFaultMessage" to CheckEnvir1 ;
+		Transition "presenceUserIn^UserInterface.readyUserInput" to CheckEnvir1 ;
+		Transition "setCurrentMotionValue(currentMotionValue)" to Snch14 ;
+		Transition "noEnvirMessage" to Snch14 ;
+	}
+	State CheckFault1  {
+	Action "entry/send(GlobalFaultHandler.readyFaultMessage)" ;
+		Transition "noFaultMessage" to CheckUserInput1 ;
+	}
+	State CheckUserInput1  {
+	Action "entry/send(UserInterface.readyUserInput)" ;
+		Transition "noUserInput^Environment.readyEnvironment" to CheckEnvir1 ;
+	}
+	State SetDimmer1M  {
+		Transition "^Dimmer1.setLightOn(valueCC)" to Synch5 ;
+	}
+	State SetDimmer2M  {
+		Transition "^Dimmer2.setLightOn(valueCC)" to Synch6 ;
+	}
+	State Snch14  {
+	Action "entry/lightStatus:=1;send(Detector.setLightStatusOn)" ;
+		Transition "receivedCC" to Synch11 ;
+	}
+	State Synch10  {
+	Action "entry/send(Environment.done)" ;
+		Transition "receivedCC" to CheckFault1 ;
+	}
+	State Synch11  {
+	Action "entry/send(BrightnessSensor.tempGetBriValue)" ;
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)" to SetDimmer1M ;
+	}
+	State Synch5  {
+		Transition "receivedCC" to SetDimmer2M ;
+	}
+	State Synch6  {
+		Transition "receivedCC" to UpdateM ;
+	}
+	State UpdateM  {
+		Transition "^Detector.update" to Synch10 ;
+	}
+	}
+	State Synch1  {
+		Transition "presenceFaultMes^GlobalFaultHandler.readyFaultMessage" to Synch1 ;
+		Transition "presenceUserIn^UserInterface.readyUserInput" to Synch1 ;
+		Transition "setCurrentMotionValue(currentMotionValue)" to Move ;
+		Transition "userInputCC" to User ;
+	}
+	State Synch2  {
+	Action "entry/send(Dimmer2.setLightOff)" ;
+		Transition "receivedCC^Environment.environmentStep" to Synch1 ;
+	}
+	State Synch7  {
+	Action "entry/send(Dimmer1.setLightOff)" ;
+		Transition "receivedCC" to Synch2 ;
+	}
+	CompositeState User {
+		Transition "userInputCC" to Idle1 ;
+	Initial  "" CheckFault2 ;
+	State CheckEnvir2  {
+		Transition "presenceFaultMes^GlobalFaultHandler.readyFaultMessage" to CheckEnvir2 ;
+		Transition "presenceUserIn^UserInterface.readyUserInput" to CheckEnvir2 ;
+		Transition "setCurrentMotionValue(currentMotionValue)" to synch15 ;
+		Transition "noEnvirMessage" to synch15 ;
+	}
+	State CheckFault2  {
+	Action "entry/send(GlobalFaultHandler.readyFaultMessage)" ;
+		Transition "noFaultMessage" to CheckUserInput2 ;
+	}
+	State CheckUserInput2  {
+	Action "entry/send(UserInterface.readyUserInput)" ;
+		Transition "noUserInput^Environment.readyEnvironment" to CheckEnvir2 ;
+	}
+	State SetDimmer1L  {
+		Transition "^Dimmer1.setLightOn(valueCC)" to Synch3 ;
+	}
+	State SetDimmer2L  {
+		Transition "^Dimmer2.setLightOn(valueCC)" to Synch4 ;
+	}
+	State Synch3  {
+		Transition "receivedCC" to SetDimmer2L ;
+	}
+	State Synch4  {
+		Transition "receivedCC" to UpdateL ;
+	}
+	State Synch8  {
+	Action "entry/send(BrightnessSensor.tempGetBriValue)" ;
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)" to SetDimmer1L ;
+	}
+	State Synch9  {
+	Action "entry/send(Environment.done)" ;
+		Transition "receivedCC" to CheckFault2 ;
+	}
+	State UpdateL  {
+		Transition "^Detector.update" to Synch9 ;
+	}
+	State synch15  {
+	Action "entry/lightStatus:=1;send(Detector.setLightStatusOn)" ;
+		Transition "receivedCC" to Synch8 ;
+	}
+	}
+	}
+	CompositeState PartialShutdown {
+		Transition "powerOff" to Synch20 ;
+	Initial  "" s1Par ;
+	State Synch15  {
+		Transition "userInputCC" to s2Par ;
+	}
+	State Synch16  {
+		Transition "userInputCC^Environment.receivedEnv" to s1Par ;
+	}
+	State s1Par  {
+	Action "entry/lightStatus:=0;partialState:=1" ;
+		Transition "presenceUserIn^UserInterface.readyUserInput" to Synch15 ;
+	}
+	State s2Par  {
+	Action "entry/lightStatus:=1;send(Environment.receivedEnv)" ;
+		Transition "presenceUserIn^UserInterface.readyUserInput" to Synch16 ;
+	}
+	}
+	State PowerOff  {
+		Transition "powerOn" to Initialize ;
+	}
+	State Synch20  {
+	Action "entry/lightStatus:=0;partialState:=0;send(BrightnessSensor.sysPowerOffBri);send(Detector.sysPowerOffDet)" ;
+		Transition "" to Synch21 ;
+	}
+	State Synch21  {
+	Action "entry/send(MotionSensor.sysPowerOffMot)" ;
+		Transition "" to PowerOff ;
+	}
+}
+Class Corrector {
+	InstanceVar byte recoveryID ;
+	Signal initiateRecoveryAction(byte ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1Cor ;
+	State Recovery  {
+	Action "entry/send(Dimmer1.setValue);send(Dimmer2.setValue)" ;
+		Transition "" to s1Cor ;
+	}
+	State s1Cor  {
+		Transition "initiateRecoveryAction(recoveryID)" to Recovery ;
+	}
+}
+Class Detector {
+	InstanceVar byte faultID ;
+	InstanceVar timer timerDet ;
+	Signal detStart( ) ;
+	Signal detStop( ) ;
+	Signal resetTimerDet( ) ;
+	Signal setLightStatusOff( ) ;
+	Signal setLightStatusOn( ) ;
+	Signal sysPowerOffDet( ) ;
+	Signal update( ) ;
+	Signal violationOccurs( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Counting  {
+		Transition "setLightStatusOn^ComputingComponent.receivedCC" to Counting ;
+		Transition "update^ComputingComponent.receivedCC" to Counting ;
+		Transition "violationOccurs" to Violation ;
+		Transition "setLightStatusOff^ComputingComponent.receivedCC" to Inactive ;
+	}
+	State Idle  {
+		Transition "detStart^_SYSTEMCLASS_.receivedDet" to Inactive ;
+	}
+	State Inactive  {
+		Transition "sysPowerOffDet^Environment.receivedEnv" to Inactive ;
+		Transition "setLightStatusOff^ComputingComponent.receivedCC" to Inactive ;
+		Transition "violationOccurs" to Violation ;
+		Transition "setLightStatusOn^ComputingComponent.receivedCC" to Counting ;
+		Transition "detStop" to Idle ;
+	}
+	State Violation  {
+	Action "entry/send(LocalFaultHandler.reportLocalFault(faultID))" ;
+		Transition "sysPowerOffDet^Environment.receivedEnv" to Inactive ;
+	}
+}
+Class Dimmer1 {
+	InstanceVar byte value ;
+	Signal setLightDefault( ) ;
+	Signal setLightOff( ) ;
+	Signal setLightOn(byte ) ;
+	Signal setValue( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Inactive ;
+	State Active  {
+		Transition "setLightOn(value)^ComputingComponent.receivedCC" to Active ;
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Inactive ;
+		Transition "setLightOff^ComputingComponent.receivedCC" to Inactive ;
+	}
+	State Default  {
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Default ;
+		Transition "setLightOff" to Inactive ;
+	}
+	State Inactive  {
+		Transition "setLightOff^ComputingComponent.receivedCC" to Inactive ;
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Inactive ;
+		Transition "setLightOn(value)^ComputingComponent.receivedCC" to Active ;
+		Transition "setLightDefault" to Default ;
+	}
+}
+Class Dimmer2 {
+	InstanceVar byte value ;
+	Signal setLightDefault( ) ;
+	Signal setLightOff( ) ;
+	Signal setLightOn(byte ) ;
+	Signal setValue( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Inactive ;
+	State Active  {
+		Transition "setLightOn(value)^ComputingComponent.receivedCC" to Active ;
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Inactive ;
+		Transition "setLightOff^ComputingComponent.receivedCC" to Inactive ;
+	}
+	State Default  {
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Default ;
+		Transition "setLightOff" to Inactive ;
+	}
+	State Inactive  {
+		Transition "setLightOff^ComputingComponent.receivedCC" to Inactive ;
+		Transition "setValue^GlobalFaultHandler.receivedGFH" to Inactive ;
+		Transition "setLightOn(value)^ComputingComponent.receivedCC" to Active ;
+		Transition "setLightDefault" to Default ;
+	}
+}
+Class Display {
+	Signal showFaultMes( ) ;
+	Signal showNormalMes( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "showNormalMes^ComputingComponent.receivedCC" to Message ;
+		Transition "showFaultMes^GlobalFaultHandler.receivedGFH" to Message ;
+	}
+	State Message  {
+		Transition "showNormalMes^ComputingComponent.receivedCC" to Message ;
+		Transition "showFaultMes^GlobalFaultHandler.receivedGFH" to Message ;
+	}
+}
+Class Environment {
+	Signal block( ) ;
+	Signal done( ) ;
+	Signal environmentStep( ) ;
+	Signal initValueReq( ) ;
+	Signal manualMode( ) ;
+	Signal readyEnvironment( ) ;
+	Signal receivedEnv( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "initValueReq" to S14 ;
+	}
+	State S1  {
+		Transition "readyEnvironment^ComputingComponent.noEnvirMessage" to S1 ;
+		Transition "done" to S2 ;
+	}
+	State S10  {
+		Transition "receivedEnv^ComputingComponent.powerOn" to Idle ;
+	}
+	State S11  {
+		Transition "receivedEnv" to S10 ;
+	}
+	State S12  {
+		Transition "receivedEnv" to S7 ;
+	}
+	State S13  {
+		Transition "^Detector.violationOccurs" to S6 ;
+	}
+	State S14  {
+		Transition "^ComputingComponent.initOn" to S16 ;
+		Transition "^ComputingComponent.initOff" to S15 ;
+	}
+	State S15  {
+		Transition "" to S17 ;
+	}
+	State S16  {
+		Transition "" to S17 ;
+	}
+	State S17  {
+		Transition "manualMode" to S7 ;
+		Transition "environmentStep" to S3 ;
+	}
+	State S2  {
+		Transition "readyEnvironment" to S3 ;
+	}
+	State S3  {
+		Transition "environmentStep" to S3 ;
+		Transition "block^MotionSensor.motionSensorProblem" to S13 ;
+		Transition "block^BrightnessSensor.brightnessSensorProblem" to S13 ;
+		Transition "block^Detector.violationOccurs" to S6 ;
+		Transition "block^Switch.switchPush" to S4 ;
+		Transition "^MotionSensor.tempGetMotValue" to S1 ;
+	}
+	State S4  {
+		Transition "" to S4 ;
+		Transition "readyEnvironment^ComputingComponent.noEnvirMessage" to S4 ;
+		Transition "done" to S5 ;
+	}
+	State S5  {
+		Transition "readyEnvironment" to S3 ;
+	}
+	State S6  {
+		Transition "manualMode" to S7 ;
+	}
+	State S7  {
+		Transition "^Switch.switchPush" to S12 ;
+		Transition "^ComputingComponent.powerOff" to S8 ;
+	}
+	State S8  {
+		Transition "receivedEnv" to S11 ;
+	}
+}
+Class GlobalFaultHandler {
+	InstanceVar byte faultID ;
+	InstanceVar timer timerFault ;
+	Signal readyFaultMessage( ) ;
+	Signal receivedGFH( ) ;
+	Signal reportGlobalFault(byte ) ;
+	Signal resetFaultTimer( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1Global ;
+	State ProcessFault  {
+	Action "entry/send(UserInterface.globalFaultOccursUI)" ;
+		Transition "receivedGFH" to Synch24 ;
+	}
+	State S2  {
+	Action "entry/send(LocalFaultHandler.receivedLFH)" ;
+		Transition "reportGlobalFault(faultID)^ComputingComponent.presenceFaultMes" to Synch12 ;
+	}
+	State Synch12  {
+		Transition "readyFaultMessage" to ProcessFault ;
+	}
+	State Synch22  {
+		Transition "receivedGFH" to Synch23 ;
+	}
+	State Synch23  {
+	Action "entry/send(ComputingComponent.globalFaultOccursCC)" ;
+		Transition "" to s1Global ;
+	}
+	State Synch24  {
+	Action "entry/send(LocalFaultHandler.performRecoveryAction)" ;
+		Transition "receivedGFH" to Synch22 ;
+	}
+	State s1Global  {
+		Transition "readyFaultMessage^ComputingComponent.noFaultMessage" to s1Global ;
+		Transition "receivedGFH" to S2 ;
+	}
+}
+Class LocalFaultHandler {
+	InstanceVar byte faultID ;
+	InstanceVar byte recoveryID ;
+	Signal performRecoveryAction( ) ;
+	Signal receivedLFH( ) ;
+	Signal reportLocalFault(byte ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1Local ;
+	State Override  {
+		Transition "" to s1Local ;
+	}
+	State Respond  {
+		Transition "" to s1Local ;
+	}
+	State S1  {
+	Action "entry/send(GlobalFaultHandler.receivedGFH)" ;
+		Transition "receivedLFH^GlobalFaultHandler.reportGlobalFault(faultID)" to Respond ;
+	}
+	State s1Local  {
+		Transition "reportLocalFault(faultID)" to S1 ;
+		Transition "performRecoveryAction^Corrector.initiateRecoveryAction(recoveryID)" to Override ;
+	}
+}
+Class MotionSensor {
+	InstanceVar bool checkMotion := 0 ;
+	InstanceVar bool currentMotion := 1 ;
+	Signal getMotionSensorOperationalState( ) ;
+	Signal motionSensorProblem( ) ;
+	Signal sysPowerOffMot( ) ;
+	Signal tempGetMotValue( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State Active  {
+	Action "entry/checkMotion:=0" ;
+		Transition "tempGetMotValue^ComputingComponent.setCurrentMotionValue(currentMotion)" to Active ;
+		Transition "sysPowerOffMot^Environment.receivedEnv" to s1 ;
+		Transition "motionSensorProblem" to s2 ;
+	}
+	State s1  {
+		Transition "sysPowerOffMot^Environment.receivedEnv" to s1 ;
+		Transition "getMotionSensorOperationalState/checkMotion:=1" to s2 ;
+	}
+	State s2  {
+		Transition "sysPowerOffMot^Environment.receivedEnv" to s1 ;
+		Transition "[checkMotion=0]" to s1 ;
+		Transition "[checkMotion]^ComputingComponent.ccok" to Active ;
+	}
+}
+Class Switch {
+	Signal switchPush( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "switchPush^UserInterface.userInputUI" to Idle ;
+	}
+}
+Class UserInterface {
+	InstanceVar byte ID ;
+	Signal globalFaultOccursUI( ) ;
+	Signal normalMode( ) ;
+	Signal readyUserInput( ) ;
+	Signal receivedUI( ) ;
+	Signal userInputUI( ) ;
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State DisplayFault  {
+		Transition "readyUserInput^ComputingComponent.noUserInput" to DisplayFault ;
+		Transition "userInputUI^ComputingComponent.presenceUserIn" to InputFault ;
+		Transition "normalMode^Display.showNormalMes" to DisplayNormal ;
+	}
+	State DisplayNormal  {
+		Transition "readyUserInput^ComputingComponent.noUserInput" to DisplayNormal ;
+		Transition "userInputUI^ComputingComponent.presenceUserIn" to InputNorm ;
+		Transition "globalFaultOccursUI^Display.showFaultMes" to DisplayFault ;
+	}
+	State Idle  {
+		Transition "readyUserInput^ComputingComponent.noUserInput" to Idle ;
+		Transition "userInputUI^ComputingComponent.presenceUserIn" to InputIdle ;
+		Transition "normalMode^Display.showNormalMes" to DisplayNormal ;
+		Transition "globalFaultOccursUI^Display.showFaultMes" to DisplayFault ;
+	}
+	State InputFault  {
+		Transition "normalMode^Display.showNormalMes" to InputNorm ;
+		Transition "readyUserInput^ComputingComponent.userInputCC" to DisplayFault ;
+	}
+	State InputIdle  {
+		Transition "readyUserInput^ComputingComponent.userInputCC" to Idle ;
+		Transition "globalFaultOccursUI^Display.showFaultMes" to InputFault ;
+		Transition "normalMode^Display.showNormalMes" to InputNorm ;
+	}
+	State InputNorm  {
+		Transition "globalFaultOccursUI^Display.showFaultMes" to InputFault ;
+		Transition "readyUserInput^ComputingComponent.userInputCC" to DisplayNormal ;
+	}
+	State Synch3  {
+	}
+}
+Class _SYSTEMCLASS_ {
+	Signal ready( ) ;
+	Signal receivedDet( ) ;
+	Initial  "" s1 ;
+	State s1  {
+		Transition "/new(ComputingComponent)" to s2 ;
+	}
+	State s10  {
+		Transition "ready/new(Detector)" to s11 ;
+	}
+	State s11  {
+		Transition "ready/new(Environment)" to s12 ;
+	}
+	State s12  {
+		Transition "ready/new(GlobalFaultHandler)" to s13 ;
+	}
+	State s13  {
+		Transition "ready/new(LocalFaultHandler)" to s15 ;
+	}
+	State s15  {
+		Transition "ready^Detector.detStart" to s16 ;
+	}
+	State s16  {
+		Transition "receivedDet^ComputingComponent.powerOn" to s17 ;
+	}
+	State s17  {
+	}
+	State s2  {
+		Transition "ready/new(UserInterface)" to s3 ;
+	}
+	State s3  {
+		Transition "ready/new(Switch)" to s4 ;
+	}
+	State s4  {
+		Transition "ready/new(Display)" to s5 ;
+	}
+	State s5  {
+		Transition "ready/new(MotionSensor)" to s6 ;
+	}
+	State s6  {
+		Transition "ready/new(BrightnessSensor)" to s7 ;
+	}
+	State s7  {
+		Transition "ready/new(Dimmer1)" to s8 ;
+	}
+	State s8  {
+		Transition "ready/new(Dimmer2)" to s9 ;
+	}
+	State s9  {
+		Transition "ready/new(Corrector)" to s10 ;
+	}
+}
+
+}

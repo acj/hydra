@@ -1,0 +1,429 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan wait=[1] of {int,mtype};
+mtype={
+        getBrightnessValue, getOperationalState, 
+        setEnvBrightness, OSTrue, 
+        OSFalse, getEnvBrightness, 
+        setCCBrightnessValue, setCCMotionValue, 
+        getMotionValue, getEnvMotion, 
+        setEnvMotionValue
+};
+typedef Timer_T {
+short propTimer=-1;
+        }
+Timer_T Timer_V;
+
+typedef BrightnessSensor_T {
+        bool timerwait;
+        int brightness_value;
+        int operational_state;
+        int temp_brightness_value;
+
+        }
+BrightnessSensor_T BrightnessSensor_V;
+
+chan BrightnessSensor_q=[5] of {mtype};
+chan BrightnessSensor_C=[0] of {bit};
+chan BrightnessSensor_setEnvBrightness_p1=[5] of {int};
+
+typedef ComputingComponent_T {
+        bool timerwait;
+        int cc_brightness_value;
+        bool cc_motion_value;
+
+        }
+ComputingComponent_T ComputingComponent_V;
+
+chan ComputingComponent_q=[5] of {mtype};
+chan ComputingComponent_C=[0] of {bit};
+chan ComputingComponent_setCCBrightnessValue_p1=[5] of {int};
+chan ComputingComponent_setCCMotionValue_p1=[5] of {bool};
+
+typedef Environment_T {
+        bool timerwait;
+        int env_brightness;
+        bool env_motion;
+
+        }
+Environment_T Environment_V;
+
+chan Environment_q=[5] of {mtype};
+chan Environment_C=[0] of {bit};
+
+typedef MotionSensor_T {
+        bool timerwait;
+        bool motion_value;
+        int operational_state;
+        bool temp_motion_value;
+
+        }
+MotionSensor_T MotionSensor_V;
+
+chan MotionSensor_q=[5] of {mtype};
+chan MotionSensor_C=[0] of {bit};
+chan MotionSensor_setEnvMotionValue_p1=[5] of {bool};
+active proctype BrightnessSensor()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+        goto  IdleBS; skip;};
+/* State CheckEnv */
+CheckEnv:     atomic{skip; printf("in state BrightnessSensor.CheckEnv\n");
+        }
+
+        CheckEnv_G:
+        if
+        :: atomic{BrightnessSensor_q?setEnvBrightness -> 
+                   BrightnessSensor_setEnvBrightness_p1?BrightnessSensor_V.temp_brightness_value
+                   -> 
+           printf ("Transition to BrightnessSensor.GetValFromEnv (evt:setEnvBrightness(temp_brightness_value)) \n");goto GetValFromEnv; skip;}
+        fi;
+/* State DetermineOS */
+DetermineOS:     atomic{skip; printf("in state BrightnessSensor.DetermineOS\n");
+        }
+
+        DetermineOS_G:
+        if
+        :: atomic{1 -> 
+           BrightnessSensor_V.operational_state=1;
+           ComputingComponent_q!OSTrue;
+           printf ("Transition to BrightnessSensor.IdleBS (/operational_state:=1^ComputingComponent.OSTrue) \n");goto IdleBS; skip;}
+        :: atomic{1 -> 
+           BrightnessSensor_V.operational_state=0;
+           ComputingComponent_q!OSFalse;
+           printf ("Transition to BrightnessSensor.IdleBS (/operational_state:=0^ComputingComponent.OSFalse) \n");goto IdleBS; skip;}
+        fi;
+/* State GetValFromEnv */
+GetValFromEnv:     atomic{skip; printf("in state BrightnessSensor.GetValFromEnv\n");
+        }
+
+        GetValFromEnv_G:
+        if
+           :: atomic{BrightnessSensor_V.temp_brightness_value>0 && BrightnessSensor_V.temp_brightness_value<1000 ->
+              BrightnessSensor_V.brightness_value=BrightnessSensor_V.temp_brightness_value;
+              printf ("Transition to BrightnessSensor.VerifyValFromEnv ([temp_brightness_value>0 & temp_brightness_value<1000]/brightness_value:=temp_brightness_value) \n");goto VerifyValFromEnv; skip;}
+           :: atomic{BrightnessSensor_V.temp_brightness_value<0 ->
+              BrightnessSensor_V.brightness_value=0;
+              printf ("Transition to BrightnessSensor.VerifyValFromEnv ([temp_brightness_value < 0]/brightness_value:=0) \n");goto VerifyValFromEnv; skip;}
+           :: atomic{BrightnessSensor_V.temp_brightness_value>1000 ->
+              BrightnessSensor_V.brightness_value=1000;
+              printf ("Transition to BrightnessSensor.VerifyValFromEnv ([temp_brightness_value > 1000]/brightness_value:=1000) \n");goto VerifyValFromEnv; skip;}
+        fi;
+/* State IdleBS */
+IdleBS:       atomic{skip; printf("in state BrightnessSensor.IdleBS\n");
+        }
+
+        IdleBS_G:
+        if
+        :: atomic{BrightnessSensor_q?getBrightnessValue -> 
+           printf ("Transition to BrightnessSensor.ValueRequest (evt:getBrightnessValue()) \n");goto ValueRequest; skip;}
+        :: atomic{BrightnessSensor_q?getOperationalState -> 
+           printf ("Transition to BrightnessSensor.DetermineOS (evt:getOperationalState()) \n");goto DetermineOS; skip;}
+        fi;
+/* State ValueRequest */
+ValueRequest:     atomic{skip; printf("in state BrightnessSensor.ValueRequest\n");
+        }
+
+        ValueRequest_G:
+        if
+        :: atomic{1 -> 
+           Environment_q!getEnvBrightness;
+           printf ("Transition to BrightnessSensor.CheckEnv (^Environment.getEnvBrightness) \n");goto CheckEnv; skip;}
+        fi;
+/* State VerifyValFromEnv */
+VerifyValFromEnv:     atomic{skip; printf("in state BrightnessSensor.VerifyValFromEnv\n");
+        }
+
+        VerifyValFromEnv_G:
+        if
+        :: atomic{1 -> 
+   atomic{ ComputingComponent_setCCBrightnessValue_p1!BrightnessSensor_V.brightness_value; ComputingComponent_q!setCCBrightnessValue;};
+           printf ("Transition to BrightnessSensor.IdleBS (^ComputingComponent.setCCBrightnessValue(brightness_value)) \n");goto IdleBS; skip;}
+        fi;
+exit:      skip
+}
+active proctype ComputingComponent()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+        goto  IdleCC; skip;};
+/* State GetBrightnessValueInfo */
+GetBrightnessValueInfo:     atomic{skip; printf("in state ComputingComponent.GetBrightnessValueInfo\n");
+        }
+
+        GetBrightnessValueInfo_G:
+        if
+        :: atomic{ComputingComponent_q?setCCBrightnessValue -> 
+                   ComputingComponent_setCCBrightnessValue_p1?ComputingComponent_V.cc_brightness_value
+                   -> 
+           printf ("Transition to ComputingComponent.GetMotionValueInfo (evt:setCCBrightnessValue(cc_brightness_value)) \n");goto GetMotionValueInfo; skip;}
+        fi;
+/* State GetMotionValueInfo */
+GetMotionValueInfo:     atomic{skip; printf("in state ComputingComponent.GetMotionValueInfo\n");
+        }
+
+        GetMotionValueInfo_G:
+        if
+        :: atomic{1 -> 
+           MotionSensor_q!getMotionValue;
+           printf ("Transition to ComputingComponent.WaitForMotionSensor (^MotionSensor.getMotionValue) \n");goto WaitForMotionSensor; skip;}
+        fi;
+/* State GetOSBrightnessInfo */
+GetOSBrightnessInfo:     atomic{skip; printf("in state ComputingComponent.GetOSBrightnessInfo\n");
+        }
+
+        GetOSBrightnessInfo_G:
+        if
+        :: atomic{ComputingComponent_q?OSTrue -> 
+           printf ("Transition to ComputingComponent.GetOSMotionSensorInfo (evt:OSTrue()) \n");goto GetOSMotionSensorInfo; skip;}
+        :: atomic{ComputingComponent_q?OSFalse -> 
+           printf ("Transition to ComputingComponent.IdleCC (evt:OSFalse()) \n");goto IdleCC; skip;}
+        fi;
+/* State GetOSMotionInfo */
+GetOSMotionInfo:     atomic{skip; printf("in state ComputingComponent.GetOSMotionInfo\n");
+        }
+
+        GetOSMotionInfo_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.GetOSMotionInfo \n");goto GetOSMotionInfo; skip;}
+        fi;
+/* State GetOSMotionSensorInfo */
+GetOSMotionSensorInfo:     atomic{skip; printf("in state ComputingComponent.GetOSMotionSensorInfo\n");
+        }
+
+        GetOSMotionSensorInfo_G:
+        if
+        :: atomic{1 -> 
+           MotionSensor_q!getOperationalState;
+           printf ("Transition to ComputingComponent.OSofMotionSensor (^MotionSensor.getOperationalState) \n");goto OSofMotionSensor; skip;}
+        fi;
+/* State IdleCC */
+IdleCC:       atomic{skip; printf("in state ComputingComponent.IdleCC\n");
+        }
+
+        IdleCC_G:
+        if
+        :: atomic{1 -> 
+           MotionSensor_q!getOperationalState;
+           printf ("Transition to ComputingComponent.GetOSMotionInfo (^MotionSensor.getOperationalState) \n");goto GetOSMotionInfo; skip;}
+        :: atomic{1 -> 
+           BrightnessSensor_q!getOperationalState;
+           printf ("Transition to ComputingComponent.GetOSBrightnessInfo (^BrightnessSensor.getOperationalState) \n");goto GetOSBrightnessInfo; skip;}
+        fi;
+/* State OSofBrightnessSensor */
+OSofBrightnessSensor:     atomic{skip; printf("in state ComputingComponent.OSofBrightnessSensor\n");
+        }
+
+        OSofBrightnessSensor_G:
+        if
+        :: atomic{1 -> 
+           BrightnessSensor_q!getBrightnessValue;
+           printf ("Transition to ComputingComponent.GetBrightnessValueInfo (^BrightnessSensor.getBrightnessValue) \n");goto GetBrightnessValueInfo; skip;}
+        fi;
+/* State OSofMotionSensor */
+OSofMotionSensor:     atomic{skip; printf("in state ComputingComponent.OSofMotionSensor\n");
+        }
+
+        OSofMotionSensor_G:
+        if
+        :: atomic{ComputingComponent_q?OSFalse -> 
+           printf ("Transition to ComputingComponent.IdleCC (evt:OSFalse()) \n");goto IdleCC; skip;}
+        :: atomic{ComputingComponent_q?OSTrue -> 
+           printf ("Transition to ComputingComponent.OSofBrightnessSensor (evt:OSTrue()) \n");goto OSofBrightnessSensor; skip;}
+        fi;
+/* State WaitForMotionSensor */
+WaitForMotionSensor:     atomic{skip; printf("in state ComputingComponent.WaitForMotionSensor\n");
+        }
+
+        WaitForMotionSensor_G:
+        if
+        :: atomic{ComputingComponent_q?setCCMotionValue -> 
+                   ComputingComponent_setCCMotionValue_p1?ComputingComponent_V.cc_motion_value
+                   -> 
+           printf ("Transition to ComputingComponent.temp (evt:setCCMotionValue(cc_motion_value)) \n");goto temp; skip;}
+        fi;
+/* State temp */
+temp:         atomic{skip; printf("in state ComputingComponent.temp\n");
+        }
+
+        temp_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.IdleCC \n");goto IdleCC; skip;}
+        fi;
+exit:      skip
+}
+active proctype Environment()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+        goto  IdleEnv; skip;};
+/* State AssignBrightValue */
+AssignBrightValue:     atomic{skip; printf("in state Environment.AssignBrightValue\n");
+        }
+
+        AssignBrightValue_G:
+        if
+        :: atomic{1 -> 
+   atomic{ BrightnessSensor_setEnvBrightness_p1!Environment_V.env_brightness; BrightnessSensor_q!setEnvBrightness;};
+           printf ("Transition to Environment.IdleEnv (^BrightnessSensor.setEnvBrightness(env_brightness)) \n");goto IdleEnv; skip;}
+        fi;
+/* State AssignMotionValue */
+AssignMotionValue:     atomic{skip; printf("in state Environment.AssignMotionValue\n");
+        }
+
+        AssignMotionValue_G:
+        if
+        :: atomic{1 -> 
+   atomic{ MotionSensor_setEnvMotionValue_p1!Environment_V.env_motion; MotionSensor_q!setEnvMotionValue;};
+           printf ("Transition to Environment.IdleEnv (^MotionSensor.setEnvMotionValue(env_motion)) \n");goto IdleEnv; skip;}
+        fi;
+/* State IdleEnv */
+IdleEnv:      atomic{skip; printf("in state Environment.IdleEnv\n");
+        }
+
+        IdleEnv_G:
+        if
+        :: atomic{Environment_q?getEnvMotion -> 
+           printf ("Transition to Environment.reqForMotionInfo (evt:getEnvMotion()) \n");goto reqForMotionInfo; skip;}
+        :: atomic{Environment_q?getEnvBrightness -> 
+           printf ("Transition to Environment.reqForBrightnessInfo (evt:getEnvBrightness()) \n");goto reqForBrightnessInfo; skip;}
+        fi;
+/* State reqForBrightnessInfo */
+reqForBrightnessInfo:     atomic{skip; printf("in state Environment.reqForBrightnessInfo\n");
+        }
+
+        reqForBrightnessInfo_G:
+        if
+        :: atomic{1 -> 
+           Environment_V.env_brightness=1200;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=1200) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_brightness=1000;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=1000) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_brightness=-100;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=-100) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_brightness=0;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=0) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_brightness=800;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=800) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_brightness=500;
+           printf ("Transition to Environment.AssignBrightValue (/env_brightness:=500) \n");goto AssignBrightValue; skip;}
+        :: atomic{1 -> 
+           printf ("Transition to Environment.AssignBrightValue \n");goto AssignBrightValue; skip;}
+        fi;
+/* State reqForMotionInfo */
+reqForMotionInfo:     atomic{skip; printf("in state Environment.reqForMotionInfo\n");
+        }
+
+        reqForMotionInfo_G:
+        if
+        :: atomic{1 -> 
+           Environment_V.env_motion=2;
+           printf ("Transition to Environment.AssignMotionValue (/env_motion:=2) \n");goto AssignMotionValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_motion=-1;
+           printf ("Transition to Environment.AssignMotionValue (/env_motion:=-1) \n");goto AssignMotionValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_motion=0;
+           printf ("Transition to Environment.AssignMotionValue (/env_motion:=0) \n");goto AssignMotionValue; skip;}
+        :: atomic{1 -> 
+           Environment_V.env_motion=1;
+           printf ("Transition to Environment.AssignMotionValue (/env_motion:=1) \n");goto AssignMotionValue; skip;}
+        fi;
+exit:      skip
+}
+active proctype MotionSensor()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+        goto  IdleMotionSensor; skip;};
+/* State CheckEnvForMotion */
+CheckEnvForMotion:     atomic{skip; printf("in state MotionSensor.CheckEnvForMotion\n");
+        }
+
+        CheckEnvForMotion_G:
+        if
+        :: atomic{MotionSensor_q?setEnvMotionValue -> 
+                   MotionSensor_setEnvMotionValue_p1?MotionSensor_V.temp_motion_value
+                   -> 
+           printf ("Transition to MotionSensor.GetMotionFromEnv (evt:setEnvMotionValue(temp_motion_value)) \n");goto GetMotionFromEnv; skip;}
+        fi;
+/* State DetermineMotionOS */
+DetermineMotionOS:     atomic{skip; printf("in state MotionSensor.DetermineMotionOS\n");
+        }
+
+        DetermineMotionOS_G:
+        if
+        :: atomic{1 -> 
+           MotionSensor_V.operational_state=0;
+           ComputingComponent_q!OSTrue;
+           printf ("Transition to MotionSensor.IdleMotionSensor (/operational_state:=0^ComputingComponent.OSTrue) \n");goto IdleMotionSensor; skip;}
+        :: atomic{1 -> 
+           MotionSensor_V.operational_state=0;
+           ComputingComponent_q!OSFalse;
+           printf ("Transition to MotionSensor.IdleMotionSensor (/operational_state:=0^ComputingComponent.OSFalse) \n");goto IdleMotionSensor; skip;}
+        fi;
+/* State GetMotionFromEnv */
+GetMotionFromEnv:     atomic{skip; printf("in state MotionSensor.GetMotionFromEnv\n");
+        }
+
+        GetMotionFromEnv_G:
+        if
+           :: atomic{MotionSensor_V.temp_motion_value>0 && MotionSensor_V.temp_motion_value<1 ->
+              MotionSensor_V.motion_value=MotionSensor_V.temp_motion_value;
+              printf ("Transition to MotionSensor.VerifyMotion ([temp_motion_value>0 & temp_motion_value<1]/motion_value:=temp_motion_value) \n");goto VerifyMotion; skip;}
+           :: atomic{MotionSensor_V.temp_motion_value>1 ->
+              MotionSensor_V.motion_value=1;
+              printf ("Transition to MotionSensor.VerifyMotion ([temp_motion_value>1]/motion_value:=1) \n");goto VerifyMotion; skip;}
+           :: atomic{MotionSensor_V.temp_motion_value<0 ->
+              MotionSensor_V.motion_value=0;
+              printf ("Transition to MotionSensor.VerifyMotion ([temp_motion_value < 0]/motion_value:=0) \n");goto VerifyMotion; skip;}
+        fi;
+/* State IdleMotionSensor */
+IdleMotionSensor:     atomic{skip; printf("in state MotionSensor.IdleMotionSensor\n");
+        }
+
+        IdleMotionSensor_G:
+        if
+        :: atomic{MotionSensor_q?getMotionValue -> 
+           printf ("Transition to MotionSensor.MotionRequest (evt:getMotionValue()) \n");goto MotionRequest; skip;}
+        :: atomic{MotionSensor_q?getOperationalState -> 
+           printf ("Transition to MotionSensor.DetermineMotionOS (evt:getOperationalState()) \n");goto DetermineMotionOS; skip;}
+        fi;
+/* State MotionRequest */
+MotionRequest:     atomic{skip; printf("in state MotionSensor.MotionRequest\n");
+        }
+
+        MotionRequest_G:
+        if
+        :: atomic{1 -> 
+           Environment_q!getEnvMotion;
+           printf ("Transition to MotionSensor.CheckEnvForMotion (^Environment.getEnvMotion) \n");goto CheckEnvForMotion; skip;}
+        fi;
+/* State VerifyMotion */
+VerifyMotion:     atomic{skip; printf("in state MotionSensor.VerifyMotion\n");
+        }
+
+        VerifyMotion_G:
+        if
+        :: atomic{1 -> 
+   atomic{ ComputingComponent_setCCMotionValue_p1!MotionSensor_V.motion_value; ComputingComponent_q!setCCMotionValue;};
+           printf ("Transition to MotionSensor.IdleMotionSensor (^ComputingComponent.setCCMotionValue(motion_value)) \n");goto IdleMotionSensor; skip;}
+        fi;
+exit:      skip
+}

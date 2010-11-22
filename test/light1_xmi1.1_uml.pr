@@ -1,0 +1,1974 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan wait=[10] of {int,mtype};
+mtype={
+        brightnessSensorProblem, getBrightnessSensorOperationalState, 
+        sysPowerOffBri, tempGetBriValue, 
+        ready, setCurrentBrightnessValue, 
+        receivedEnv, ccok, 
+        globalFaultOccursCC, initOff, 
+        initOn, noEnvirMessage, 
+        noFaultMessage, noUserInput, 
+        powerOff, powerOn, 
+        presenceFaultMes, presenceUserIn, 
+        receivedCC, reserTimerShort, 
+        resetTimerLong, setCurrentMotionValue, 
+        userInputCC, manualMode, 
+        normalMode, st_Bridge4, 
+        st_Bridge3, st_Bridge1, 
+        st_Synch20, sysPowerOffDet, 
+        sysPowerOffMot, tempGetMotValue, 
+        getMotionSensorOperationalState, initValueReq, 
+        setLightStatusOff, st_Bridge2, 
+        readyFaultMessage, readyUserInput, 
+        setLightOff, environmentStep, 
+        st_Idle1, readyEnvironment, 
+        setLightOn, setLightStatusOn, 
+        done, update, 
+        initiateRecoveryAction, setValue, 
+        detStart, detStop, 
+        resetTimerDet, violationOccurs, 
+        receivedDet, reportLocalFault, 
+        setLightDefault, receivedGFH, 
+        showFaultMes, showNormalMes, 
+        block, motionSensorProblem, 
+        switchPush, reportGlobalFault, 
+        resetFaultTimer, globalFaultOccursUI, 
+        receivedLFH, performRecoveryAction, 
+        userInputUI, receivedUI
+        
+};
+typedef Timer_T {
+        bool timerwait;
+       short timerDet=-1;
+       short timerFault=-1;        }
+Timer_T Timer_V;
+
+typedef BrightnessSensor_T {
+        bool timerwait;
+        bool checkBrightness;
+        byte currentBrightness;
+
+        }
+BrightnessSensor_T BrightnessSensor_V;
+
+chan BrightnessSensor_q=[5] of {mtype};
+chan BrightnessSensor_C=[0] of {bit};
+
+typedef ComputingComponent_T {
+        bool timerwait;
+        bool controlTimerLong;
+        bool controlTimerShort;
+        byte currentBrightnessValue;
+        bool currentMotionValue;
+        byte faultID;
+        bool initialization;
+        bool lightStatus;
+        bool normalState;
+        bool partialState;
+        byte valueCC;
+
+        }
+ComputingComponent_T ComputingComponent_V;
+
+chan ComputingComponent_q=[5] of {mtype};
+chan ComputingComponent_C=[0] of {bit};
+chan ComputingComponent_setCurrentBrightnessValue_p1=[5] of {byte};
+chan ComputingComponent_setCurrentMotionValue_p1=[5] of {bool};
+chan Initialize_C=[0] of {bit};
+chan Initialize_start=[0] of {bit};
+chan NormalBehavior_C=[0] of {bit};
+chan NormalBehavior_start=[0] of {bit};
+chan Move_C=[0] of {bit};
+chan Move_start=[0] of {bit};
+chan User_C=[0] of {bit};
+chan User_start=[0] of {bit};
+chan PartialShutdown_C=[0] of {bit};
+chan PartialShutdown_start=[0] of {bit};
+
+typedef Corrector_T {
+        bool timerwait;
+        byte recoveryID;
+
+        }
+Corrector_T Corrector_V;
+
+chan Corrector_q=[5] of {mtype};
+chan Corrector_C=[0] of {bit};
+chan Corrector_initiateRecoveryAction_p1=[5] of {byte};
+
+typedef Detector_T {
+        bool timerwait;
+        byte faultID;
+
+        }
+Detector_T Detector_V;
+
+chan Detector_q=[5] of {mtype};
+chan Detector_C=[0] of {bit};
+
+typedef Dimmer1_T {
+        bool timerwait;
+        byte value;
+
+        }
+Dimmer1_T Dimmer1_V;
+
+chan Dimmer1_q=[5] of {mtype};
+chan Dimmer1_C=[0] of {bit};
+chan Dimmer1_setLightOn_p1=[5] of {byte};
+
+typedef Dimmer2_T {
+        bool timerwait;
+        byte value;
+
+        }
+Dimmer2_T Dimmer2_V;
+
+chan Dimmer2_q=[5] of {mtype};
+chan Dimmer2_C=[0] of {bit};
+chan Dimmer2_setLightOn_p1=[5] of {byte};
+
+typedef Display_T {
+        bool timerwait;
+
+
+        }
+Display_T Display_V;
+
+chan Display_q=[5] of {mtype};
+chan Display_C=[0] of {bit};
+
+typedef Environment_T {
+        bool timerwait;
+
+
+        }
+Environment_T Environment_V;
+
+chan Environment_q=[5] of {mtype};
+chan Environment_C=[0] of {bit};
+
+typedef GlobalFaultHandler_T {
+        bool timerwait;
+        byte faultID;
+
+        }
+GlobalFaultHandler_T GlobalFaultHandler_V;
+
+chan GlobalFaultHandler_q=[5] of {mtype};
+chan GlobalFaultHandler_C=[0] of {bit};
+chan GlobalFaultHandler_reportGlobalFault_p1=[5] of {byte};
+
+typedef LocalFaultHandler_T {
+        bool timerwait;
+        byte faultID;
+        byte recoveryID;
+
+        }
+LocalFaultHandler_T LocalFaultHandler_V;
+
+chan LocalFaultHandler_q=[5] of {mtype};
+chan LocalFaultHandler_C=[0] of {bit};
+chan LocalFaultHandler_reportLocalFault_p1=[5] of {byte};
+
+typedef MotionSensor_T {
+        bool timerwait;
+        bool checkMotion;
+        bool currentMotion;
+
+        }
+MotionSensor_T MotionSensor_V;
+
+chan MotionSensor_q=[5] of {mtype};
+chan MotionSensor_C=[0] of {bit};
+
+typedef Switch_T {
+        bool timerwait;
+
+
+        }
+Switch_T Switch_V;
+
+chan Switch_q=[5] of {mtype};
+chan Switch_C=[0] of {bit};
+
+typedef UserInterface_T {
+        bool timerwait;
+        byte ID;
+
+        }
+UserInterface_T UserInterface_V;
+
+chan UserInterface_q=[5] of {mtype};
+chan UserInterface_C=[0] of {bit};
+
+
+chan _SYSTEMCLASS__q=[5] of {mtype};
+chan _SYSTEMCLASS__C=[0] of {bit};
+active proctype BrightnessSensor()
+{
+atomic{
+mtype m;
+        BrightnessSensor_V.checkBrightness = 0;
+        BrightnessSensor_V.currentBrightness = 55;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1; skip;};
+/* State Active */
+Active:       atomic{skip; printf("in state BrightnessSensor.Active\n");
+/* entry actions */
+        BrightnessSensor_V.checkBrightness=0;        }
+
+        Active_G:
+        if
+        :: atomic{BrightnessSensor_q?tempGetBriValue -> 
+           ComputingComponent_setCurrentBrightnessValue_p1!BrightnessSensor_V.currentBrightness; ComputingComponent_q!setCurrentBrightnessValue;
+           printf ("Transition to BrightnessSensor.Active (evt:tempGetBriValue()^ComputingComponent.setCurrentBrightnessValue(currentBrightness))");goto Active; skip;}
+        :: atomic{BrightnessSensor_q?sysPowerOffBri -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to BrightnessSensor.s1 (evt:sysPowerOffBri()^Environment.receivedEnv)");goto s1; skip;}
+        :: atomic{BrightnessSensor_q?brightnessSensorProblem -> 
+           printf ("Transition to BrightnessSensor.s2 (evt:brightnessSensorProblem())");goto s2; skip;}
+        fi;
+/* State s1 */
+s1:           atomic{skip; printf("in state BrightnessSensor.s1\n");
+        }
+
+        s1_G:
+        if
+        :: atomic{BrightnessSensor_q?sysPowerOffBri -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to BrightnessSensor.s1 (evt:sysPowerOffBri()^Environment.receivedEnv)");goto s1; skip;}
+        :: atomic{BrightnessSensor_q?getBrightnessSensorOperationalState -> 
+           BrightnessSensor_V.checkBrightness=1;
+           printf ("Transition to BrightnessSensor.s2 (evt:getBrightnessSensorOperationalState()/checkBrightness:=1)");goto s2; skip;}
+        fi;
+/* State s2 */
+s2:           atomic{skip; printf("in state BrightnessSensor.s2\n");
+        }
+
+        s2_G:
+        if
+        :: atomic{BrightnessSensor_q?sysPowerOffBri -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to BrightnessSensor.s1 (evt:sysPowerOffBri()^Environment.receivedEnv)");goto s1; skip;}
+           :: atomic{BrightnessSensor_V.checkBrightness==0 ->
+              printf ("Transition to BrightnessSensor.s1 ([checkBrightness=0])");goto s1; skip;}
+           :: atomic{BrightnessSensor_V.checkBrightness ->
+              ComputingComponent_q!ccok;
+              printf ("Transition to BrightnessSensor.Active ([checkBrightness]^ComputingComponent.ccok)");goto Active; skip;}
+        fi;
+exit:      skip
+}
+active proctype ComputingComponent()
+{
+atomic{
+mtype m;
+int Initialize_pid, NormalBehavior_pid, PartialShutdown_pid;
+        ComputingComponent_V.initialization = 0;
+        ComputingComponent_V.lightStatus = 0;
+        ComputingComponent_V.normalState = 0;
+        ComputingComponent_V.partialState = 0;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  PowerOff; skip;};
+/* State Bridge1 */
+Bridge1:      atomic{skip; printf("in state ComputingComponent.Bridge1\n");
+/* entry actions */
+        ComputingComponent_V.normalState=0;
+        Environment_q!manualMode;
+        }
+
+        Bridge1_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.PartialShutdown");goto to_PartialShutdown; skip;}
+        fi;
+/* State Bridge3 */
+Bridge3:      atomic{skip; printf("in state ComputingComponent.Bridge3\n");
+/* entry actions */
+        ComputingComponent_V.initialization=0;
+        UserInterface_q!normalMode;
+        }
+
+        Bridge3_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.NormalBehavior (evt:receivedCC())");goto to_NormalBehavior; skip;}
+        fi;
+/* State Bridge4 */
+Bridge4:      atomic{skip; printf("in state ComputingComponent.Bridge4\n");
+/* entry actions */
+        Environment_q!manualMode;
+        }
+
+        Bridge4_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.PartialShutdown");goto to_PartialShutdown; skip;}
+        fi;
+/* Link to composite state Initialize */
+to_Initialize:  atomic{skip; Initialize_start!1;}
+        atomic{Initialize_C?1; wait??Initialize_pid,m;}
+        if
+        :: atomic{m == st_Bridge4 -> goto Bridge4; skip;};
+        :: atomic{m == st_Bridge3 -> goto Bridge3; skip;};
+        fi;
+/* Link to composite state NormalBehavior */
+to_NormalBehavior:  atomic{skip; NormalBehavior_start!1;}
+        atomic{NormalBehavior_C?1; wait??NormalBehavior_pid,m;}
+        if
+        :: atomic{m == st_Bridge1 -> goto Bridge1; skip;};
+        fi;
+/* Link to composite state PartialShutdown */
+to_PartialShutdown:  atomic{skip; PartialShutdown_start!1;}
+        atomic{PartialShutdown_C?1; wait??PartialShutdown_pid,m;}
+        if
+        :: atomic{m == st_Synch20 -> goto Synch20; skip;};
+        fi;
+/* State PowerOff */
+PowerOff:     atomic{skip; printf("in state ComputingComponent.PowerOff\n");
+        }
+
+        PowerOff_G:
+        if
+        :: atomic{ComputingComponent_q?powerOn -> 
+           printf ("Transition to ComputingComponent.Initialize (evt:powerOn())");goto to_Initialize; skip;}
+        fi;
+/* State Synch20 */
+Synch20:      atomic{skip; printf("in state ComputingComponent.Synch20\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=0;
+        ComputingComponent_V.partialState=0;
+        BrightnessSensor_q!sysPowerOffBri;
+
+        Detector_q!sysPowerOffDet;
+        }
+
+        Synch20_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.Synch21");goto Synch21; skip;}
+        fi;
+/* State Synch21 */
+Synch21:      atomic{skip; printf("in state ComputingComponent.Synch21\n");
+/* entry actions */
+        MotionSensor_q!sysPowerOffMot;
+        }
+
+        Synch21_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.PowerOff");goto PowerOff; skip;}
+        fi;
+exit:      skip
+}
+active proctype Initialize(mtype state)
+{atomic{
+mtype m;
+goto exit;}
+
+startCState:  atomic{
+/*Init state*/
+        goto  FirstSen; skip;};
+/* State CheckBriSen */
+CheckBriSen:     atomic{skip; printf("in state ComputingComponent.CheckBriSen\n");
+        }
+
+        CheckBriSen_G:
+        if
+        :: atomic{ComputingComponent_q?ccok -> 
+           BrightnessSensor_q!tempGetBriValue;
+           printf ("Transition to ComputingComponent.GetBrightness (evt:ccok()^BrightnessSensor.tempGetBriValue)");goto GetBrightness; skip;}
+        fi;
+/* State CheckMotSen */
+CheckMotSen:     atomic{skip; printf("in state ComputingComponent.CheckMotSen\n");
+        }
+
+        CheckMotSen_G:
+        if
+        :: atomic{ComputingComponent_q?ccok -> 
+           MotionSensor_q!tempGetMotValue;
+           printf ("Transition to ComputingComponent.GetMotion (evt:ccok()^MotionSensor.tempGetMotValue)");goto GetMotion; skip;}
+        fi;
+/* State Final */
+Final:        atomic{skip; printf("in state ComputingComponent.Final\n");
+        }
+
+        Final_G:
+        if
+           :: atomic{ComputingComponent_V.initialization==0 ->
+              wait!_pid,st_Bridge4; Initialize_C!1; printf ("Transition to ComputingComponent.Bridge4 ([initialization=0])");goto exit; skip;}
+           :: atomic{ComputingComponent_V.initialization==1 ->
+              wait!_pid,st_Bridge3; Initialize_C!1; printf ("Transition to ComputingComponent.Bridge3 ([initialization=1])");goto exit; skip;}
+        fi;
+/* State FirstSen */
+FirstSen:     atomic{skip; printf("in state ComputingComponent.FirstSen\n");
+        }
+
+        FirstSen_G:
+        if
+        :: atomic{1 -> 
+           MotionSensor_q!getMotionSensorOperationalState;
+           printf ("Transition to ComputingComponent.CheckMotSen (^MotionSensor.getMotionSensorOperationalState)");goto CheckMotSen; skip;}
+        fi;
+/* State GetBrightness */
+GetBrightness:     atomic{skip; printf("in state ComputingComponent.GetBrightness\n");
+        }
+
+        GetBrightness_G:
+        if
+        :: atomic{ComputingComponent_q?setCurrentBrightnessValue -> 
+                   ComputingComponent_setCurrentBrightnessValue_p1?ComputingComponent_V.currentBrightnessValue
+                   -> 
+           printf ("Transition to ComputingComponent.Initreq (evt:setCurrentBrightnessValue(currentBrightnessValue))");goto Initreq; skip;}
+        fi;
+/* State GetMotion */
+GetMotion:    atomic{skip; printf("in state ComputingComponent.GetMotion\n");
+        }
+
+        GetMotion_G:
+        if
+        :: atomic{ComputingComponent_q?setCurrentMotionValue -> 
+                   ComputingComponent_setCurrentMotionValue_p1?ComputingComponent_V.currentMotionValue
+                   -> 
+           printf ("Transition to ComputingComponent.SecondSen (evt:setCurrentMotionValue(currentMotionValue))");goto SecondSen; skip;}
+        fi;
+/* State InitSetOff */
+InitSetOff:     atomic{skip; printf("in state ComputingComponent.InitSetOff\n");
+        }
+
+        InitSetOff_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.Final");goto Final; skip;}
+        fi;
+/* State InitSetOn */
+InitSetOn:    atomic{skip; printf("in state ComputingComponent.InitSetOn\n");
+        }
+
+        InitSetOn_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.Final");goto Final; skip;}
+        fi;
+/* State Initreq */
+Initreq:      atomic{skip; printf("in state ComputingComponent.Initreq\n");
+/* entry actions */
+        Environment_q!initValueReq;
+        }
+
+        Initreq_G:
+        if
+        :: atomic{ComputingComponent_q?initOff -> 
+           ComputingComponent_V.initialization=0;
+           printf ("Transition to ComputingComponent.InitSetOff (evt:initOff()/initialization:=0)");goto InitSetOff; skip;}
+        :: atomic{ComputingComponent_q?initOn -> 
+           ComputingComponent_V.initialization=1;
+           printf ("Transition to ComputingComponent.InitSetOn (evt:initOn()/initialization:=1)");goto InitSetOn; skip;}
+        fi;
+/* State SecondSen */
+SecondSen:    atomic{skip; printf("in state ComputingComponent.SecondSen\n");
+        }
+
+        SecondSen_G:
+        if
+        :: atomic{1 -> 
+           BrightnessSensor_q!getBrightnessSensorOperationalState;
+           printf ("Transition to ComputingComponent.CheckBriSen (^BrightnessSensor.getBrightnessSensorOperationalState)");goto CheckBriSen; skip;}
+        fi;
+exit:             Initialize_start?1->goto startCState;
+
+}
+active proctype NormalBehavior(mtype state)
+{atomic{
+mtype m;
+int NormalBehavior_pid, Move_pid, User_pid;
+goto exit;}
+
+startCState:  atomic{
+/*Init state*/
+        goto  Idle1; skip;};
+/* State Bridge2 */
+Bridge2:      atomic{skip; printf("in state ComputingComponent.Bridge2\n");
+        }
+
+        Bridge2_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to ComputingComponent.Idle1");goto Idle1; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; NormalBehavior_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        fi;
+/* State Idle1 */
+Idle1:        atomic{skip; printf("in state ComputingComponent.Idle1\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=0;
+        ComputingComponent_V.normalState=1;
+        Detector_q!setLightStatusOff;
+        }
+
+        Idle1_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.Synch7 (evt:receivedCC())");goto Synch7; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; NormalBehavior_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        fi;
+/* Link to composite state Move */
+to_Move:   atomic{skip; Move_start!1;}
+        atomic{Move_C?1;wait??Move_pid,m;}
+        if
+        :: atomic{m == st_Bridge2 -> goto Bridge2; skip;};
+        :: atomic{m == st_Bridge1 -> wait!_pid,st_Bridge1; ; goto exit; skip;};
+
+        fi;
+/* State Synch1 */
+Synch1:       atomic{skip; printf("in state ComputingComponent.Synch1\n");
+        }
+
+        Synch1_G:
+        if
+        :: atomic{ComputingComponent_q?presenceFaultMes -> 
+           GlobalFaultHandler_q!readyFaultMessage;
+           printf ("Transition to ComputingComponent.Synch1 (evt:presenceFaultMes()^GlobalFaultHandler.readyFaultMessage)");goto Synch1; skip;}
+        :: atomic{ComputingComponent_q?presenceUserIn -> 
+           UserInterface_q!readyUserInput;
+           printf ("Transition to ComputingComponent.Synch1 (evt:presenceUserIn()^UserInterface.readyUserInput)");goto Synch1; skip;}
+        :: atomic{ComputingComponent_q?setCurrentMotionValue -> 
+                   ComputingComponent_setCurrentMotionValue_p1?ComputingComponent_V.currentMotionValue
+                   -> 
+           printf ("Transition to ComputingComponent.Move (evt:setCurrentMotionValue(currentMotionValue))");goto to_Move; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           printf ("Transition to ComputingComponent.User (evt:userInputCC())");goto to_User; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; NormalBehavior_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        fi;
+/* State Synch2 */
+Synch2:       atomic{skip; printf("in state ComputingComponent.Synch2\n");
+/* entry actions */
+        Dimmer2_q!setLightOff;
+        }
+
+        Synch2_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           Environment_q!environmentStep;
+           printf ("Transition to ComputingComponent.Synch1 (evt:receivedCC()^Environment.environmentStep)");goto Synch1; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; NormalBehavior_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        fi;
+/* State Synch7 */
+Synch7:       atomic{skip; printf("in state ComputingComponent.Synch7\n");
+/* entry actions */
+        Dimmer1_q!setLightOff;
+        }
+
+        Synch7_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.Synch2 (evt:receivedCC())");goto Synch2; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; NormalBehavior_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        fi;
+/* Link to composite state User */
+to_User:   atomic{skip; User_start!1;}
+        atomic{User_C?1;wait??User_pid,m;}
+        if
+        :: atomic{m == st_Idle1 -> goto Idle1; skip;};
+        :: atomic{m == st_Bridge1 -> wait!_pid,st_Bridge1; ; goto exit; skip;};
+
+        fi;
+exit:             NormalBehavior_start?1->goto startCState;
+
+}
+active proctype Move(mtype state)
+{atomic{
+mtype m;
+int NormalBehavior_pid, Move_pid;
+goto exit;}
+
+startCState:  atomic{
+/*Init state*/
+        goto  CheckFault1; skip;};
+/* State CheckEnvir1 */
+CheckEnvir1:     atomic{skip; printf("in state ComputingComponent.CheckEnvir1\n");
+        }
+
+        CheckEnvir1_G:
+        if
+        :: atomic{ComputingComponent_q?presenceFaultMes -> 
+           GlobalFaultHandler_q!readyFaultMessage;
+           printf ("Transition to ComputingComponent.CheckEnvir1 (evt:presenceFaultMes()^GlobalFaultHandler.readyFaultMessage)");goto CheckEnvir1; skip;}
+        :: atomic{ComputingComponent_q?presenceUserIn -> 
+           UserInterface_q!readyUserInput;
+           printf ("Transition to ComputingComponent.CheckEnvir1 (evt:presenceUserIn()^UserInterface.readyUserInput)");goto CheckEnvir1; skip;}
+        :: atomic{ComputingComponent_q?setCurrentMotionValue -> 
+                   ComputingComponent_setCurrentMotionValue_p1?ComputingComponent_V.currentMotionValue
+                   -> 
+           printf ("Transition to ComputingComponent.Snch14 (evt:setCurrentMotionValue(currentMotionValue))");goto Snch14; skip;}
+        :: atomic{ComputingComponent_q?noEnvirMessage -> 
+           printf ("Transition to ComputingComponent.Snch14 (evt:noEnvirMessage())");goto Snch14; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State CheckFault1 */
+CheckFault1:     atomic{skip; printf("in state ComputingComponent.CheckFault1\n");
+/* entry actions */
+        GlobalFaultHandler_q!readyFaultMessage;
+        }
+
+        CheckFault1_G:
+        if
+        :: atomic{ComputingComponent_q?noFaultMessage -> 
+           printf ("Transition to ComputingComponent.CheckUserInput1 (evt:noFaultMessage())");goto CheckUserInput1; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State CheckUserInput1 */
+CheckUserInput1:     atomic{skip; printf("in state ComputingComponent.CheckUserInput1\n");
+/* entry actions */
+        UserInterface_q!readyUserInput;
+        }
+
+        CheckUserInput1_G:
+        if
+        :: atomic{ComputingComponent_q?noUserInput -> 
+           Environment_q!readyEnvironment;
+           printf ("Transition to ComputingComponent.CheckEnvir1 (evt:noUserInput()^Environment.readyEnvironment)");goto CheckEnvir1; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State SetDimmer1M */
+SetDimmer1M:     atomic{skip; printf("in state ComputingComponent.SetDimmer1M\n");
+        }
+
+        SetDimmer1M_G:
+        if
+        :: atomic{1 -> 
+           Dimmer1_setLightOn_p1!ComputingComponent_V.valueCC; Dimmer1_q!setLightOn;
+           printf ("Transition to ComputingComponent.Synch5 (^Dimmer1.setLightOn(valueCC))");goto Synch5; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State SetDimmer2M */
+SetDimmer2M:     atomic{skip; printf("in state ComputingComponent.SetDimmer2M\n");
+        }
+
+        SetDimmer2M_G:
+        if
+        :: atomic{1 -> 
+           Dimmer2_setLightOn_p1!ComputingComponent_V.valueCC; Dimmer2_q!setLightOn;
+           printf ("Transition to ComputingComponent.Synch6 (^Dimmer2.setLightOn(valueCC))");goto Synch6; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Snch14 */
+Snch14:       atomic{skip; printf("in state ComputingComponent.Snch14\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=1;
+        Detector_q!setLightStatusOn;
+        }
+
+        Snch14_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.Synch11 (evt:receivedCC())");goto Synch11; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch10 */
+Synch10:      atomic{skip; printf("in state ComputingComponent.Synch10\n");
+/* entry actions */
+        Environment_q!done;
+        }
+
+        Synch10_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.CheckFault1 (evt:receivedCC())");goto CheckFault1; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch11 */
+Synch11:      atomic{skip; printf("in state ComputingComponent.Synch11\n");
+/* entry actions */
+        BrightnessSensor_q!tempGetBriValue;
+        }
+
+        Synch11_G:
+        if
+        :: atomic{ComputingComponent_q?setCurrentBrightnessValue -> 
+                   ComputingComponent_setCurrentBrightnessValue_p1?ComputingComponent_V.currentBrightnessValue
+                   -> 
+           printf ("Transition to ComputingComponent.SetDimmer1M (evt:setCurrentBrightnessValue(currentBrightnessValue))");goto SetDimmer1M; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch5 */
+Synch5:       atomic{skip; printf("in state ComputingComponent.Synch5\n");
+        }
+
+        Synch5_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.SetDimmer2M (evt:receivedCC())");goto SetDimmer2M; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch6 */
+Synch6:       atomic{skip; printf("in state ComputingComponent.Synch6\n");
+        }
+
+        Synch6_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.UpdateM (evt:receivedCC())");goto UpdateM; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State UpdateM */
+UpdateM:      atomic{skip; printf("in state ComputingComponent.UpdateM\n");
+        }
+
+        UpdateM_G:
+        if
+        :: atomic{1 -> 
+           Detector_q!update;
+           printf ("Transition to ComputingComponent.Synch10 (^Detector.update)");goto Synch10; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; Move_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Bridge2; Move_C!1; printf ("Transition to ComputingComponent.Bridge2 (evt:userInputCC())");goto exit; skip;}
+        fi;
+exit:             Move_start?1->goto startCState;
+
+}
+active proctype User(mtype state)
+{atomic{
+mtype m;
+int NormalBehavior_pid, User_pid;
+goto exit;}
+
+startCState:  atomic{
+/*Init state*/
+        goto  CheckFault2; skip;};
+/* State CheckEnvir2 */
+CheckEnvir2:     atomic{skip; printf("in state ComputingComponent.CheckEnvir2\n");
+        }
+
+        CheckEnvir2_G:
+        if
+        :: atomic{ComputingComponent_q?presenceFaultMes -> 
+           GlobalFaultHandler_q!readyFaultMessage;
+           printf ("Transition to ComputingComponent.CheckEnvir2 (evt:presenceFaultMes()^GlobalFaultHandler.readyFaultMessage)");goto CheckEnvir2; skip;}
+        :: atomic{ComputingComponent_q?presenceUserIn -> 
+           UserInterface_q!readyUserInput;
+           printf ("Transition to ComputingComponent.CheckEnvir2 (evt:presenceUserIn()^UserInterface.readyUserInput)");goto CheckEnvir2; skip;}
+        :: atomic{ComputingComponent_q?setCurrentMotionValue -> 
+                   ComputingComponent_setCurrentMotionValue_p1?ComputingComponent_V.currentMotionValue
+                   -> 
+           printf ("Transition to ComputingComponent.synch15 (evt:setCurrentMotionValue(currentMotionValue))");goto synch15; skip;}
+        :: atomic{ComputingComponent_q?noEnvirMessage -> 
+           printf ("Transition to ComputingComponent.synch15 (evt:noEnvirMessage())");goto synch15; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State CheckFault2 */
+CheckFault2:     atomic{skip; printf("in state ComputingComponent.CheckFault2\n");
+/* entry actions */
+        GlobalFaultHandler_q!readyFaultMessage;
+        }
+
+        CheckFault2_G:
+        if
+        :: atomic{ComputingComponent_q?noFaultMessage -> 
+           printf ("Transition to ComputingComponent.CheckUserInput2 (evt:noFaultMessage())");goto CheckUserInput2; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State CheckUserInput2 */
+CheckUserInput2:     atomic{skip; printf("in state ComputingComponent.CheckUserInput2\n");
+/* entry actions */
+        UserInterface_q!readyUserInput;
+        }
+
+        CheckUserInput2_G:
+        if
+        :: atomic{ComputingComponent_q?noUserInput -> 
+           Environment_q!readyEnvironment;
+           printf ("Transition to ComputingComponent.CheckEnvir2 (evt:noUserInput()^Environment.readyEnvironment)");goto CheckEnvir2; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State SetDimmer1L */
+SetDimmer1L:     atomic{skip; printf("in state ComputingComponent.SetDimmer1L\n");
+        }
+
+        SetDimmer1L_G:
+        if
+        :: atomic{1 -> 
+           Dimmer1_setLightOn_p1!ComputingComponent_V.valueCC; Dimmer1_q!setLightOn;
+           printf ("Transition to ComputingComponent.Synch3 (^Dimmer1.setLightOn(valueCC))");goto Synch3; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State SetDimmer2L */
+SetDimmer2L:     atomic{skip; printf("in state ComputingComponent.SetDimmer2L\n");
+        }
+
+        SetDimmer2L_G:
+        if
+        :: atomic{1 -> 
+           Dimmer2_setLightOn_p1!ComputingComponent_V.valueCC; Dimmer2_q!setLightOn;
+           printf ("Transition to ComputingComponent.Synch4 (^Dimmer2.setLightOn(valueCC))");goto Synch4; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch3 */
+Synch3:       atomic{skip; printf("in state ComputingComponent.Synch3\n");
+        }
+
+        Synch3_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.SetDimmer2L (evt:receivedCC())");goto SetDimmer2L; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch4 */
+Synch4:       atomic{skip; printf("in state ComputingComponent.Synch4\n");
+        }
+
+        Synch4_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.UpdateL (evt:receivedCC())");goto UpdateL; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch8 */
+Synch8:       atomic{skip; printf("in state ComputingComponent.Synch8\n");
+/* entry actions */
+        BrightnessSensor_q!tempGetBriValue;
+        }
+
+        Synch8_G:
+        if
+        :: atomic{ComputingComponent_q?setCurrentBrightnessValue -> 
+                   ComputingComponent_setCurrentBrightnessValue_p1?ComputingComponent_V.currentBrightnessValue
+                   -> 
+           printf ("Transition to ComputingComponent.SetDimmer1L (evt:setCurrentBrightnessValue(currentBrightnessValue))");goto SetDimmer1L; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State Synch9 */
+Synch9:       atomic{skip; printf("in state ComputingComponent.Synch9\n");
+/* entry actions */
+        Environment_q!done;
+        }
+
+        Synch9_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.CheckFault2 (evt:receivedCC())");goto CheckFault2; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State UpdateL */
+UpdateL:      atomic{skip; printf("in state ComputingComponent.UpdateL\n");
+        }
+
+        UpdateL_G:
+        if
+        :: atomic{1 -> 
+           Detector_q!update;
+           printf ("Transition to ComputingComponent.Synch9 (^Detector.update)");goto Synch9; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+/* State synch15 */
+synch15:      atomic{skip; printf("in state ComputingComponent.synch15\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=1;
+        Detector_q!setLightStatusOn;
+        }
+
+        synch15_G:
+        if
+        :: atomic{ComputingComponent_q?receivedCC -> 
+           printf ("Transition to ComputingComponent.Synch8 (evt:receivedCC())");goto Synch8; skip;}
+        :: atomic{ComputingComponent_q?globalFaultOccursCC -> 
+           wait!_pid,st_Bridge1; User_C!1; printf ("Transition to ComputingComponent.Bridge1 (evt:globalFaultOccursCC())");goto exit; skip;}
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           wait!_pid,st_Idle1; User_C!1; printf ("Transition to ComputingComponent.Idle1 (evt:userInputCC())");goto exit; skip;}
+        fi;
+exit:             User_start?1->goto startCState;
+
+}
+active proctype PartialShutdown(mtype state)
+{atomic{
+mtype m;
+int PartialShutdown_pid;
+goto exit;}
+
+startCState:  atomic{
+/*Init state*/
+        goto  s1Par; skip;};
+/* State Synch15 */
+Synch15:      atomic{skip; printf("in state ComputingComponent.Synch15\n");
+        }
+
+        Synch15_G:
+        if
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           printf ("Transition to ComputingComponent.s2Par (evt:userInputCC())");goto s2Par; skip;}
+        :: atomic{ComputingComponent_q?powerOff -> 
+           wait!_pid,st_Synch20; PartialShutdown_C!1; printf ("Transition to ComputingComponent.Synch20 (evt:powerOff())");goto exit; skip;}
+        fi;
+/* State Synch16 */
+Synch16:      atomic{skip; printf("in state ComputingComponent.Synch16\n");
+        }
+
+        Synch16_G:
+        if
+        :: atomic{ComputingComponent_q?userInputCC -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to ComputingComponent.s1Par (evt:userInputCC()^Environment.receivedEnv)");goto s1Par; skip;}
+        :: atomic{ComputingComponent_q?powerOff -> 
+           wait!_pid,st_Synch20; PartialShutdown_C!1; printf ("Transition to ComputingComponent.Synch20 (evt:powerOff())");goto exit; skip;}
+        fi;
+/* State s1Par */
+s1Par:        atomic{skip; printf("in state ComputingComponent.s1Par\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=0;
+        ComputingComponent_V.partialState=1;        }
+
+        s1Par_G:
+        if
+        :: atomic{ComputingComponent_q?presenceUserIn -> 
+           UserInterface_q!readyUserInput;
+           printf ("Transition to ComputingComponent.Synch15 (evt:presenceUserIn()^UserInterface.readyUserInput)");goto Synch15; skip;}
+        :: atomic{ComputingComponent_q?powerOff -> 
+           wait!_pid,st_Synch20; PartialShutdown_C!1; printf ("Transition to ComputingComponent.Synch20 (evt:powerOff())");goto exit; skip;}
+        fi;
+/* State s2Par */
+s2Par:        atomic{skip; printf("in state ComputingComponent.s2Par\n");
+/* entry actions */
+        ComputingComponent_V.lightStatus=1;
+        Environment_q!receivedEnv;
+        }
+
+        s2Par_G:
+        if
+        :: atomic{ComputingComponent_q?presenceUserIn -> 
+           UserInterface_q!readyUserInput;
+           printf ("Transition to ComputingComponent.Synch16 (evt:presenceUserIn()^UserInterface.readyUserInput)");goto Synch16; skip;}
+        :: atomic{ComputingComponent_q?powerOff -> 
+           wait!_pid,st_Synch20; PartialShutdown_C!1; printf ("Transition to ComputingComponent.Synch20 (evt:powerOff())");goto exit; skip;}
+        fi;
+exit:             PartialShutdown_start?1->goto startCState;
+
+}
+active proctype Corrector()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1Cor; skip;};
+/* State Recovery */
+Recovery:     atomic{skip; printf("in state Corrector.Recovery\n");
+/* entry actions */
+        Dimmer1_q!setValue;
+
+        Dimmer2_q!setValue;
+        }
+
+        Recovery_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to Corrector.s1Cor");goto s1Cor; skip;}
+        fi;
+/* State s1Cor */
+s1Cor:        atomic{skip; printf("in state Corrector.s1Cor\n");
+        }
+
+        s1Cor_G:
+        if
+        :: atomic{Corrector_q?initiateRecoveryAction -> 
+                   Corrector_initiateRecoveryAction_p1?Corrector_V.recoveryID
+                   -> 
+           printf ("Transition to Corrector.Recovery (evt:initiateRecoveryAction(recoveryID))");goto Recovery; skip;}
+        fi;
+exit:      skip
+}
+active proctype Detector()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Idle; skip;};
+/* State Counting */
+Counting:     atomic{skip; printf("in state Detector.Counting\n");
+        }
+
+        Counting_G:
+        if
+        :: atomic{Detector_q?setLightStatusOn -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Detector.Counting (evt:setLightStatusOn()^ComputingComponent.receivedCC)");goto Counting; skip;}
+        :: atomic{Detector_q?update -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Detector.Counting (evt:update()^ComputingComponent.receivedCC)");goto Counting; skip;}
+        :: atomic{Detector_q?violationOccurs -> 
+           printf ("Transition to Detector.Violation (evt:violationOccurs())");goto Violation; skip;}
+        :: atomic{Detector_q?setLightStatusOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Detector.Inactive (evt:setLightStatusOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        fi;
+/* State Idle */
+Idle:         atomic{skip; printf("in state Detector.Idle\n");
+        }
+
+        Idle_G:
+        if
+        :: atomic{Detector_q?detStart -> 
+           _SYSTEMCLASS__q!receivedDet;
+           printf ("Transition to Detector.Inactive (evt:detStart()^_SYSTEMCLASS_.receivedDet)");goto Inactive; skip;}
+        fi;
+/* State Inactive */
+Inactive:     atomic{skip; printf("in state Detector.Inactive\n");
+        }
+
+        Inactive_G:
+        if
+        :: atomic{Detector_q?sysPowerOffDet -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to Detector.Inactive (evt:sysPowerOffDet()^Environment.receivedEnv)");goto Inactive; skip;}
+        :: atomic{Detector_q?setLightStatusOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Detector.Inactive (evt:setLightStatusOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        :: atomic{Detector_q?violationOccurs -> 
+           printf ("Transition to Detector.Violation (evt:violationOccurs())");goto Violation; skip;}
+        :: atomic{Detector_q?setLightStatusOn -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Detector.Counting (evt:setLightStatusOn()^ComputingComponent.receivedCC)");goto Counting; skip;}
+        :: atomic{Detector_q?detStop -> 
+           printf ("Transition to Detector.Idle (evt:detStop())");goto Idle; skip;}
+        fi;
+/* State Violation */
+Violation:    atomic{skip; printf("in state Detector.Violation\n");
+/* entry actions */
+        LocalFaultHandler_reportLocalFault_p1!Detector_V.faultID; LocalFaultHandler_q!reportLocalFault;
+        }
+
+        Violation_G:
+        if
+        :: atomic{Detector_q?sysPowerOffDet -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to Detector.Inactive (evt:sysPowerOffDet()^Environment.receivedEnv)");goto Inactive; skip;}
+        fi;
+exit:      skip
+}
+active proctype Dimmer1()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Inactive; skip;};
+/* State Active */
+Active:       atomic{skip; printf("in state Dimmer1.Active\n");
+        }
+
+        Active_G:
+        if
+        :: atomic{Dimmer1_q?setLightOn -> 
+                   Dimmer1_setLightOn_p1?Dimmer1_V.value
+                   -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer1.Active (evt:setLightOn(value)^ComputingComponent.receivedCC)");goto Active; skip;}
+        :: atomic{Dimmer1_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer1.Inactive (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Inactive; skip;}
+        :: atomic{Dimmer1_q?setLightOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer1.Inactive (evt:setLightOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        fi;
+/* State Default */
+Default:      atomic{skip; printf("in state Dimmer1.Default\n");
+        }
+
+        Default_G:
+        if
+        :: atomic{Dimmer1_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer1.Default (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Default; skip;}
+        :: atomic{Dimmer1_q?setLightOff -> 
+           printf ("Transition to Dimmer1.Inactive (evt:setLightOff())");goto Inactive; skip;}
+        fi;
+/* State Inactive */
+Inactive:     atomic{skip; printf("in state Dimmer1.Inactive\n");
+        }
+
+        Inactive_G:
+        if
+        :: atomic{Dimmer1_q?setLightOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer1.Inactive (evt:setLightOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        :: atomic{Dimmer1_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer1.Inactive (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Inactive; skip;}
+        :: atomic{Dimmer1_q?setLightOn -> 
+                   Dimmer1_setLightOn_p1?Dimmer1_V.value
+                   -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer1.Active (evt:setLightOn(value)^ComputingComponent.receivedCC)");goto Active; skip;}
+        :: atomic{Dimmer1_q?setLightDefault -> 
+           printf ("Transition to Dimmer1.Default (evt:setLightDefault())");goto Default; skip;}
+        fi;
+exit:      skip
+}
+active proctype Dimmer2()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Inactive; skip;};
+/* State Active */
+Active:       atomic{skip; printf("in state Dimmer2.Active\n");
+        }
+
+        Active_G:
+        if
+        :: atomic{Dimmer2_q?setLightOn -> 
+                   Dimmer2_setLightOn_p1?Dimmer2_V.value
+                   -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer2.Active (evt:setLightOn(value)^ComputingComponent.receivedCC)");goto Active; skip;}
+        :: atomic{Dimmer2_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer2.Inactive (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Inactive; skip;}
+        :: atomic{Dimmer2_q?setLightOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer2.Inactive (evt:setLightOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        fi;
+/* State Default */
+Default:      atomic{skip; printf("in state Dimmer2.Default\n");
+        }
+
+        Default_G:
+        if
+        :: atomic{Dimmer2_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer2.Default (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Default; skip;}
+        :: atomic{Dimmer2_q?setLightOff -> 
+           printf ("Transition to Dimmer2.Inactive (evt:setLightOff())");goto Inactive; skip;}
+        fi;
+/* State Inactive */
+Inactive:     atomic{skip; printf("in state Dimmer2.Inactive\n");
+        }
+
+        Inactive_G:
+        if
+        :: atomic{Dimmer2_q?setLightOff -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer2.Inactive (evt:setLightOff()^ComputingComponent.receivedCC)");goto Inactive; skip;}
+        :: atomic{Dimmer2_q?setValue -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Dimmer2.Inactive (evt:setValue()^GlobalFaultHandler.receivedGFH)");goto Inactive; skip;}
+        :: atomic{Dimmer2_q?setLightOn -> 
+                   Dimmer2_setLightOn_p1?Dimmer2_V.value
+                   -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Dimmer2.Active (evt:setLightOn(value)^ComputingComponent.receivedCC)");goto Active; skip;}
+        :: atomic{Dimmer2_q?setLightDefault -> 
+           printf ("Transition to Dimmer2.Default (evt:setLightDefault())");goto Default; skip;}
+        fi;
+exit:      skip
+}
+active proctype Display()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Idle; skip;};
+/* State Idle */
+Idle:         atomic{skip; printf("in state Display.Idle\n");
+        }
+
+        Idle_G:
+        if
+        :: atomic{Display_q?showNormalMes -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Display.Message (evt:showNormalMes()^ComputingComponent.receivedCC)");goto Message; skip;}
+        :: atomic{Display_q?showFaultMes -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Display.Message (evt:showFaultMes()^GlobalFaultHandler.receivedGFH)");goto Message; skip;}
+        fi;
+/* State Message */
+Message:      atomic{skip; printf("in state Display.Message\n");
+        }
+
+        Message_G:
+        if
+        :: atomic{Display_q?showNormalMes -> 
+           ComputingComponent_q!receivedCC;
+           printf ("Transition to Display.Message (evt:showNormalMes()^ComputingComponent.receivedCC)");goto Message; skip;}
+        :: atomic{Display_q?showFaultMes -> 
+           GlobalFaultHandler_q!receivedGFH;
+           printf ("Transition to Display.Message (evt:showFaultMes()^GlobalFaultHandler.receivedGFH)");goto Message; skip;}
+        fi;
+exit:      skip
+}
+active proctype Environment()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Idle; skip;};
+/* State Idle */
+Idle:         atomic{skip; printf("in state Environment.Idle\n");
+        }
+
+        Idle_G:
+        if
+        :: atomic{Environment_q?initValueReq -> 
+           printf ("Transition to Environment.S14 (evt:initValueReq())");goto S14; skip;}
+        fi;
+/* State S1 */
+S1:           atomic{skip; printf("in state Environment.S1\n");
+        }
+
+        S1_G:
+        if
+        :: atomic{Environment_q?readyEnvironment -> 
+           ComputingComponent_q!noEnvirMessage;
+           printf ("Transition to Environment.S1 (evt:readyEnvironment()^ComputingComponent.noEnvirMessage)");goto S1; skip;}
+        :: atomic{Environment_q?done -> 
+           printf ("Transition to Environment.S2 (evt:done())");goto S2; skip;}
+        fi;
+/* State S10 */
+S10:          atomic{skip; printf("in state Environment.S10\n");
+        }
+
+        S10_G:
+        if
+        :: atomic{Environment_q?receivedEnv -> 
+           ComputingComponent_q!powerOn;
+           printf ("Transition to Environment.Idle (evt:receivedEnv()^ComputingComponent.powerOn)");goto Idle; skip;}
+        fi;
+/* State S11 */
+S11:          atomic{skip; printf("in state Environment.S11\n");
+        }
+
+        S11_G:
+        if
+        :: atomic{Environment_q?receivedEnv -> 
+           printf ("Transition to Environment.S10 (evt:receivedEnv())");goto S10; skip;}
+        fi;
+/* State S12 */
+S12:          atomic{skip; printf("in state Environment.S12\n");
+        }
+
+        S12_G:
+        if
+        :: atomic{Environment_q?receivedEnv -> 
+           printf ("Transition to Environment.S7 (evt:receivedEnv())");goto S7; skip;}
+        fi;
+/* State S13 */
+S13:          atomic{skip; printf("in state Environment.S13\n");
+        }
+
+        S13_G:
+        if
+        :: atomic{1 -> 
+           Detector_q!violationOccurs;
+           printf ("Transition to Environment.S6 (^Detector.violationOccurs)");goto S6; skip;}
+        fi;
+/* State S14 */
+S14:          atomic{skip; printf("in state Environment.S14\n");
+        }
+
+        S14_G:
+        if
+        :: atomic{1 -> 
+           ComputingComponent_q!initOn;
+           printf ("Transition to Environment.S16 (^ComputingComponent.initOn)");goto S16; skip;}
+        :: atomic{1 -> 
+           ComputingComponent_q!initOff;
+           printf ("Transition to Environment.S15 (^ComputingComponent.initOff)");goto S15; skip;}
+        fi;
+/* State S15 */
+S15:          atomic{skip; printf("in state Environment.S15\n");
+        }
+
+        S15_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to Environment.S17");goto S17; skip;}
+        fi;
+/* State S16 */
+S16:          atomic{skip; printf("in state Environment.S16\n");
+        }
+
+        S16_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to Environment.S17");goto S17; skip;}
+        fi;
+/* State S17 */
+S17:          atomic{skip; printf("in state Environment.S17\n");
+        }
+
+        S17_G:
+        if
+        :: atomic{Environment_q?manualMode -> 
+           printf ("Transition to Environment.S7 (evt:manualMode())");goto S7; skip;}
+        :: atomic{Environment_q?environmentStep -> 
+           printf ("Transition to Environment.S3 (evt:environmentStep())");goto S3; skip;}
+        fi;
+/* State S2 */
+S2:           atomic{skip; printf("in state Environment.S2\n");
+        }
+
+        S2_G:
+        if
+        :: atomic{Environment_q?readyEnvironment -> 
+           printf ("Transition to Environment.S3 (evt:readyEnvironment())");goto S3; skip;}
+        fi;
+/* State S3 */
+S3:           atomic{skip; printf("in state Environment.S3\n");
+        }
+
+        S3_G:
+        if
+        :: atomic{Environment_q?environmentStep -> 
+           printf ("Transition to Environment.S3 (evt:environmentStep())");goto S3; skip;}
+        :: atomic{Environment_q?block -> 
+           MotionSensor_q!motionSensorProblem;
+           printf ("Transition to Environment.S13 (evt:block()^MotionSensor.motionSensorProblem)");goto S13; skip;}
+        :: atomic{Environment_q?block -> 
+           BrightnessSensor_q!brightnessSensorProblem;
+           printf ("Transition to Environment.S13 (evt:block()^BrightnessSensor.brightnessSensorProblem)");goto S13; skip;}
+        :: atomic{Environment_q?block -> 
+           Detector_q!violationOccurs;
+           printf ("Transition to Environment.S6 (evt:block()^Detector.violationOccurs)");goto S6; skip;}
+        :: atomic{Environment_q?block -> 
+           Switch_q!switchPush;
+           printf ("Transition to Environment.S4 (evt:block()^Switch.switchPush)");goto S4; skip;}
+        :: atomic{1 -> 
+           MotionSensor_q!tempGetMotValue;
+           printf ("Transition to Environment.S1 (^MotionSensor.tempGetMotValue)");goto S1; skip;}
+        fi;
+/* State S4 */
+S4:           atomic{skip; printf("in state Environment.S4\n");
+        }
+
+        S4_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to Environment.S4");goto S4; skip;}
+        :: atomic{Environment_q?readyEnvironment -> 
+           ComputingComponent_q!noEnvirMessage;
+           printf ("Transition to Environment.S4 (evt:readyEnvironment()^ComputingComponent.noEnvirMessage)");goto S4; skip;}
+        :: atomic{Environment_q?done -> 
+           printf ("Transition to Environment.S5 (evt:done())");goto S5; skip;}
+        fi;
+/* State S5 */
+S5:           atomic{skip; printf("in state Environment.S5\n");
+        }
+
+        S5_G:
+        if
+        :: atomic{Environment_q?readyEnvironment -> 
+           printf ("Transition to Environment.S3 (evt:readyEnvironment())");goto S3; skip;}
+        fi;
+/* State S6 */
+S6:           atomic{skip; printf("in state Environment.S6\n");
+        }
+
+        S6_G:
+        if
+        :: atomic{Environment_q?manualMode -> 
+           printf ("Transition to Environment.S7 (evt:manualMode())");goto S7; skip;}
+        fi;
+/* State S7 */
+S7:           atomic{skip; printf("in state Environment.S7\n");
+        }
+
+        S7_G:
+        if
+        :: atomic{1 -> 
+           Switch_q!switchPush;
+           printf ("Transition to Environment.S12 (^Switch.switchPush)");goto S12; skip;}
+        :: atomic{1 -> 
+           ComputingComponent_q!powerOff;
+           printf ("Transition to Environment.S8 (^ComputingComponent.powerOff)");goto S8; skip;}
+        fi;
+/* State S8 */
+S8:           atomic{skip; printf("in state Environment.S8\n");
+        }
+
+        S8_G:
+        if
+        :: atomic{Environment_q?receivedEnv -> 
+           printf ("Transition to Environment.S11 (evt:receivedEnv())");goto S11; skip;}
+        fi;
+exit:      skip
+}
+active proctype GlobalFaultHandler()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1Global; skip;};
+/* State ProcessFault */
+ProcessFault:     atomic{skip; printf("in state GlobalFaultHandler.ProcessFault\n");
+/* entry actions */
+        UserInterface_q!globalFaultOccursUI;
+        }
+
+        ProcessFault_G:
+        if
+        :: atomic{GlobalFaultHandler_q?receivedGFH -> 
+           printf ("Transition to GlobalFaultHandler.Synch24 (evt:receivedGFH())");goto Synch24; skip;}
+        fi;
+/* State S2 */
+S2:           atomic{skip; printf("in state GlobalFaultHandler.S2\n");
+/* entry actions */
+        LocalFaultHandler_q!receivedLFH;
+        }
+
+        S2_G:
+        if
+        :: atomic{GlobalFaultHandler_q?reportGlobalFault -> 
+                   GlobalFaultHandler_reportGlobalFault_p1?GlobalFaultHandler_V.faultID
+                   -> 
+           ComputingComponent_q!presenceFaultMes;
+           printf ("Transition to GlobalFaultHandler.Synch12 (evt:reportGlobalFault(faultID)^ComputingComponent.presenceFaultMes)");goto Synch12; skip;}
+        fi;
+/* State Synch12 */
+Synch12:      atomic{skip; printf("in state GlobalFaultHandler.Synch12\n");
+        }
+
+        Synch12_G:
+        if
+        :: atomic{GlobalFaultHandler_q?readyFaultMessage -> 
+           printf ("Transition to GlobalFaultHandler.ProcessFault (evt:readyFaultMessage())");goto ProcessFault; skip;}
+        fi;
+/* State Synch22 */
+Synch22:      atomic{skip; printf("in state GlobalFaultHandler.Synch22\n");
+        }
+
+        Synch22_G:
+        if
+        :: atomic{GlobalFaultHandler_q?receivedGFH -> 
+           printf ("Transition to GlobalFaultHandler.Synch23 (evt:receivedGFH())");goto Synch23; skip;}
+        fi;
+/* State Synch23 */
+Synch23:      atomic{skip; printf("in state GlobalFaultHandler.Synch23\n");
+/* entry actions */
+        ComputingComponent_q!globalFaultOccursCC;
+        }
+
+        Synch23_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to GlobalFaultHandler.s1Global");goto s1Global; skip;}
+        fi;
+/* State Synch24 */
+Synch24:      atomic{skip; printf("in state GlobalFaultHandler.Synch24\n");
+/* entry actions */
+        LocalFaultHandler_q!performRecoveryAction;
+        }
+
+        Synch24_G:
+        if
+        :: atomic{GlobalFaultHandler_q?receivedGFH -> 
+           printf ("Transition to GlobalFaultHandler.Synch22 (evt:receivedGFH())");goto Synch22; skip;}
+        fi;
+/* State s1Global */
+s1Global:     atomic{skip; printf("in state GlobalFaultHandler.s1Global\n");
+        }
+
+        s1Global_G:
+        if
+        :: atomic{GlobalFaultHandler_q?readyFaultMessage -> 
+           ComputingComponent_q!noFaultMessage;
+           printf ("Transition to GlobalFaultHandler.s1Global (evt:readyFaultMessage()^ComputingComponent.noFaultMessage)");goto s1Global; skip;}
+        :: atomic{GlobalFaultHandler_q?receivedGFH -> 
+           printf ("Transition to GlobalFaultHandler.S2 (evt:receivedGFH())");goto S2; skip;}
+        fi;
+exit:      skip
+}
+active proctype LocalFaultHandler()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1Local; skip;};
+/* State Override */
+Override:     atomic{skip; printf("in state LocalFaultHandler.Override\n");
+        }
+
+        Override_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to LocalFaultHandler.s1Local");goto s1Local; skip;}
+        fi;
+/* State Respond */
+Respond:      atomic{skip; printf("in state LocalFaultHandler.Respond\n");
+        }
+
+        Respond_G:
+        if
+        :: atomic{1 -> 
+           printf ("Transition to LocalFaultHandler.s1Local");goto s1Local; skip;}
+        fi;
+/* State S1 */
+S1:           atomic{skip; printf("in state LocalFaultHandler.S1\n");
+/* entry actions */
+        GlobalFaultHandler_q!receivedGFH;
+        }
+
+        S1_G:
+        if
+        :: atomic{LocalFaultHandler_q?receivedLFH -> 
+           GlobalFaultHandler_reportGlobalFault_p1!LocalFaultHandler_V.faultID; GlobalFaultHandler_q!reportGlobalFault;
+           printf ("Transition to LocalFaultHandler.Respond (evt:receivedLFH()^GlobalFaultHandler.reportGlobalFault(faultID))");goto Respond; skip;}
+        fi;
+/* State s1Local */
+s1Local:      atomic{skip; printf("in state LocalFaultHandler.s1Local\n");
+        }
+
+        s1Local_G:
+        if
+        :: atomic{LocalFaultHandler_q?reportLocalFault -> 
+                   LocalFaultHandler_reportLocalFault_p1?LocalFaultHandler_V.faultID
+                   -> 
+           printf ("Transition to LocalFaultHandler.S1 (evt:reportLocalFault(faultID))");goto S1; skip;}
+        :: atomic{LocalFaultHandler_q?performRecoveryAction -> 
+           Corrector_initiateRecoveryAction_p1!LocalFaultHandler_V.recoveryID; Corrector_q!initiateRecoveryAction;
+           printf ("Transition to LocalFaultHandler.Override (evt:performRecoveryAction()^Corrector.initiateRecoveryAction(recoveryID))");goto Override; skip;}
+        fi;
+exit:      skip
+}
+active proctype MotionSensor()
+{
+atomic{
+mtype m;
+        MotionSensor_V.checkMotion = 0;
+        MotionSensor_V.currentMotion = 1;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  s1; skip;};
+/* State Active */
+Active:       atomic{skip; printf("in state MotionSensor.Active\n");
+/* entry actions */
+        MotionSensor_V.checkMotion=0;        }
+
+        Active_G:
+        if
+        :: atomic{MotionSensor_q?tempGetMotValue -> 
+           ComputingComponent_setCurrentMotionValue_p1!MotionSensor_V.currentMotion; ComputingComponent_q!setCurrentMotionValue;
+           printf ("Transition to MotionSensor.Active (evt:tempGetMotValue()^ComputingComponent.setCurrentMotionValue(currentMotion))");goto Active; skip;}
+        :: atomic{MotionSensor_q?sysPowerOffMot -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to MotionSensor.s1 (evt:sysPowerOffMot()^Environment.receivedEnv)");goto s1; skip;}
+        :: atomic{MotionSensor_q?motionSensorProblem -> 
+           printf ("Transition to MotionSensor.s2 (evt:motionSensorProblem())");goto s2; skip;}
+        fi;
+/* State s1 */
+s1:           atomic{skip; printf("in state MotionSensor.s1\n");
+        }
+
+        s1_G:
+        if
+        :: atomic{MotionSensor_q?sysPowerOffMot -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to MotionSensor.s1 (evt:sysPowerOffMot()^Environment.receivedEnv)");goto s1; skip;}
+        :: atomic{MotionSensor_q?getMotionSensorOperationalState -> 
+           MotionSensor_V.checkMotion=1;
+           printf ("Transition to MotionSensor.s2 (evt:getMotionSensorOperationalState()/checkMotion:=1)");goto s2; skip;}
+        fi;
+/* State s2 */
+s2:           atomic{skip; printf("in state MotionSensor.s2\n");
+        }
+
+        s2_G:
+        if
+        :: atomic{MotionSensor_q?sysPowerOffMot -> 
+           Environment_q!receivedEnv;
+           printf ("Transition to MotionSensor.s1 (evt:sysPowerOffMot()^Environment.receivedEnv)");goto s1; skip;}
+           :: atomic{MotionSensor_V.checkMotion==0 ->
+              printf ("Transition to MotionSensor.s1 ([checkMotion=0])");goto s1; skip;}
+           :: atomic{MotionSensor_V.checkMotion ->
+              ComputingComponent_q!ccok;
+              printf ("Transition to MotionSensor.Active ([checkMotion]^ComputingComponent.ccok)");goto Active; skip;}
+        fi;
+exit:      skip
+}
+active proctype Switch()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Idle; skip;};
+/* State Idle */
+Idle:         atomic{skip; printf("in state Switch.Idle\n");
+        }
+
+        Idle_G:
+        if
+        :: atomic{Switch_q?switchPush -> 
+           UserInterface_q!userInputUI;
+           printf ("Transition to Switch.Idle (evt:switchPush()^UserInterface.userInputUI)");goto Idle; skip;}
+        fi;
+exit:      skip
+}
+active proctype UserInterface()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto  Idle; skip;};
+/* State DisplayFault */
+DisplayFault:     atomic{skip; printf("in state UserInterface.DisplayFault\n");
+        }
+
+        DisplayFault_G:
+        if
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!noUserInput;
+           printf ("Transition to UserInterface.DisplayFault (evt:readyUserInput()^ComputingComponent.noUserInput)");goto DisplayFault; skip;}
+        :: atomic{UserInterface_q?userInputUI -> 
+           ComputingComponent_q!presenceUserIn;
+           printf ("Transition to UserInterface.InputFault (evt:userInputUI()^ComputingComponent.presenceUserIn)");goto InputFault; skip;}
+        :: atomic{UserInterface_q?normalMode -> 
+           Display_q!showNormalMes;
+           printf ("Transition to UserInterface.DisplayNormal (evt:normalMode()^Display.showNormalMes)");goto DisplayNormal; skip;}
+        fi;
+/* State DisplayNormal */
+DisplayNormal:     atomic{skip; printf("in state UserInterface.DisplayNormal\n");
+        }
+
+        DisplayNormal_G:
+        if
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!noUserInput;
+           printf ("Transition to UserInterface.DisplayNormal (evt:readyUserInput()^ComputingComponent.noUserInput)");goto DisplayNormal; skip;}
+        :: atomic{UserInterface_q?userInputUI -> 
+           ComputingComponent_q!presenceUserIn;
+           printf ("Transition to UserInterface.InputNorm (evt:userInputUI()^ComputingComponent.presenceUserIn)");goto InputNorm; skip;}
+        :: atomic{UserInterface_q?globalFaultOccursUI -> 
+           Display_q!showFaultMes;
+           printf ("Transition to UserInterface.DisplayFault (evt:globalFaultOccursUI()^Display.showFaultMes)");goto DisplayFault; skip;}
+        fi;
+/* State Idle */
+Idle:         atomic{skip; printf("in state UserInterface.Idle\n");
+        }
+
+        Idle_G:
+        if
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!noUserInput;
+           printf ("Transition to UserInterface.Idle (evt:readyUserInput()^ComputingComponent.noUserInput)");goto Idle; skip;}
+        :: atomic{UserInterface_q?userInputUI -> 
+           ComputingComponent_q!presenceUserIn;
+           printf ("Transition to UserInterface.InputIdle (evt:userInputUI()^ComputingComponent.presenceUserIn)");goto InputIdle; skip;}
+        :: atomic{UserInterface_q?normalMode -> 
+           Display_q!showNormalMes;
+           printf ("Transition to UserInterface.DisplayNormal (evt:normalMode()^Display.showNormalMes)");goto DisplayNormal; skip;}
+        :: atomic{UserInterface_q?globalFaultOccursUI -> 
+           Display_q!showFaultMes;
+           printf ("Transition to UserInterface.DisplayFault (evt:globalFaultOccursUI()^Display.showFaultMes)");goto DisplayFault; skip;}
+        fi;
+/* State InputFault */
+InputFault:     atomic{skip; printf("in state UserInterface.InputFault\n");
+        }
+
+        InputFault_G:
+        if
+        :: atomic{UserInterface_q?normalMode -> 
+           Display_q!showNormalMes;
+           printf ("Transition to UserInterface.InputNorm (evt:normalMode()^Display.showNormalMes)");goto InputNorm; skip;}
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!userInputCC;
+           printf ("Transition to UserInterface.DisplayFault (evt:readyUserInput()^ComputingComponent.userInputCC)");goto DisplayFault; skip;}
+        fi;
+/* State InputIdle */
+InputIdle:    atomic{skip; printf("in state UserInterface.InputIdle\n");
+        }
+
+        InputIdle_G:
+        if
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!userInputCC;
+           printf ("Transition to UserInterface.Idle (evt:readyUserInput()^ComputingComponent.userInputCC)");goto Idle; skip;}
+        :: atomic{UserInterface_q?globalFaultOccursUI -> 
+           Display_q!showFaultMes;
+           printf ("Transition to UserInterface.InputFault (evt:globalFaultOccursUI()^Display.showFaultMes)");goto InputFault; skip;}
+        :: atomic{UserInterface_q?normalMode -> 
+           Display_q!showNormalMes;
+           printf ("Transition to UserInterface.InputNorm (evt:normalMode()^Display.showNormalMes)");goto InputNorm; skip;}
+        fi;
+/* State InputNorm */
+InputNorm:    atomic{skip; printf("in state UserInterface.InputNorm\n");
+        }
+
+        InputNorm_G:
+        if
+        :: atomic{UserInterface_q?globalFaultOccursUI -> 
+           Display_q!showFaultMes;
+           printf ("Transition to UserInterface.InputFault (evt:globalFaultOccursUI()^Display.showFaultMes)");goto InputFault; skip;}
+        :: atomic{UserInterface_q?readyUserInput -> 
+           ComputingComponent_q!userInputCC;
+           printf ("Transition to UserInterface.DisplayNormal (evt:readyUserInput()^ComputingComponent.userInputCC)");goto DisplayNormal; skip;}
+        fi;
+/* State Synch3 */
+Synch3:       atomic{skip; printf("in state UserInterface.Synch3\n");
+        }
+        if
+        :: skip -> false
+        fi;
+exit:      skip
+}
+active proctype _SYSTEMCLASS_()
+{
+atomic{
+mtype m;
+
+/*Init state*/
+        goto  s1; skip;};
+/* State s1 */
+s1:           atomic{skip; printf("in state _SYSTEMCLASS_.s1\n");
+        }
+
+        s1_G:
+        if
+        :: atomic{1 -> 
+           run ComputingComponent();
+           printf ("Transition to _SYSTEMCLASS_.s2 (/new (ComputingComponent))");goto s2; skip;}
+        fi;
+/* State s10 */
+s10:          atomic{skip; printf("in state _SYSTEMCLASS_.s10\n");
+        }
+
+        s10_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Detector();
+           printf ("Transition to _SYSTEMCLASS_.s11 (evt:ready()/new (Detector))");goto s11; skip;}
+        fi;
+/* State s11 */
+s11:          atomic{skip; printf("in state _SYSTEMCLASS_.s11\n");
+        }
+
+        s11_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Environment();
+           printf ("Transition to _SYSTEMCLASS_.s12 (evt:ready()/new (Environment))");goto s12; skip;}
+        fi;
+/* State s12 */
+s12:          atomic{skip; printf("in state _SYSTEMCLASS_.s12\n");
+        }
+
+        s12_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run GlobalFaultHandler();
+           printf ("Transition to _SYSTEMCLASS_.s13 (evt:ready()/new (GlobalFaultHandler))");goto s13; skip;}
+        fi;
+/* State s13 */
+s13:          atomic{skip; printf("in state _SYSTEMCLASS_.s13\n");
+        }
+
+        s13_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run LocalFaultHandler();
+           printf ("Transition to _SYSTEMCLASS_.s15 (evt:ready()/new (LocalFaultHandler))");goto s15; skip;}
+        fi;
+/* State s15 */
+s15:          atomic{skip; printf("in state _SYSTEMCLASS_.s15\n");
+        }
+
+        s15_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           Detector_q!detStart;
+           printf ("Transition to _SYSTEMCLASS_.s16 (evt:ready()^Detector.detStart)");goto s16; skip;}
+        fi;
+/* State s16 */
+s16:          atomic{skip; printf("in state _SYSTEMCLASS_.s16\n");
+        }
+
+        s16_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?receivedDet -> 
+           ComputingComponent_q!powerOn;
+           printf ("Transition to _SYSTEMCLASS_.s17 (evt:receivedDet()^ComputingComponent.powerOn)");goto s17; skip;}
+        fi;
+/* State s17 */
+s17:          atomic{skip; printf("in state _SYSTEMCLASS_.s17\n");
+        }
+        if
+        :: skip -> false
+        fi;
+/* State s2 */
+s2:           atomic{skip; printf("in state _SYSTEMCLASS_.s2\n");
+        }
+
+        s2_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run UserInterface();
+           printf ("Transition to _SYSTEMCLASS_.s3 (evt:ready()/new (UserInterface))");goto s3; skip;}
+        fi;
+/* State s3 */
+s3:           atomic{skip; printf("in state _SYSTEMCLASS_.s3\n");
+        }
+
+        s3_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Switch();
+           printf ("Transition to _SYSTEMCLASS_.s4 (evt:ready()/new (Switch))");goto s4; skip;}
+        fi;
+/* State s4 */
+s4:           atomic{skip; printf("in state _SYSTEMCLASS_.s4\n");
+        }
+
+        s4_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Display();
+           printf ("Transition to _SYSTEMCLASS_.s5 (evt:ready()/new (Display))");goto s5; skip;}
+        fi;
+/* State s5 */
+s5:           atomic{skip; printf("in state _SYSTEMCLASS_.s5\n");
+        }
+
+        s5_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run MotionSensor();
+           printf ("Transition to _SYSTEMCLASS_.s6 (evt:ready()/new (MotionSensor))");goto s6; skip;}
+        fi;
+/* State s6 */
+s6:           atomic{skip; printf("in state _SYSTEMCLASS_.s6\n");
+        }
+
+        s6_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run BrightnessSensor();
+           printf ("Transition to _SYSTEMCLASS_.s7 (evt:ready()/new (BrightnessSensor))");goto s7; skip;}
+        fi;
+/* State s7 */
+s7:           atomic{skip; printf("in state _SYSTEMCLASS_.s7\n");
+        }
+
+        s7_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Dimmer1();
+           printf ("Transition to _SYSTEMCLASS_.s8 (evt:ready()/new (Dimmer1))");goto s8; skip;}
+        fi;
+/* State s8 */
+s8:           atomic{skip; printf("in state _SYSTEMCLASS_.s8\n");
+        }
+
+        s8_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Dimmer2();
+           printf ("Transition to _SYSTEMCLASS_.s9 (evt:ready()/new (Dimmer2))");goto s9; skip;}
+        fi;
+/* State s9 */
+s9:           atomic{skip; printf("in state _SYSTEMCLASS_.s9\n");
+        }
+
+        s9_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Corrector();
+           printf ("Transition to _SYSTEMCLASS_.s10 (evt:ready()/new (Corrector))");goto s10; skip;}
+        fi;
+exit:      skip
+}

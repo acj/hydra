@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- <!DOCTYPE XMI SYSTEM "C:\Program Files\Rational\XDE\Addins\XMI\DTD\XMI11UML14.dtd"> -->
+<XMI xmi.version="1.1" xmlns:UML="http://www.omg.org/UML" xmlns:xlink="http://www.w3c.org/xlink" xmlns:XDE="http://www.rational.com/products/XDE">
+    <XMI.header>
+        <XMI.documentation>
+            <XMI.exporter>Rational XDE</XMI.exporter>
+            <XMI.exporterVersion>1.5</XMI.exporterVersion>
+        </XMI.documentation>
+        <XMI.metamodel xmi.name="UML" xmi.version="1.4"/>
+    </XMI.header>
+    <XMI.content>
+        <UML:Model xmi.id="XDE-B102FCC3-658C-4A6D-B184-F3D882B317F2" name="alcs_1" isSpecification="false">
+            <UML:Namespace.ownedElement>
+                <UML:Class xmi.id="XDE-78DBF4B3-12AF-44A2-845B-0B9836D99CF2" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="ComputingComponent" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-29FE6985-7B10-4C24-AB39-A3CD77EAD256" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="cc_brightness_value" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-CD652E95-2531-4445-8E76-9A9D6495B2B4" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="OSTrue" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-12BA4125-E7AE-4B3E-A146-AB8E19112CCE" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="OSFalse" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-1866EE50-5AFE-4F3D-9D6A-B595C6854039" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="setCCBrightnessValue" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-FD857B42-AD40-4B9C-BF97-BBF26C15BE0F" kind="in" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="cc_brightness_value" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:Association xmi.id="XDE-ADB54C15-DB14-40EE-A7E9-D10F1BBF14D4" name="reads values from" isSpecification="false">
+                            <UML:Association.connection>
+                                <UML:AssociationEnd xmi.id="XDE-109EF912-2ECE-4937-AD95-F570CA958FB7" aggregation="none" isNavigable="true" participant="XDE-2BF98D73-2077-41D3-9311-F98F1CCBA416" changeability="changeable" targetScope="instance" visibility="private" ordering="unordered" name="" isSpecification="false">
+                                    <UML:AssociationEnd.multiplicity>
+                                        <UML:Multiplicity>
+                                            <UML:Multiplicity.range>
+                                                <UML:MultiplicityRange lower="1" upper="1"/>
+                                            </UML:Multiplicity.range>
+                                        </UML:Multiplicity>
+                                    </UML:AssociationEnd.multiplicity>
+                                </UML:AssociationEnd>
+                                <UML:AssociationEnd xmi.id="XDE-CDD24EF5-1CB6-4B0D-8AD2-F4CB19504D79" aggregation="none" isNavigable="false" participant="XDE-78DBF4B3-12AF-44A2-845B-0B9836D99CF2" changeability="changeable" targetScope="instance" visibility="private" ordering="unordered" name="" isSpecification="false">
+                                    <UML:AssociationEnd.multiplicity>
+                                        <UML:Multiplicity>
+                                            <UML:Multiplicity.range>
+                                                <UML:MultiplicityRange lower="1" upper="1"/>
+                                            </UML:Multiplicity.range>
+                                        </UML:Multiplicity>
+                                    </UML:AssociationEnd.multiplicity>
+                                </UML:AssociationEnd>
+                            </UML:Association.connection>
+                        </UML:Association>
+                        <UML:StateMachine xmi.id="XDE-FAD64D9A-A7D3-4B0B-A923-923139A74C86" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-84ABC768-11D2-4CDD-9906-4188E969BB10" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-271F5781-A6AC-485B-A87D-A52B550C0E8C" kind="initial" outgoing="XDE-166A1E2F-69F2-4F09-A00E-B811F5F271B9" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-6500BE34-AC3D-415C-988D-DF222926B0CF" isConcurrent="false" outgoing="XDE-CD1CD193-606A-4959-AF57-B2E082B00C45" name="IdleCC" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-1ED5EEF0-8F01-4C4E-B7CB-522E4999DA7D" isConcurrent="false" outgoing="XDE-22E16EC0-3363-49EB-AA7D-7C98CF237FCE XDE-022D858C-2E1C-45A6-8104-664CED22CC5F" name="GetOSBrightnessInfo" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-353B8E02-59E4-4DA1-8040-BE2941A0882D" isConcurrent="false" outgoing="XDE-A68DEA87-9A0E-4414-BA6A-0048F71C1549" name="OSofBrightnessSensor" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-C3900EBA-47CE-4EAC-978C-938A9BBDF5FC" isConcurrent="false" outgoing="XDE-516AFB8A-D25D-4C64-9323-D5CCFFE3D839" name="GetBrightnessValueInfo" isSpecification="false"/>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-516AFB8A-D25D-4C64-9323-D5CCFFE3D839" source="XDE-C3900EBA-47CE-4EAC-978C-938A9BBDF5FC" target="XDE-6500BE34-AC3D-415C-988D-DF222926B0CF" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-0B4C519B-FECE-4B87-BFBE-3B928D3CD34E" operation="XDE-1866EE50-5AFE-4F3D-9D6A-B595C6854039" name="setCCBrightnessValue" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-A68DEA87-9A0E-4414-BA6A-0048F71C1549" source="XDE-353B8E02-59E4-4DA1-8040-BE2941A0882D" target="XDE-C3900EBA-47CE-4EAC-978C-938A9BBDF5FC" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-1893BD9F-BBCA-421F-BDAD-45808A28D5EC" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^BrightnessSensor.getBrightnessValue"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-22E16EC0-3363-49EB-AA7D-7C98CF237FCE" source="XDE-1ED5EEF0-8F01-4C4E-B7CB-522E4999DA7D" target="XDE-6500BE34-AC3D-415C-988D-DF222926B0CF" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-D3C1F103-2235-4C50-8368-2B0CB9B3278C" operation="XDE-12BA4125-E7AE-4B3E-A146-AB8E19112CCE" name="OSFalse" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-022D858C-2E1C-45A6-8104-664CED22CC5F" source="XDE-1ED5EEF0-8F01-4C4E-B7CB-522E4999DA7D" target="XDE-353B8E02-59E4-4DA1-8040-BE2941A0882D" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-0A70DCDF-62FE-4C4A-89BC-165AFA0FC159" operation="XDE-CD652E95-2531-4445-8E76-9A9D6495B2B4" name="OSTrue" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-CD1CD193-606A-4959-AF57-B2E082B00C45" source="XDE-6500BE34-AC3D-415C-988D-DF222926B0CF" target="XDE-1ED5EEF0-8F01-4C4E-B7CB-522E4999DA7D" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-4466D8B2-46B1-4264-8E00-A9EA883F0992" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^BrightnessSensor.getOperationalState()"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-166A1E2F-69F2-4F09-A00E-B811F5F271B9" source="XDE-271F5781-A6AC-485B-A87D-A52B550C0E8C" target="XDE-6500BE34-AC3D-415C-988D-DF222926B0CF" name="" isSpecification="false"/>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-B5834383-0FE4-453C-BB90-03AE0322473B" isActive="false" isAbstract="true" isLeaf="false" isRoot="false" visibility="public" name="AbstractPassiveIntegerSensor" isSpecification="false">
+                    <UML:Namespace.ownedElement>
+                        <UML:Generalization xmi.id="XDE-49A989BB-7AB3-475B-A7D3-61AD01AF72F7" child="XDE-B5834383-0FE4-453C-BB90-03AE0322473B" parent="XDE-2BF98D73-2077-41D3-9311-F98F1CCBA416" discriminator="" visibility="public" name="" isSpecification="false"/>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-2BF98D73-2077-41D3-9311-F98F1CCBA416" isActive="false" isAbstract="true" isLeaf="false" isRoot="false" visibility="public" name="AbstractPassiveSensor" isSpecification="false"/>
+                <UML:Class xmi.id="XDE-65645C98-24C7-4E1F-BC2D-C83FBB9CA4ED" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="BrightnessSensor" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-82C0F30E-430F-4205-8482-295F46BDAE9A" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="operational_state" isSpecification="false"/>
+                        <UML:Attribute xmi.id="XDE-CF26F8A3-0A00-43BF-B237-2DABD5F3613A" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="temp_brightness_value" isSpecification="false"/>
+                        <UML:Attribute xmi.id="XDE-2D6EE79B-B3F9-4358-BF53-C35141C1E795" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="brightness_value" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-AC8E53AB-8EAF-4F85-990E-10B75D0B3944" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="getOperationalState" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-FAE1B9C4-3A08-48B4-9021-AABB89EBD231" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="getBrightnessValue" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-5974ECFF-0E0B-4258-9B4E-ADB0EE769418" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="setEnvBrightness" isSpecification="false">
+                            <UML:BehavioralFeature.parameter>
+                                <UML:Parameter xmi.id="XDE-424EF56A-357F-472D-B84E-A9FEDAA9A2B6" kind="in" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="temp_brightness_value" isSpecification="false"/>
+                            </UML:BehavioralFeature.parameter>
+                        </UML:Operation>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:Generalization xmi.id="XDE-FB3CB783-8C03-4201-9004-C1C49F96ED9D" child="XDE-65645C98-24C7-4E1F-BC2D-C83FBB9CA4ED" parent="XDE-B5834383-0FE4-453C-BB90-03AE0322473B" discriminator="" visibility="public" name="" isSpecification="false"/>
+                        <UML:Association xmi.id="XDE-F4791BAD-3836-4BFB-8389-8ADD87CCADF6" name="gets info from" isSpecification="false">
+                            <UML:Association.connection>
+                                <UML:AssociationEnd xmi.id="XDE-E65948CD-7EEC-47D9-A489-6437782D393B" aggregation="none" isNavigable="true" participant="XDE-968D8462-C035-48A6-8B64-6A33FC616B88" changeability="changeable" targetScope="instance" visibility="private" ordering="unordered" name="" isSpecification="false">
+                                    <UML:AssociationEnd.multiplicity>
+                                        <UML:Multiplicity>
+                                            <UML:Multiplicity.range>
+                                                <UML:MultiplicityRange lower="1" upper="1"/>
+                                            </UML:Multiplicity.range>
+                                        </UML:Multiplicity>
+                                    </UML:AssociationEnd.multiplicity>
+                                </UML:AssociationEnd>
+                                <UML:AssociationEnd xmi.id="XDE-F026F4B6-755C-44D5-AF82-5F1DBBF5525F" aggregation="none" isNavigable="false" participant="XDE-65645C98-24C7-4E1F-BC2D-C83FBB9CA4ED" changeability="changeable" targetScope="instance" visibility="private" ordering="unordered" name="" isSpecification="false">
+                                    <UML:AssociationEnd.multiplicity>
+                                        <UML:Multiplicity>
+                                            <UML:Multiplicity.range>
+                                                <UML:MultiplicityRange lower="1" upper="1"/>
+                                            </UML:Multiplicity.range>
+                                        </UML:Multiplicity>
+                                    </UML:AssociationEnd.multiplicity>
+                                </UML:AssociationEnd>
+                            </UML:Association.connection>
+                        </UML:Association>
+                        <UML:StateMachine xmi.id="XDE-057076C7-7192-4B59-B404-A797FC4FC030" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-72BBB679-CE9F-40BE-AE4A-29D55EADEDE4" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:Pseudostate xmi.id="XDE-18D6805A-F4A4-4A29-ABD3-63961D14383B" kind="initial" outgoing="XDE-17A97580-7964-41DF-822A-57622BA4F4B7" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-301DFA9A-045A-431F-92FC-D83199D70933" isConcurrent="false" outgoing="XDE-0CA4F8FA-21AA-4E48-9047-414F4C8E7307 XDE-483A0F0A-9CD9-4E05-94B0-A704A8D9A9F1" name="IdleBS" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-A96D02A1-2547-4286-9216-84407FE154F6" isConcurrent="false" outgoing="XDE-720846A5-BB49-431B-97F4-1473C4007E83 XDE-060BA5E6-4764-4720-9231-E56CEAD926CA" name="DetermineOS" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-695E0011-AAEC-4AD1-B107-13F3407CCBA0" isConcurrent="false" outgoing="XDE-8604AB46-B9CC-44BB-87DB-C49AED6E7225" name="ValueRequest" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-FA1149C2-79E8-4C1F-8713-CE3C7CD50879" isConcurrent="false" outgoing="XDE-B9B3B1C6-6DAA-4361-86D7-C203FE3BC6A5" name="CheckEnv" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-DF1538FD-62A7-46AE-AD66-94883AFADBA0" isConcurrent="false" outgoing="XDE-E640DDB2-EA1D-4B8F-BFAC-D79FF41706A3 XDE-FCF6230C-617A-43E5-8366-DE58981E7C40 XDE-0A411D94-B39B-4BCA-88A8-A41C57148F83" name="GetValFromEnv" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-5C68C30D-969E-4174-A91F-7B1BB852E36A" isConcurrent="false" outgoing="XDE-4DD009A1-0410-4BAD-A2A8-A523B5D06DE0" name="VerifyValFromEnv" isSpecification="false"/>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-4DD009A1-0410-4BAD-A2A8-A523B5D06DE0" source="XDE-5C68C30D-969E-4174-A91F-7B1BB852E36A" target="XDE-301DFA9A-045A-431F-92FC-D83199D70933" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-9396E62E-2D44-4114-B26E-314E31C76081" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^ComputingComponent.setCCBrightnessValue(brightness_value)"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-E640DDB2-EA1D-4B8F-BFAC-D79FF41706A3" source="XDE-DF1538FD-62A7-46AE-AD66-94883AFADBA0" target="XDE-5C68C30D-969E-4174-A91F-7B1BB852E36A" name="" isSpecification="false">
+                                    <UML:Transition.guard>
+                                        <UML:Guard>
+                                            <UML:Guard.expression>
+                                                <UML:BooleanExpression body="temp_brightness_value &gt; 0 &amp;&amp; temp_brightness_value &lt; 1000" language=""/>
+                                            </UML:Guard.expression>
+                                        </UML:Guard>
+                                    </UML:Transition.guard>
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-9851ABE2-D67B-423F-8523-F96E512591C9" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="brightness_value:=temp_brightness_value"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-FCF6230C-617A-43E5-8366-DE58981E7C40" source="XDE-DF1538FD-62A7-46AE-AD66-94883AFADBA0" target="XDE-5C68C30D-969E-4174-A91F-7B1BB852E36A" name="" isSpecification="false">
+                                    <UML:Transition.guard>
+                                        <UML:Guard>
+                                            <UML:Guard.expression>
+                                                <UML:BooleanExpression body="temp_brightness_value &lt; 0" language=""/>
+                                            </UML:Guard.expression>
+                                        </UML:Guard>
+                                    </UML:Transition.guard>
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-0F2B8B3E-73AE-48CF-BBD7-0773402CFB5B" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="brightness_value:=0"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-0A411D94-B39B-4BCA-88A8-A41C57148F83" source="XDE-DF1538FD-62A7-46AE-AD66-94883AFADBA0" target="XDE-5C68C30D-969E-4174-A91F-7B1BB852E36A" name="" isSpecification="false">
+                                    <UML:Transition.guard>
+                                        <UML:Guard>
+                                            <UML:Guard.expression>
+                                                <UML:BooleanExpression body="temp_brightness_value &gt; 1000" language=""/>
+                                            </UML:Guard.expression>
+                                        </UML:Guard>
+                                    </UML:Transition.guard>
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-3353D8F5-7B1B-4DBD-8869-70961B33461E" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="brightness_value:=1000"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-B9B3B1C6-6DAA-4361-86D7-C203FE3BC6A5" source="XDE-FA1149C2-79E8-4C1F-8713-CE3C7CD50879" target="XDE-DF1538FD-62A7-46AE-AD66-94883AFADBA0" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-22DF21B3-0804-47B0-806E-5706E684651E" operation="XDE-5974ECFF-0E0B-4258-9B4E-ADB0EE769418" name="setEnvBrightness" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-8604AB46-B9CC-44BB-87DB-C49AED6E7225" source="XDE-695E0011-AAEC-4AD1-B107-13F3407CCBA0" target="XDE-FA1149C2-79E8-4C1F-8713-CE3C7CD50879" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-2143244D-0653-4298-9789-D2E817D303DB" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^Environment.getEnvBrightness()"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-0CA4F8FA-21AA-4E48-9047-414F4C8E7307" source="XDE-301DFA9A-045A-431F-92FC-D83199D70933" target="XDE-695E0011-AAEC-4AD1-B107-13F3407CCBA0" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-F527DA77-19F5-4D4D-B317-6752A079815C" operation="XDE-FAE1B9C4-3A08-48B4-9021-AABB89EBD231" name="getBrightnessValue" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-17A97580-7964-41DF-822A-57622BA4F4B7" source="XDE-18D6805A-F4A4-4A29-ABD3-63961D14383B" target="XDE-301DFA9A-045A-431F-92FC-D83199D70933" name="" isSpecification="false"/>
+                                <UML:Transition xmi.id="XDE-720846A5-BB49-431B-97F4-1473C4007E83" source="XDE-A96D02A1-2547-4286-9216-84407FE154F6" target="XDE-301DFA9A-045A-431F-92FC-D83199D70933" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-46F091D4-AD2E-49AC-900F-0AD9DA6A3BCC" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="operational_state:=1; ^ComputingComponent.OSTrue()"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-060BA5E6-4764-4720-9231-E56CEAD926CA" source="XDE-A96D02A1-2547-4286-9216-84407FE154F6" target="XDE-301DFA9A-045A-431F-92FC-D83199D70933" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-FEBCAC1F-752B-4608-8BCC-BC85BFC2BB37" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="operational_state:=0; ^ComputingComponent.OSFalse()"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-483A0F0A-9CD9-4E05-94B0-A704A8D9A9F1" source="XDE-301DFA9A-045A-431F-92FC-D83199D70933" target="XDE-A96D02A1-2547-4286-9216-84407FE154F6" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-C92F8148-C77A-4642-9281-94EF04E9931D" operation="XDE-AC8E53AB-8EAF-4F85-990E-10B75D0B3944" name="getOperationalState" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+                <UML:Class xmi.id="XDE-968D8462-C035-48A6-8B64-6A33FC616B88" isActive="false" isAbstract="false" isLeaf="false" isRoot="false" visibility="public" name="Environment" isSpecification="false">
+                    <UML:Classifier.feature>
+                        <UML:Attribute xmi.id="XDE-F600A998-3B2D-4DE4-A050-239C48884196" changeability="changeable" targetScope="instance" ownerScope="instance" visibility="public" ordering="unordered" type="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="env_brightness" isSpecification="false"/>
+                        <UML:Operation xmi.id="XDE-40708F6E-0F66-4B52-83B6-6BDBD21A7ED6" concurrency="sequential" isRoot="false" isLeaf="false" isAbstract="false" isQuery="false" ownerScope="instance" visibility="public" specification="" name="getEnvBrightness" isSpecification="false"/>
+                    </UML:Classifier.feature>
+                    <UML:Namespace.ownedElement>
+                        <UML:StateMachine xmi.id="XDE-5DD8FDDD-96A1-4658-A748-182E3CA03AC9" name="StateMachine1" isSpecification="false">
+                            <UML:StateMachine.top>
+                                <UML:CompositeState xmi.id="XDE-2AF1A356-602E-4187-BF27-76C5C1B8255F" isConcurrent="false" name="TOP" isSpecification="false">
+                                    <UML:CompositeState.subvertex>
+                                        <UML:CompositeState xmi.id="XDE-0629A977-816D-4691-9127-9382B66318AD" isConcurrent="false" outgoing="XDE-6A8369DF-E011-4AD4-9E72-78340676B5DC" name="IdleEnv" isSpecification="false"/>
+                                        <UML:Pseudostate xmi.id="XDE-EE48C3CA-43C3-41CF-97B9-6AC6275CF46C" kind="initial" outgoing="XDE-1404062C-B422-49D5-B1FC-E6C67677D44F" name="" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" isConcurrent="false" outgoing="XDE-E13FB2D2-F398-4905-A808-DC97F6543B4C XDE-84D9FBE2-6C7F-4CC9-B0CA-0E7AC282D084 XDE-D5F3D9AF-1B71-4EB6-AEFB-EB81BA1B0964 XDE-946626A9-A2D6-4AF5-9334-E3FF9F6FAB53 XDE-B716AC55-E317-42C4-8651-F25A4AD14A63 XDE-2233124C-EFFA-4CD3-9495-A623A5DBDA0F XDE-5A4619AF-85E9-493F-AB6C-F12AE4BFF74D" name="reqForBrightnessInfo" isSpecification="false"/>
+                                        <UML:CompositeState xmi.id="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" isConcurrent="false" outgoing="XDE-2F7D8402-A68C-456E-AEE3-545BBA168501" name="AssignBrightValue" isSpecification="false"/>
+                                    </UML:CompositeState.subvertex>
+                                </UML:CompositeState>
+                            </UML:StateMachine.top>
+                            <UML:StateMachine.transitions>
+                                <UML:Transition xmi.id="XDE-2F7D8402-A68C-456E-AEE3-545BBA168501" source="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" target="XDE-0629A977-816D-4691-9127-9382B66318AD" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-576E2A2F-E7C7-4E7A-B359-A01F7012A9B3" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="^BrightnessSensor.setEnvBrightness(env_brightness)"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-E13FB2D2-F398-4905-A808-DC97F6543B4C" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-0AC92638-8A1B-408A-8119-B210642E4575" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=1200"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-84D9FBE2-6C7F-4CC9-B0CA-0E7AC282D084" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-A0A18549-DFA8-42D2-9913-5B2E79C873B3" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=1000"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-D5F3D9AF-1B71-4EB6-AEFB-EB81BA1B0964" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false"/>
+                                <UML:Transition xmi.id="XDE-946626A9-A2D6-4AF5-9334-E3FF9F6FAB53" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-BEBC0C93-4A09-4F68-89DA-AD0BA3E98369" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=-100"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-B716AC55-E317-42C4-8651-F25A4AD14A63" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-69305C04-19F2-423D-A78C-EE1D9228615A" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=0"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-2233124C-EFFA-4CD3-9495-A623A5DBDA0F" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-8FB7EE92-07D0-436F-946B-65D466B57DBB" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=800"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-5A4619AF-85E9-493F-AB6C-F12AE4BFF74D" source="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" target="XDE-D9D5F8FB-08E0-470F-A63A-D4F58753A4BF" name="" isSpecification="false">
+                                    <UML:Transition.effect>
+                                        <UML:UninterpretedAction xmi.id="XDE-A66BA4AA-D168-4E40-B99B-9B3BC8AFB3DD" isAsynchronous="false" name="" isSpecification="false">
+                                            <UML:Action.script>
+                                                <UML:ActionExpression language="" body="env_brightness:=500"/>
+                                            </UML:Action.script>
+                                        </UML:UninterpretedAction>
+                                    </UML:Transition.effect>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-6A8369DF-E011-4AD4-9E72-78340676B5DC" source="XDE-0629A977-816D-4691-9127-9382B66318AD" target="XDE-A4D96DD1-452C-4185-9104-8386DB9B358F" name="" isSpecification="false">
+                                    <UML:Transition.trigger>
+                                        <UML:Event>
+                                            <UML:ModelElement.namespace>
+                                                <UML:Namespace>
+                                                    <UML:Namespace.ownedElement>
+                                                        <UML:CallEvent xmi.id="XDE-84D55979-5B52-4E76-9C09-304D37FAAE16" operation="XDE-40708F6E-0F66-4B52-83B6-6BDBD21A7ED6" name="getEnvBrightness" isSpecification="false"/>
+                                                    </UML:Namespace.ownedElement>
+                                                </UML:Namespace>
+                                            </UML:ModelElement.namespace>
+                                        </UML:Event>
+                                    </UML:Transition.trigger>
+                                </UML:Transition>
+                                <UML:Transition xmi.id="XDE-1404062C-B422-49D5-B1FC-E6C67677D44F" source="XDE-EE48C3CA-43C3-41CF-97B9-6AC6275CF46C" target="XDE-0629A977-816D-4691-9127-9382B66318AD" name="" isSpecification="false"/>
+                            </UML:StateMachine.transitions>
+                        </UML:StateMachine>
+                    </UML:Namespace.ownedElement>
+                </UML:Class>
+            </UML:Namespace.ownedElement>
+        </UML:Model>
+        <UML:DataType xmi.id="XDE-13568BB6-70FC-4F93-BBB4-B21425DBCCC3" name="int"/>
+        <UML:TaggedValue xmi.id="XDE-49981284-59BB-4596-8940-848F5E5E2547" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-CF26F8A3-0A00-43BF-B237-2DABD5F3613A"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-F3A2D0B1-AE49-4763-8A72-D65D83C2B2D9" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-ADB54C15-DB14-40EE-A7E9-D10F1BBF14D4"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-42C79A4A-C335-430F-95F6-B200C5F5E8CE" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-968D8462-C035-48A6-8B64-6A33FC616B88"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-C0AC9C06-A27A-4198-81A1-F72B42EF8F85" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-65645C98-24C7-4E1F-BC2D-C83FBB9CA4ED"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-CDD989F2-A675-4CDB-985D-9E87DBBE0025" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-F4791BAD-3836-4BFB-8389-8ADD87CCADF6"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-4BE772C0-DF46-4ED5-87AE-B606BA15DFC5" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-2D6EE79B-B3F9-4358-BF53-C35141C1E795"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-40AFC1C5-370F-4242-B210-C2E55D8696BE" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-2BF98D73-2077-41D3-9311-F98F1CCBA416"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-B4FA1748-20C1-4CD3-BB7C-79A57DA67479" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-B5834383-0FE4-453C-BB90-03AE0322473B"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-629F4A9B-966B-41DE-A085-B0C644FB6244" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-78DBF4B3-12AF-44A2-845B-0B9836D99CF2"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-158B11A4-B3B1-4CC6-95BC-AB6316944B9E" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-F600A998-3B2D-4DE4-A050-239C48884196"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-600363D9-9215-4483-B0E3-E9C1F4B8D66A" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-29FE6985-7B10-4C24-AB39-A3CD77EAD256"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+        <UML:TaggedValue xmi.id="XDE-DDECE87B-8B47-41A6-A07F-32189EBE11CF" name="persistence">
+            <UML:TaggedValue.dataValue>persistent</UML:TaggedValue.dataValue>
+            <UML:TaggedValue.modelElement>
+                <UML:ModelElement xmi.idref="XDE-82C0F30E-430F-4205-8482-295F46BDAE9A"/>
+            </UML:TaggedValue.modelElement>
+        </UML:TaggedValue>
+    </XMI.content>
+</XMI>
