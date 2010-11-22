@@ -36,9 +36,7 @@ public class MainDriver {
         ConversionDriver cvd = new ConversionDriver(filename);
 		
         NodeUtilityClass nuc = new NodeUtilityClass();
-        nuc.println("***** Starting HydraVJ v3.01 (10/24/2005)*******\n");
-        nuc.println("***** Warning: Contains Hack around Process Termination Bug! *******\n");
-        nuc.println("***** Warning: All processes active! *******\n");
+        
 	    try {
 	    	cvd.setHilIntermediateFilename(hilIntFilename);
             cvd.convert();
@@ -53,7 +51,7 @@ public class MainDriver {
 
 	private static void printUsage() {
 		System.err.println("Hydra v4.0\n\n" +
-				"Usage: java -jar hydra.jar [model XMI input] [Promela output]\n\n" +
+				"Usage: java -jar hydra.jar <model XMI input> <Promela output> [intermediate HIL output]\n\n" +
 				"Hydra was developed by the Software Engineering and Network Systems Group\n" +
 				"at Michigan State University.");
 	}
