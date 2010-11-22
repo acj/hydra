@@ -30,20 +30,19 @@ public class UMLExpr1 extends NodeUtilityClass implements UMLExpr1Constants {
          String retStr;
          dataStream = new StringReader (expresssion);
          ReInit(dataStream);
-         /* for debug only
-  	 println ("---------------------------------------------------------------------------------");
-  	 println ("  parsing \"" + expresssion + "\"");
-  	 println ("---------------------------------------------------------------------------------");
-  	 */
+         //* for debug only
+
+  	 	 //println ("---------------------------------------------------------------------------------");
+         //*/
          try {
                 retStr = stmt();
          }  catch (ParseException pe) {
                 retStr = "*ERROR*";
+         	 	System.err.println("---------------------------------------------------------------------------");
+         	 	System.err.println("Error parsing \"" + expresssion + "\"\n");
+                System.err.println(pe.toString());
          }
-         /* for debug only
-  	 println ("---------------------------------------------------------------------------------");
-  	 println ("");
-  	 */
+       
          return retStr;
   }
 

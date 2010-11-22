@@ -49,25 +49,22 @@ public class UMLExpr1 extends NodeUtilityClass {
   }
 
   // TODO work it! work it good...
-  public String Parse_Me (aNode theClassRef, String expresssion) /*throws ParseException*/ {
+  public String Parse_Me (aNode theClassRef, String expression) /*throws ParseException*/ {
   	 classRef = theClassRef;
   	 String retStr;
-  	 dataStream = new StringReader (expresssion);
+  	 dataStream = new StringReader (expression);
   	 ReInit(dataStream);
-  	 /* for debug only
-  	 println ("---------------------------------------------------------------------------------");
-  	 println ("  parsing \"" + expresssion + "\"");
-  	 println ("---------------------------------------------------------------------------------");
-  	 */
   	 try {
   	 	retStr = stmt();
   	 }  catch (ParseException pe) {
   	 	retStr = "*ERROR*";
+
+        System.err.println("-------------------------------------------\
+--------------------------------");
+        System.err.println("Error parsing \"" + expression + "\"\n");
+        System.err.println(pe.toString());
   	 }
-  	 /* for debug only
-  	 println ("---------------------------------------------------------------------------------");
-  	 println ("");
-  	 */
+
   	 return retStr;
   }
   
