@@ -59,8 +59,7 @@ public class UMLExpr1 extends NodeUtilityClass {
   	 }  catch (ParseException pe) {
   	 	retStr = "*ERROR*";
 
-        System.err.println("-------------------------------------------\
---------------------------------");
+        System.err.println("------------------------------------------------");
         System.err.println("Error parsing \"" + expression + "\"\n");
         System.err.println(pe.toString());
   	 }
