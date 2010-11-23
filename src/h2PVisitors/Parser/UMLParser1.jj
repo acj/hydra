@@ -1,6 +1,8 @@
 /**
- *  UML1.jj
+ * UML1Parser.jj
  * UML/Hydra parser
+ *
+ * This grammar generates/parses HIL (Hydra Intermediate Language).
  */
 
 options {
@@ -111,7 +113,7 @@ TOKEN: /* main items */
   <AND: "&"> 
 |  <NOT: "~">
 |  <OR: "|">
-|  <COMPARE_OP:  "=" | "!=" | ">=" | "<=" | ">" | "<"  > 
+|  <COMPARE_OP:  "=" | "==" | "!=" | ">=" | "<=" | ">" | "<"  > 
 |  <IN: "in">
 |  <ASSIGNOP: ":=">
 
@@ -925,11 +927,14 @@ aNode function() throws ParseException:
 	String parmlistStr = "";
 }
 {
-	t = <ID> { funcID = t.image; }
+	(t = <ID> { funcID = t.image; }
 	<LPARENS>
 	parmlistStr = parmlist()
 	<RPARENS>
-	{ return new TransitionActionNode ("function", funcID, parmlistStr); }
+	) { return new TransitionActionNode ("function", funcID, parmlistStr); }
+|	(t = <ID> { funcID = t.image; }
+	<LPARENS> <RPARENS>
+	) { return new TransitionActionNode ("function", funcID, ""); }
 }
 
 String functioninassign() throws ParseException:

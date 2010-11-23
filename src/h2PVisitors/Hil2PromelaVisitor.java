@@ -661,7 +661,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		if (actType.equals("function")) {
 			// T ODO from visittranactionNodePak->outputFunction
-			String retVal = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getParamList());
+			String retVal = "";
+			if (! tNode.getParamList().equals("")) {
+				retVal = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getParamList());
+			}
 			tmpStr += strln("        " + tNode.getFunctionID() + "(" + retVal + ")");
 		}
 
