@@ -6,7 +6,7 @@
  */
 
 options {
-  LOOKAHEAD=3;
+  //LOOKAHEAD=3;
   CHOICE_AMBIGUITY_CHECK = 2;
   OTHER_AMBIGUITY_CHECK = 1;
   DEBUG_PARSER = false;
@@ -19,7 +19,7 @@ options {
   USER_TOKEN_MANAGER = false;
   USER_CHAR_STREAM = false;
   SANITY_CHECK = true;
-  FORCE_LA_CHECK = true;
+  FORCE_LA_CHECK = false;
   STATIC = false;
 }
 
@@ -676,12 +676,13 @@ aNode event() throws ParseException:
 	{ return new EventNode (eventName, "normal", eventWhenVar); }
 |
 	(
-	  <WHEN> <LPARENS>
-	  ( 
-	  		eventWhenVar = complexguard()
-	  |		t = <ID> { eventWhenVar = t.image; }
-	  )
-	  <RPARENS>
+		<WHEN> <LPARENS>
+		(
+			LOOKAHEAD(2) 
+			eventWhenVar = complexguard()
+			| t = <ID> { eventWhenVar = t.image; }
+		)
+		<RPARENS>
 	)
 	{ return new EventNode (eventName, "when", eventWhenVar); }
 /*|
@@ -771,27 +772,29 @@ aNode action() throws ParseException:
 	aNode childNode;
 }
 {
-	
 	(
 	  <NEW> <LPARENS> 
 	  t = <ID> { content = t.image; }
 	  <RPARENS>
-	)
-	{ return new TransitionActionNode ("newaction", content); } 
-|	(
-	  <SEND> <LPARENS>
-	  childNode = message()
-	  <RPARENS>
-	)
-	{
-		tNode = new TransitionActionNode ("sendmsg"); 
-		return rootNode.addChildToNode(tNode, childNode); 
-	} 
-|	tNode = printstmt() { return tNode; }
-//|	LOOKAHEAD( <ID><ASSIGNOP> ) (
-|	tNode = assignstmt() { return tNode; }
-|	tNode = function() { return tNode; }
-//)
+	) { return new TransitionActionNode ("newaction", content); } 
+	|
+		(
+		  <SEND> <LPARENS>
+		  childNode = message()
+		  <RPARENS>
+		)
+		{
+			tNode = new TransitionActionNode ("sendmsg"); 
+			return rootNode.addChildToNode(tNode, childNode); 
+		} 
+	|
+		tNode = printstmt() { return tNode; }
+	|
+		LOOKAHEAD(2)
+		tNode = assignstmt() { return tNode; }
+	|
+		LOOKAHEAD(2)
+		tNode = function() { return tNode; }
 }
 
 aNode messages() throws ParseException:
@@ -841,13 +844,14 @@ aNode assignstmt() throws ParseException:
 	{ return new TransitionActionNode ("assignstmt", retVal); }
 }
 
+// Addition and subtraction
 String stmtpm() throws ParseException:
 {
 	Token t;
 	String retVal = "";
 	String temp;
 }
-{ // double check what it does!
+{
 	(
 	  temp = stmtdm() { retVal += temp; }
 	  (
@@ -859,13 +863,14 @@ String stmtpm() throws ParseException:
 	) { return retVal; }
 }
 
+// Division and multiplication
 String stmtdm() throws ParseException:
 {
 	Token t;
 	String retVal = "";
 	String temp;
 }
-{ // double check what it does!
+{
 	(
 	  temp = actterm() { retVal += temp; }
 	  (
@@ -877,30 +882,36 @@ String stmtdm() throws ParseException:
 	) { return retVal; }
 }
 
+// Terminals (numbers, identifiers, function calls, etc.)
 String actterm() throws ParseException:
 {
 	Token t;
 	String retVal = "";
+	String temp = "";
 }
 {
-	// LOOKAHEAD(functioninassign())
+	(
+	LOOKAHEAD(2)
 	retVal = functioninassign() { return retVal; }
-|	(
+	|
+		LOOKAHEAD(2)
+		temp = pred() { retVal += temp; }
+	|
 		( <MINUS> { retVal += "-"; } )? 
 		(
-		    t = <ID> 
-		  | t = <NUM>
-		) { retVal += t.image; }
-	) { return retVal; }
-/*	(
-		( "-" { retVal += "-"; } )? 
-		t = <ID> { retVal += t.image;}
-	) { return retVal; }*/
-|	(
-		<LPARENS>
-		retVal = stmtpm()
-		<RPARENS>
-	) { return ("(" + retVal + ")"); }
+		    t = <ID> { retVal += t.image; }
+		|
+			t = <NUM> { retVal += t.image; }
+		) 
+		{ return retVal; }
+	|
+		(
+			<LPARENS>
+			retVal = stmtpm()
+			<RPARENS>
+		)
+		{ return ("(" + retVal + ")"); }
+	)
 }
 
 aNode printstmt() throws ParseException:
@@ -927,14 +938,13 @@ aNode function() throws ParseException:
 	String parmlistStr = "";
 }
 {
-	(t = <ID> { funcID = t.image; }
-	<LPARENS>
-	parmlistStr = parmlist()
-	<RPARENS>
-	) { return new TransitionActionNode ("function", funcID, parmlistStr); }
-|	(t = <ID> { funcID = t.image; }
-	<LPARENS> <RPARENS>
-	) { return new TransitionActionNode ("function", funcID, ""); }
+	(
+		t = <ID> { funcID = t.image; }
+		<LPARENS>
+		( parmlistStr = parmlist() )?
+		<RPARENS>
+	) 
+	{ return new TransitionActionNode ("function", funcID, parmlistStr); }
 }
 
 String functioninassign() throws ParseException:
@@ -971,9 +981,12 @@ String parm() throws ParseException:
 	String temp;
 }
 {
-	t = <ID> { return t.image; }
-|	t = <NUM> { return t.image; }
-|	temp = pred() { return temp; }
+	(
+		temp = stmtpm()
+	) 
+	{
+		return temp;
+	}
 }
 
 String pred() throws ParseException:
@@ -984,7 +997,7 @@ String pred() throws ParseException:
 }
 {
 	(
-		temp = stmtpm() { retVal += temp; }
+		temp = numid() { retVal += temp; }
 		t = <COMPARE_OP> { retVal += t.image; }
 		temp = numid() { retVal += temp; }
 	)  { return retVal; }

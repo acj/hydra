@@ -4,7 +4,7 @@
  */
 
 options {
-  LOOKAHEAD=2;
+  //LOOKAHEAD=2;
   CHOICE_AMBIGUITY_CHECK = 2;
   OTHER_AMBIGUITY_CHECK = 1;
   DEBUG_PARSER = false;
@@ -61,7 +61,10 @@ public class UMLExpr1 extends NodeUtilityClass {
 
         System.err.println("------------------------------------------------");
         System.err.println("Error parsing \"" + expression + "\"\n");
-        System.err.println(pe.toString());
+        //System.err.println(pe.toString());
+        pe.printStackTrace();
+        
+        System.exit(-1);
   	 }
 
   	 return retStr;
@@ -155,7 +158,7 @@ TOKEN:
 |  <AND: "&">
 |  <NOT: "~">
 |  <IMP: "->">
-|  <COMPARE_OP: "=" | "!=" | ">=" | "<=" | ">" | "<" > 
+|  <COMPARE_OP: "=" | "==" | "!=" | ">=" | "<=" | ">" | "<" > 
 |  <ASSGNOP: ":=">
 |  <IN: "in">
 |  <WHEN: "when">
@@ -188,10 +191,14 @@ String stmt() throws ParseException:
 {}
 {
   (
-      finalStr = assignment()
-    | finalStr = guard()
-    | finalStr = parmlist()
-    | finalStr = whenclause()
+  	LOOKAHEAD(2)
+    finalStr = assignment()
+    |
+    	finalStr = guard()
+    |
+    	finalStr = parmlist()
+    |
+    	finalStr = whenclause()
   )
   { 
     return finalStr;
@@ -210,72 +217,6 @@ String assignment() throws ParseException:
 	{ return Assignment(temp1, temp2); }
 }
 
-String stmtpm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp;
-}
-{ // double check what it does!
-	(
-	  temp = stmtdm() { retVal += temp; }
-	  (
-	    ( 
-	        t = <PLUS>
-	      | t = <MINUS>
-	    ) { retVal += t.image; }
-	    temp = stmtdm() {retVal += temp;}
-	  )*
-	) { return retVal; }
-}
-
-String stmtdm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp;
-}
-{ // double check what it does!
-	(
-	  temp = actterm() { retVal += temp; }
-	  (
-	    ( 
-	        t = <TIMES>
-	      | t = <SLASH>
-	    ) { retVal += t.image; }
-	    temp = actterm() {retVal += temp;}
-	  )*
-	) { return retVal; }
-}
-
-String actterm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp;
-	boolean isID = false;
-}
-{
-	retVal = function() { return retVal; }
-|	(
-		( <MINUS> { retVal += "-"; } )? 
-		(
-		  t = <ID> { isID = true; }
-		| t = <NUM>
-		) { temp = t.image; }
-	)
-	{
-		if (isID) {
-		  temp = InstVar(temp);
-		} 
-		return (retVal + temp); }
-|	(
-		<LPARENS>
-		retVal = stmtpm()
-		<RPARENS>
-	) { return ("(" + retVal + ")"); }
-}
-
 String function() throws ParseException:
 {
 	Token t;
@@ -286,7 +227,7 @@ String function() throws ParseException:
 	(
 		t = <ID> { funcID = t.image; }
 		<LPARENS>
-		parmlistStr = parmlist()
+		( parmlistStr = parmlist() )?
 		<RPARENS>
 	)
 	{ return (funcID + "(" + parmlistStr + ")"); }
@@ -320,9 +261,7 @@ String parm() throws ParseException:
 	String temp;
 }
 {
-	t = <ID> { return InstVar(t.image); }
-|	t = <NUM> { return t.image; }
-|	temp = pred() { return temp; }
+	temp = stmtpm() { return temp; }
 }
 
 String guard() throws ParseException:
@@ -370,29 +309,29 @@ String gdterm() throws ParseException:
 	boolean isnot = false;
 }
 {
-	retVal = pred()
-	{ return retVal; }
-/*|	(
-	  t = <ID>  { temp = t.image; }
+	(
+		LOOKAHEAD(2)
+		retVal = pred() { return retVal; }
+		|	
+			(
+		  		( <NOT> { isnot = true;} )?
+				t = <ID>  { temp = t.image; }
+			)
+			{ 
+				if (isnot) {
+					return Logic("not", temp); 
+				} else {
+					return  InstVar(temp); 
+				}
+			} 
+		|
+			(
+				<LPARENS>
+				retVal = guardbody()
+				<RPARENS>
+			)
+		{  return ("(" + retVal + ")"); }
 	)
-	{ return InstVar(temp); } */
-|	(
-  	  ( <NOT> { isnot = true;} )?
-	  t = <ID>  { temp = t.image; }
-	)
-	{ 
-		if (isnot) {
-			return Logic("not", temp); 
-		} else {
-			return  InstVar(temp); 
-		}
-	} 
-|	(
-	  <LPARENS>
-	  retVal = guardbody()
-	  <RPARENS>
-	)
-	{  return ("(" + retVal + ")"); }
 }
 
 String pred() throws ParseException:
@@ -402,12 +341,14 @@ String pred() throws ParseException:
 	String temp1, temp2, temp3;
 }
 {
+	LOOKAHEAD(2)
 	(
 		temp1 = numid()
 		t = <COMPARE_OP> { temp2 = t.image; }
 		temp3 = numid()
 	)  { return Compare(temp1, temp2, temp3); }
-|	retVal = function() { return retVal; }
+	|
+		retVal = function() { return retVal; }
 }
 
 String numid() throws ParseException:
@@ -431,3 +372,81 @@ String whenclause() throws ParseException:
 	{ return retVal; }
 }
 
+// Terminals (numbers, identifiers, function calls, etc.)
+String actterm() throws ParseException:
+{
+	Token t;
+	String retVal = "";
+	String temp = "";
+	boolean isID = false;
+}
+{
+	(LOOKAHEAD(2)
+    	retVal = function() { return retVal; }
+	|
+		(
+			( <MINUS> { retVal += "-"; } )? 
+			(
+				t = <ID> { isID = true; }
+			|
+				t = <NUM>
+			) { temp = t.image; }
+		) {
+			if (isID) {
+				temp = InstVar(temp);
+			} 
+			return (retVal + temp);
+		  }
+	|
+		(
+			<LPARENS>
+			retVal = stmtpm()
+			<RPARENS>
+		)
+		{ return ("(" + retVal + ")"); }
+	)
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// The following rules are taken from UMLParser1
+//
+// Please try to keep them in sync.
+//////////////////////////////////////////////////////////////////////////////
+
+// Addition and subtraction
+String stmtpm() throws ParseException:
+{
+	Token t;
+	String retVal = "";
+	String temp;
+}
+{
+	(
+	  temp = stmtdm() { retVal += temp; }
+	  (
+	    (   t = <PLUS>
+	      | t = <MINUS>
+	    ) { retVal += t.image; }
+	    temp = stmtdm() {retVal += temp;}
+	  )*
+	) { return retVal; }
+}
+
+// Division and multiplication
+String stmtdm() throws ParseException:
+{
+	Token t;
+	String retVal = "";
+	String temp;
+}
+{
+	(
+	  temp = actterm() { retVal += temp; }
+	  (
+	    (   t = <TIMES>
+	      | t = <SLASH>
+	    ) { retVal += t.image; }
+	    temp = actterm() {retVal += temp;}
+	  )*
+	) { return retVal; }
+}
