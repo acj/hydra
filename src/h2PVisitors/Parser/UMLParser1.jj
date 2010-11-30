@@ -116,13 +116,13 @@ TOKEN: /* main items */
 
 <*> TOKEN : /* OPERATORS, IDENTIFIERS & NUMBERS */
 {
-  <AND: "&"> 
+   <AND: "&&" | "&"> 
 |  <NOT: "~">
-|  <OR: "|">
-|  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<" >
-|  <EQUALITY_OP: "==" | "=" > 
+|  <OR: "||" | "|">
+|  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<">
+|  <EQUALITY_OP: "==" | "<>"> 
 |  <IN: "in">
-|  <ASSIGNOP: ":=">
+|  <ASSIGNOP: ":=" | "=">
 
 |  <PLUS: "+">
 |  <MINUS: "-">
@@ -135,7 +135,7 @@ TOKEN: /* main items */
 
 // TODO the negative causes problems in lexing, the negative 
 // numbers will have to be moved directly into the parser!
- |   < #CONSTANT: ("-")? ( <DIGIT> )+ >
+|   < #CONSTANT: ("-")? ( <DIGIT> )+ >
 //|   < #CONSTANT: ( <DIGIT> )+ >
 |   < #DIGIT: ["0" - "9"] >
 |   < #LETTER: ["A"-"Z"] | ["a"-"z"] >

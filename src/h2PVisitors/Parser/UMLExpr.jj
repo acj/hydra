@@ -127,13 +127,13 @@ SKIP:
 
 TOKEN:
 {
-   <OR: "|">
-|  <AND: "&">
+   <OR: "||" | "|">
+|  <AND: "&&" | "&">
 |  <NOT: "~">
 |  <IMP: "->">
 |  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<" >
-|  <EQUALITY_OP: "==" | "=" > 
-|  <ASSGNOP: ":=">
+|  <EQUALITY_OP: "==" | "<>"> 
+|  <ASSGNOP: ":=" | "=">
 |  <IN: "in">
 |  <WHEN: "when">
 |  <SENT: "sent">
