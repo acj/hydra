@@ -39,6 +39,12 @@ public class UMLParser1 extends NodeUtilityClass {
     public void setRootNode (WorldUtilNode theRootNode) {
     	rootNode = theRootNode;
     }
+    
+    // Dummy method to allow us to use the same expression rules from
+    // UMLExpr.
+    public String InstVar (String varname) {
+    	return varname;
+    }
 }
 
 PARSER_END(UMLParser1)
@@ -113,7 +119,8 @@ TOKEN: /* main items */
   <AND: "&"> 
 |  <NOT: "~">
 |  <OR: "|">
-|  <COMPARE_OP:  "=" | "==" | "!=" | ">=" | "<=" | ">" | "<"  > 
+|  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<" >
+|  <EQUALITY_OP: "==" | "=" > 
 |  <IN: "in">
 |  <ASSIGNOP: ":=">
 
@@ -566,15 +573,6 @@ aNode instvar() throws ParseException:
 	{ return new InstanceVariableNode (vType, tVar, initVal); }
 }
 
-String numid() throws ParseException:
-{
-	Token t;
-}
-{
-	t = <ID> { return t.image; }
-|	t = <NUM> { return t.image; }
-}
-
 void assocbody() throws ParseException:
 {}
 {
@@ -794,7 +792,7 @@ aNode action() throws ParseException:
 		tNode = assignstmt() { return tNode; }
 	|
 		LOOKAHEAD(2)
-		tNode = function() { return tNode; }
+		tNode = functionInAction() { return tNode; }
 }
 
 aNode messages() throws ParseException:
@@ -840,78 +838,8 @@ aNode assignstmt() throws ParseException:
 {
 	t = <ID> { retVal += t.image; }
 	t = <ASSIGNOP> { retVal += t.image; }
-	temp = stmtpm() { retVal += temp; }
+	temp = expression() { retVal += temp; }
 	{ return new TransitionActionNode ("assignstmt", retVal); }
-}
-
-// Addition and subtraction
-String stmtpm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp;
-}
-{
-	(
-	  temp = stmtdm() { retVal += temp; }
-	  (
-	    (   t = <PLUS>
-	      | t = <MINUS>
-	    ) { retVal += t.image; }
-	    temp = stmtdm() {retVal += temp;}
-	  )*
-	) { return retVal; }
-}
-
-// Division and multiplication
-String stmtdm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp;
-}
-{
-	(
-	  temp = actterm() { retVal += temp; }
-	  (
-	    (   t = <TIMES>
-	      | t = <SLASH>
-	    ) { retVal += t.image; }
-	    temp = actterm() {retVal += temp;}
-	  )*
-	) { return retVal; }
-}
-
-// Terminals (numbers, identifiers, function calls, etc.)
-String actterm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-	String temp = "";
-}
-{
-	(
-	LOOKAHEAD(2)
-	retVal = functioninassign() { return retVal; }
-	|
-		LOOKAHEAD(2)
-		temp = pred() { retVal += temp; }
-	|
-		( <MINUS> { retVal += "-"; } )? 
-		(
-		    t = <ID> { retVal += t.image; }
-		|
-			t = <NUM> { retVal += t.image; }
-		) 
-		{ return retVal; }
-	|
-		(
-			<LPARENS>
-			retVal = stmtpm()
-			<RPARENS>
-		)
-		{ return ("(" + retVal + ")"); }
-	)
 }
 
 aNode printstmt() throws ParseException:
@@ -925,13 +853,13 @@ aNode printstmt() throws ParseException:
 	t = <PRINTEXPRESSION> { content = t.image; }
 	(
 		<COMMA>
-		parmlistStr = parmlist()
+		parmlistStr = parameterList()
 	)?
 	<RPARENS>
 	{ return new TransitionActionNode ("printstmt", content, parmlistStr); }
 }
 
-aNode function() throws ParseException:
+aNode functionInAction() throws ParseException:
 {
 	Token t;
 	String funcID = "";
@@ -941,10 +869,26 @@ aNode function() throws ParseException:
 	(
 		t = <ID> { funcID = t.image; }
 		<LPARENS>
-		( parmlistStr = parmlist() )?
+		( parmlistStr = parameterList() )?
 		<RPARENS>
 	) 
 	{ return new TransitionActionNode ("function", funcID, parmlistStr); }
+}
+
+String function() throws ParseException:
+{
+	Token t;
+	String funcID = "";
+	String parameterListStr = "";
+}
+{
+	(
+		t = <ID> { funcID = t.image; }
+		<LPARENS>
+		( parameterListStr = parameterList() )?
+		<RPARENS>
+	)
+	{ return (funcID + "(" + parameterListStr + ")"); }
 }
 
 String functioninassign() throws ParseException:
@@ -956,12 +900,12 @@ String functioninassign() throws ParseException:
 {
 	t = <ID> { funcID = t.image; }
 	<LPARENS>
-	parmlistStr = parmlist()
+	parmlistStr = parameterList()
 	<RPARENS>
 	{ return (funcID + "(" + parmlistStr + ")"); }
 }
 
-String parmlist() throws ParseException:
+String parameterList() throws ParseException:
 {
 	String retVal = "";
 	String temp = "";
@@ -981,12 +925,7 @@ String parm() throws ParseException:
 	String temp;
 }
 {
-	(
-		temp = stmtpm()
-	) 
-	{
-		return temp;
-	}
+	temp = expression() { return temp; }
 }
 
 String pred() throws ParseException:
@@ -1009,3 +948,167 @@ String pred() throws ParseException:
 	)  { return retVal; }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Expression parsing rules
+//
+// !!! Please keep in sync with UMLExpr.jj !!!
+
+String expression() throws ParseException:
+{
+	String retVal = "";
+}
+{
+	retVal = logicalExpression()
+	{ return retVal; }
+}
+
+String logicalExpression() throws ParseException:
+{
+	String retVal = "";
+	String temp = "";
+}
+{
+	retVal = booleanExpression()
+	(
+		<OR>
+		temp = booleanExpression() { retVal = retVal + "||" + temp; }
+	)*
+	{ return retVal; }
+}
+
+// Expressions with a logical "AND"
+String booleanExpression() throws ParseException:
+{
+	String retVal = "";
+	String temp = "";
+}
+{
+	retVal = equalityExpression()
+	(
+		<AND>
+		temp = equalityExpression() { retVal = retVal + "&&" + temp; }
+	)*
+	{ return retVal; }
+}
+
+String equalityExpression() throws ParseException:
+{
+	Token t;
+	String temp1 = "";
+	String temp2 = "";
+	String temp3 = "";
+}
+{
+	temp1 = relationalExpression()
+	(
+		t = <EQUALITY_OP> { temp2 = t.image; }
+		temp3 = relationalExpression()
+	)*
+	{ return temp1 + temp2 + temp3; }
+}
+
+String relationalExpression() throws ParseException:
+{
+	Token t;
+	String temp1 = "";
+	String temp2 = "";
+	String temp3 = "";
+}
+{
+	temp1 = additiveExpression()
+	(
+		t = <COMPARE_OP> { temp2 = t.image; }
+		temp3 = additiveExpression()
+	)*
+	{ return temp1 + temp2 + temp3; }
+}
+
+String additiveExpression() throws ParseException:
+{
+	Token t;
+	String temp1 = "";
+	String temp2 = "";
+	String temp3 = "";
+}
+{
+	temp1 = multiplicativeExpression()
+	(
+		(
+			t = <PLUS> { temp2 = t.image; }
+		|
+			t = <MINUS> { temp2 = t.image; }
+		)
+		temp3 = multiplicativeExpression()
+	)*
+	{ return temp1 + temp2 + temp3; }
+}
+
+String multiplicativeExpression() throws ParseException:
+{
+	Token t;
+	String temp1 = "";
+	String temp2 = "";
+	String temp3 = "";
+}
+{
+	temp1 = unaryExpression()
+	(
+		(
+			t = <TIMES> { temp2 = t.image; }
+		|
+			t = <SLASH> { temp2 = t.image; }
+		)
+		temp3 = unaryExpression()
+	)*
+	{ return temp1 + temp2 + temp3; }
+}
+
+String unaryExpression() throws ParseException:
+{
+	Token t;
+	String temp = "";
+}
+{
+	(
+		temp = primaryExpression() { return temp; }
+	|
+		<NOT>
+		temp = primaryExpression() { return "!" + temp; }
+	|
+		<MINUS>
+		temp = primaryExpression()  { return "-" + temp; }
+	)
+}
+
+String primaryExpression() throws ParseException:
+{
+	Token t;
+	String temp = "";
+}
+{
+	(
+		<LPARENS>
+		temp = logicalExpression()
+		<RPARENS>
+	|
+		LOOKAHEAD(2)
+		temp = function()
+	|
+		temp = numid()
+	)
+	{ return temp; }
+}
+
+String numid() throws ParseException:
+{
+	Token t;
+	String temp = "";
+	boolean isnot = false;
+}
+{
+	(
+		t = <ID>  { return InstVar(t.image); }
+	|
+		t = <NUM> { return t.image; }
+	)
+}
