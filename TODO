@@ -1,4 +1,24 @@
+[Code]
 + Specify the XMI parser class as a command line argument (eg. Parser.XDE)
 + Allow each stage to be run independently:
-  * Convert XMI into HIL
-  * Convert HIL into Promela
+    * Convert XMI into HIL
+  	* Convert HIL into Promela
++ Check identifiers to verify that they have been defined
++ Add support for ENUM statements
++ Add support for increment/decrement operators
++ Support for simple timers
++ Review the LTL parser and genericLex lexing code
+
++ Implement a test suite
+
++ Look into function calls on other classes (processes).  Does it work?  The Ford model needs it.  It uses the convention ClassName.OperName() to make the call.
+
+[Docs]
++ Expression grammar
+    * "==" for comparison
+   	* "=" assumed to mean assignment
+
++ All identifiers need to be defined before they are used
++ jjdoc output of the grammar for documentation
++ javadoc output for class documentation
++ High-level design documentation
