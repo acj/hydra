@@ -3,12 +3,14 @@
 + Allow each stage to be run independently:
     * Convert XMI into HIL
   	* Convert HIL into Promela
+    * Make a conversion driver for doing each stage.  The main driver can
+	  do both steps.
 + Check identifiers to verify that they have been defined
 + Add support for ENUM statements
 + Add support for increment/decrement operators
 + Support for simple timers
 + Review the LTL parser and genericLex lexing code
-
++ Support for simple one-line comments in HIL
 + Implement a test suite
 
 + Look into function calls on other classes (processes).  Does it work?  The Ford model needs it.  It uses the convention ClassName.OperName() to make the call.
@@ -17,6 +19,7 @@
 + Expression grammar
     * "==" for comparison
    	* "=" assumed to mean assignment
+	* Assignment statements have no value
 
 + All identifiers need to be defined before they are used
 + jjdoc output of the grammar for documentation
