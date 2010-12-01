@@ -5,15 +5,14 @@ import xmi2hil.ConversionDriver;
 /*
  * MainDriver
  * 
- * Test Driver program for tmpPromelaVisitor.
- * It can accept an optional argument, which if present
- * it will read the input from the specified name in the
- * parameter.
+ * Driver class for bootstrapping Hydra.
  */
 public class MainDriver {
 
 	/**
-	 * @param args
+	 * Launch Hydra using arguments from the command line.
+	 * 
+	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) throws ParseException {
 		String filename = "";
@@ -42,6 +41,7 @@ public class MainDriver {
             cvd.convert();
             if (!cvd.hasErrors()) { // save file only if error free
             	cvd.save(outputFilename);
+            	System.err.println("\nOutput written to " + outputFilename);
             }
 		} catch (ParseException x) {
 		    	System.out.println("Parse Error. Exiting.");
