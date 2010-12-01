@@ -1,6 +1,7 @@
 /**
  * UML1Parser.jj
- * UML/Hydra parser
+ * 
+ * Hydra HIL parser
  *
  * This grammar generates/parses HIL (Hydra Intermediate Language).
  */
@@ -117,7 +118,7 @@ TOKEN: /* main items */
 <*> TOKEN : /* OPERATORS, IDENTIFIERS & NUMBERS */
 {
    <AND: "&&" | "&"> 
-|  <NOT: "~">
+|  <NOT: "~" | "!">
 |  <OR: "||" | "|">
 |  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<">
 |  <EQUALITY_OP: "==" | "<>"> 
