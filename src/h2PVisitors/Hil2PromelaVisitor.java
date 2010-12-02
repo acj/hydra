@@ -15,6 +15,7 @@ import h2PNodes.CompositeStateNode;
 import h2PNodes.ConcurrentCompositeBodyNode;
 import h2PNodes.ConcurrentCompositeNode;
 import h2PNodes.DriverFileNode;
+import h2PNodes.EnumNode;
 import h2PNodes.EventNode;
 import h2PNodes.HistoryNode;
 import h2PNodes.InitNode;
@@ -36,6 +37,7 @@ import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 import h2PVisitors.Parser.genericLex1;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -208,6 +210,21 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see h2PVisitors.aVisitor#visitEnumNode(h2PNodes.EnumNode)
+	 */
+	public AcceptReturnType visitEnumNode(EnumNode tNode) {
+		AcceptReturnType tmpART = super.visitNode(tNode);
+		
+		for (Iterator<String> it = tNode.getEnums().iterator(); it.hasNext();) {
+			addToMTypeList(it.next());
+		}
+		
+		return tmpART;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1650,11 +1667,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 	}
 
 	/*
-	 * # Reused # Put (lvl, @list) write a string out indented according to level. If the # string has a label, it is
-	 * placed at the left. If the string is over # 72 chars, it is split to a next line indented at lvl+1. # If Put,
-	 * lvl=0 follows a PutNR, the string is placed on the right # end of the previous PutNR and if folded, folded at the
-	 * PutNR lvl+1 # If multiple Puts are req'd, do this: PutNR lvl,text for the first with # lvl set to what is req'd.
-	 * The do PutNR 0,text as many times as needed, # then Put 0,text.
+	 * # Reused # Put (lvl, @list) write a string out indented according to
+	 * level. If the string has a label, it is placed at the left. If the 
+	 * string is over 72 chars, it is split to a next line indented at 
+	 * lvl+1.  If Put, lvl=0 follows a PutNR, the string is placed on
+	 * the right end of the previous PutNR and if folded, folded at the
+	 * PutNR lvl+1.  If multiple Puts are req'd, do this: PutNR lvl,text
+	 * for the first with lvl set to what is req'd.  Then do PutNR 0,text
+	 * as many times as needed, then Put 0,text.
 	 */
 	protected String mbnhPut(int level, String txt) {
 		String out, x;
@@ -1753,9 +1773,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		for (i = 0; i < (tempMTL.length - 1); i++) {
 			tempMTL[i] = tempMTL[i] + ", ";
-			/*
-			 * tmpStr = tempMTL[i]; tempMTL [i] = tmpStr + ", ";
-			 */
 		}
 
 		int idx, wholeleng, leng;
@@ -2039,6 +2056,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 			if (childNode.getType().equals("DriverFileNode")) {
 				DriverFileID = childNode.accept(this).defV();
 				tmpART.addStr("driverFileID", DriverFileID);
+			}
+			if (childNode.getType().equals("EnumNode")) {
+				tmpART.merge(childNode.accept(this));
 			}
 			if (childNode.getType().equals("NullNode")) {
 				// do... nothing.

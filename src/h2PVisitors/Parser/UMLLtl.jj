@@ -1,6 +1,9 @@
 /**
- *  UMLLtl.jj
- * UML/Hydra LTL parser
+ * UMLLtl.jj
+ *
+ * Hydra LTL parser
+ *
+ * TODO: Is this used at all?  Not referenced from any current file. (acj 11/30/10)
  */
 
 options {

@@ -9,6 +9,7 @@ import h2PNodes.CompositeStateNode;
 import h2PNodes.ConcurrentCompositeBodyNode;
 import h2PNodes.ConcurrentCompositeNode;
 import h2PNodes.DriverFileNode;
+import h2PNodes.EnumNode;
 import h2PNodes.EventNode;
 import h2PNodes.HistoryNode;
 import h2PNodes.InitNode;
@@ -134,6 +135,10 @@ public class CStateFlattenerVisitor extends aVisitor {
 		return super.visitDriverFileNode(tNode);
 	}
 
+	public AcceptReturnType visitEnumNode(EnumNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitEnumNode(tNode);
+	}
 	public AcceptReturnType visitEventNode(EventNode tNode) {
 		// TODO Auto-generated method stub
 		return super.visitEventNode(tNode);

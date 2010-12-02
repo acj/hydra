@@ -99,6 +99,7 @@ TOKEN: /* main items */
 |  <FROM: "from">
 |  <HISTORY: "History">
 |  <INSTVAR: "InstanceVar">
+|  <ENUM: "Enum">
 
 |  <SUPER: "super">
 |  <SUB: "sub">
@@ -232,6 +233,7 @@ aNode modelstmt() throws ParseException:
   String tID = "";
   ClassNode cNode = null;
   ClassBodyNode cbNode = null;
+  EnumNode enumNode;
 }
 {
   (
@@ -254,13 +256,28 @@ aNode modelstmt() throws ParseException:
     <ASSOCIATION>
     <ID>
     <LCURLY> assocbody()<RCURLY>
-  ) { return null; }
+  ) { return null; } // TODO
 | (
     <AGGREGATION>
     <ID>
     <LCURLY> agbody()<RCURLY>
-  ) { return null; }
-    
+  ) { return null; } // TODO
+| (
+	<ENUM>
+	t = <ID> { enumNode = new EnumNode(t.image); }
+	<LPARENS>
+	t = <ID>
+	(
+		<COMMA>
+		t = <ID>
+	)*
+	{
+		enumNode.addEnum(t.image);
+	}
+	<RPARENS>
+	<SEMICOLON>
+  )
+  { return enumNode; }
 }
 
 ClassBodyNode classbody() throws ParseException:

@@ -16,6 +16,7 @@ import h2PNodes.CompositeStateNode;
 import h2PNodes.ConcurrentCompositeBodyNode;
 import h2PNodes.ConcurrentCompositeNode;
 import h2PNodes.DriverFileNode;
+import h2PNodes.EnumNode;
 import h2PNodes.EventNode;
 import h2PNodes.HistoryNode;
 import h2PNodes.InitNode;
@@ -143,6 +144,15 @@ public abstract class aVisitor extends NodeUtilityClass {
 
 	// -- takes care of cstatebodyNode
 	public AcceptReturnType visitCompositeStateBodyNode(CompositeStateBodyNode tNode) {
+		if (callVisitNodeAlways) {
+			return visitNode(tNode);
+		}
+//		else
+		return AcceptReturnType.nil();
+	}
+	
+	// -- takes care of enumNode
+	public AcceptReturnType visitEnumNode(EnumNode tNode) {
 		if (callVisitNodeAlways) {
 			return visitNode(tNode);
 		}
@@ -293,5 +303,4 @@ public abstract class aVisitor extends NodeUtilityClass {
 		//else
 		return AcceptReturnType.nil();
 	}
-
 }

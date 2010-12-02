@@ -15,6 +15,7 @@ import h2PNodes.CompositeStateNode;
 import h2PNodes.ConcurrentCompositeBodyNode;
 import h2PNodes.ConcurrentCompositeNode;
 import h2PNodes.DriverFileNode;
+import h2PNodes.EnumNode;
 import h2PNodes.EventNode;
 import h2PNodes.HistoryNode;
 import h2PNodes.InitNode;
@@ -294,6 +295,14 @@ public class ASTErrorChecker extends aVisitor {
 	}
 
 	/* (non-Javadoc)
+	 * @see h2PVisitors.aVisitor#visitEnumNode(h2PNodes.EnumNode)
+	 */
+	public AcceptReturnType visitEnumNode(EnumNode tNode) {
+		// TODO Auto-generated method stub
+		return super.visitEnumNode(tNode);
+	}
+	
+	/* (non-Javadoc)
 	 * @see h2PVisitors.aVisitor#visitEventNode(h2PNodes.EventNode)
 	 */
 	public AcceptReturnType visitEventNode(EventNode tNode) {
@@ -514,11 +523,12 @@ public class ASTErrorChecker extends aVisitor {
 			if (childNode.getType().equals("ClassNode")) {
 				validChild = true;
 				tART.merge(childNode.accept(this));
-			}
-			if (childNode.getType().equals("DriverFileNode")) {
+			} else if (childNode.getType().equals("DriverFileNode")) {
 				validChild = true;				
-			}
-			if (childNode.getType().equals("NullNode")) {
+			} else if (childNode.getType().equals("EnumNode")) {
+				validChild = true;
+				//tART.merge(childNode.accept(this));
+			} else if (childNode.getType().equals("NullNode")) {
 				validChild = true;				
 			}
 			if (!validChild) {
