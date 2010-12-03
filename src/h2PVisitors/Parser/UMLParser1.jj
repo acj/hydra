@@ -266,13 +266,13 @@ aNode modelstmt() throws ParseException:
 	<ENUM>
 	t = <ID> { enumNode = new EnumNode(t.image); }
 	<LPARENS>
-	t = <ID>
+	t = <ID> { enumNode.addEnum(t.image); }
 	(
 		<COMMA>
-		t = <ID>
+		t = <ID> { enumNode.addEnum(t.image); }
 	)*
 	{
-		enumNode.addEnum(t.image);
+		
 	}
 	<RPARENS>
 	<SEMICOLON>
