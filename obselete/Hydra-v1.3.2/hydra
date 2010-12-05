@@ -1,0 +1,116 @@
+#!/usr/bin/perl
+
+use FindBin qw($RealBin);
+use File::Basename;
+{
+
+    use lib ($RealBin, "$RealBin/SPIN");
+    use Yacc;
+    use TranYacc;
+    use Msg;
+    use LTLYacc;
+    use TranYaccPak;
+    use Log;
+    use Log;
+    use ASTWalker;
+    use CState;
+    use CCState;
+    use State;
+    use Class;
+    use Context;
+    use History;
+    use Join;
+    use Init;
+
+    Put Msg(level=>info, msg=>"Starting...Hydra V1.3.2 (6/10/2002)");
+    if (@ARGV == 0) {ShowOptions()}
+    while (substr($ARGV[0],0,1) eq '-') {
+	my $switch = shift(@ARGV);
+	if (@ARGV == 0) {ShowOptions}
+	if ($switch eq '-N') {
+	    $NEVERFILE = shift(@ARGV);
+	}
+	elsif ($switch eq '-E') {$RUNSPIN = 1}
+	elsif ($switch eq '-V') {$VERIFY = 1}
+	else {
+	    print "unknown option $ARGV[0]\n";
+	    ShowOptions();
+	}
+    }
+    if ($RUNSPIN && $VERIFY) {
+	Put Msg(level=>error, msg=>'Specify either -V or -E but not both');
+	exit(1);
+    }
+
+# All the filename processing... take an extension if given, else look
+# for .hil, then .xyz. Check to make sure file exists before parse.
+
+    $FILENAME = $ARGV[0];
+    
+    Register Log(ASTWalker, State, CState);
+    ($base,$path,$type) = fileparse($FILENAME, ('\.hil', '\.xyz'));
+    if (!$type) {
+	if (-e $path . $base . '.hil') {$type = '.hil'}
+	elsif (-e $path . $base . '.xyz') {
+	    $type = '.xyz';
+	    print "The .xyz is deprecated in favor of .hil\n";
+	    print ".xyz will go away in future versions.\n";
+	}
+	else {
+	    print "$path$base not found with .hil or .xyz extension\n";
+	    exit(1);
+	}
+    }
+    if (!(-e $path . $base . $type)) {
+	print "Can't find the input file $path$base$type\n";
+	exit(1);
+    }
+
+    $tree = Yacc->Parse($path . $base . $type);
+    print "parse complete\n";
+    Context->OutFile("$path$base.pr");
+    if ($NEVERFILE) {
+	Context->SetNever($NEVERFILE);
+	print "Temporal assertion processed\n";
+    }
+    ASTWalker->Model($tree);
+    Context->Output;
+    
+    if (Msg->Errors) {exit}
+    if ($RUNSPIN) {
+	system("spin $path$base.pr");
+    }
+    elsif ($VERIFY) {
+	system("spin -a $path$base.pr");
+	if ($?) {
+	    Put Msg(level=>error, msg=>"spin failed");
+	    exit(1);
+	}
+	system("gcc pan.c -o pan");
+	if ($?) {
+	    Put Msg(level=>error, msg=>"Compile failed (this is not good)");
+	    exit(1);
+	}
+	if ($NEVERFILE) {system("pan -a")}
+	else {system("pan")}
+    }
+}
+
+sub ShowOptions
+{
+    print <<"EOF";
+Usage: hydra [-N neverclaim_file] [-E] inputfile
+Where inputfile ends in .hil extension.
+-E runs SPIN in simulation mode
+-V runs SPIN in neverclaim verify mode (does compile, etc)
+Neverclaim is written using syntax:
+[] = always
+<> = eventually
+Variables: Class.instancevar
+IN predicate: in(Class.state)
+message sent predicate: sent(Class.msg)
+EOF
+
+    exit;
+}
+#
