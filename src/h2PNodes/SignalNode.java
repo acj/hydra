@@ -7,6 +7,8 @@
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.SymbolTable;
+import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
 
 /**
@@ -29,10 +31,10 @@ public class SignalNode extends aNode {
         name = sygname;
     }
     
-    public SignalNode(String sygname, String signalType) {
-        this(sygname);
-        // TODO Auto-generated constructor stub
+    public SignalNode(String sigName, String signalType, String className) {
+        this(sigName);
         sigType = signalType;
+        SymbolTable.addSymbol(sigName, SymbolType.SIGNAL, className);
     }
     
 

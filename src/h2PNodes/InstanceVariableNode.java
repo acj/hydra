@@ -7,6 +7,8 @@
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.SymbolTable;
+import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
 
 /**
@@ -24,12 +26,13 @@ public class InstanceVariableNode extends aNode {
     /**
      * @param theID
      */
-    public InstanceVariableNode(String theVType, String newVar, String anInitValue) {
+    public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) {
         super(noID(), "InstanceVariableNode");
-        // TODO Auto-generated constructor stub
         vType = theVType;
         tVariable = newVar;
         initValue = anInitValue;
+        
+        SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, className);
     }
     
 

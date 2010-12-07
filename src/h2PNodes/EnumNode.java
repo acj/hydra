@@ -5,7 +5,8 @@ package h2PNodes;
 
 import java.util.Vector;
 
-import h2PFoundation.AcceptReturnType;
+import h2PFoundation.*;
+import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
 
 /**
@@ -23,6 +24,7 @@ public class EnumNode extends aNode {
         super(noID(), "EnumNode");
         enums = new Vector<String>();
         enumTypeName = name;
+        
     }
 
 	public AcceptReturnType accept(aVisitor v) {
@@ -31,6 +33,7 @@ public class EnumNode extends aNode {
 	
 	public void addEnum(String enumName) {
 		enums.add(enumName);
+		SymbolTable.addSymbol(enumName, SymbolType.GLOBVAR, "");
 	}
     
     public String getEnumTypeName(){

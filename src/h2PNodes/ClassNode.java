@@ -7,6 +7,8 @@
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.SymbolTable;
+import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
 
 /**
@@ -25,7 +27,8 @@ public class ClassNode extends aNode {
      */
     public ClassNode(String theID) {
         super(theID, "ClassNode");
-        // TODO Auto-generated constructor stub
+        
+        SymbolTable.addSymbol(theID, SymbolType.CLASS, "");
     }
     
 
