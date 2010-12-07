@@ -1,5 +1,5 @@
 /**
- * UML1Parser.jj
+ * UMLParser.jj
  * 
  * Hydra HIL parser
  *
@@ -34,9 +34,13 @@ public class UMLParser1 extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
 
     public UMLParser1 (WorldUtilNode theRootNode) {
-    	setRootNode (theRootNode);
+    	setRootNode (theRootNode);    	
     }
 
+	public void initialize() {
+		SymbolTable.initialize();		
+	}
+	
     public void setRootNode (WorldUtilNode theRootNode) {
     	rootNode = theRootNode;
     }
@@ -245,7 +249,7 @@ aNode modelstmt() throws ParseException:
     <CLASS>
     t = <ID> { tID = t.image; }
     <LCURLY> 
-    ( cbNode = classbody() )?
+    ( cbNode = classbody(t.image) )?
     <RCURLY>
   )
   { 
@@ -280,31 +284,31 @@ aNode modelstmt() throws ParseException:
   { return enumNode; }
 }
 
-ClassBodyNode classbody() throws ParseException:
+ClassBodyNode classbody(String className) throws ParseException:
 {
   ClassBodyNode tNode = new ClassBodyNode ();	
   aNode childNode;
 }
 {
-	( childNode = classstmt() 
+	( childNode = classstmt(className)
 		{ rootNode.addChildToNode(tNode, childNode);  }  
 	)+
 	{ return tNode; }
 }
 
-aNode classstmt() throws ParseException:
+aNode classstmt(String className) throws ParseException:
 {
 	aNode tNode;
 }
 {
-	tNode = signal() { return tNode; }
+	tNode = signal(className) { return tNode; }
 |	tNode = cstate() { return tNode; }
 |	tNode = ccstate() { return tNode; }
 |	tNode = init() { return tNode; }
 |	tNode = join() { return tNode; }
 /* |	tNode = history() { return tNode; } */
 |	tNode = state() { return tNode; }
-|	tNode = instvar() { return tNode; }
+|	tNode = instvar(className) { return tNode; }
 |	(
 	<AGSUBCONST>
 	<ADORNS>
@@ -318,7 +322,7 @@ aNode classstmt() throws ParseException:
 |	ordconst() { return null; }
 }
 
-aNode signal() throws ParseException:
+aNode signal(String className) throws ParseException:
 {
 	Token t;
 	String signame = "";
@@ -333,7 +337,7 @@ aNode signal() throws ParseException:
     <RPARENS>
   )?
   <SEMICOLON>
-  { return new SignalNode(signame, sigtype); }
+  { return new SignalNode(signame, sigtype, className); }
 }
 
 aNode cstate() throws ParseException:
@@ -576,7 +580,7 @@ aNode history() throws ParseException:
 	}
 }
 
-aNode instvar() throws ParseException:
+aNode instvar(String className) throws ParseException:
 {
 	Token t;
 	String vType = "";
@@ -589,7 +593,7 @@ aNode instvar() throws ParseException:
 	t = <ID> { tVar = t.image; }
 	( <ASSIGNOP> initVal = numid() )?
 	<SEMICOLON>
-	{ return new InstanceVariableNode (vType, tVar, initVal); }
+	{ return new InstanceVariableNode (vType, tVar, initVal, className); }
 }
 
 void assocbody() throws ParseException:
@@ -1148,6 +1152,8 @@ String numid() throws ParseException:
 {
 	(
 		t = <ID>  { return InstVar(t.image); }
+	|	
+		t = <FULLID> { return InstVar(t.image); }
 	|
 		t = <NUM> { return t.image; }
 	)

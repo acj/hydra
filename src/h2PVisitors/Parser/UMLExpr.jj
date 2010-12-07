@@ -72,22 +72,49 @@ public class UMLExpr1 extends NodeUtilityClass {
   	 return retStr;
   }
 
-  public String InstVar (String varname) {
-  	ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-  	aNode returnValue = FindLocalDestNode (classRef, "InstanceVariableNode", "var", varname);
-  	
-  	String temp = thisClassRef.getID() + "_V.";
-  	
+  /**
+   * Mangles instance variable names so that they reference the global typedef
+   * that holds member variables and their values for each class.
+   *
+   * For example, the class Foo will have a typedef called Foo_T and a default
+   * instance named Foo_V.  
+   */
+  public String InstVar (String varname) throws ParseException {
+  	String className;
+  	if (varname.contains(".")) {
+  		int dotPos = varname.indexOf(".");
+  		className = varname.substring(0, dotPos);
+  		varname = varname.substring(dotPos+1);
+  	} else {
+  		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
+  		className = thisClassRef.getID();
+  	}
+  	String temp = className + "_V.";
+  	// Determine whether this is a timer variable
   	String entities [] = globalOutputs.getStrSplit("TimerList");
   	for (int i = 0; i < entities.length; i++) {
   		if (entities[i].equals(varname)) {
   			temp = "Timer_V.";
   		}
   	}
-  	if (returnValue != null) {
+  	if (SymbolTable.symbolExistsInClass(varname, className)) {
   		return temp + varname;
   	}
-  	return varname;
+  	String hintClass = SymbolTable.searchForSymbol(varname);
+  	if (hintClass != "") {
+  		// The symbol *is* defined, but not in this class.  Give a hint.
+  		System.err.println("Error: reference to undefined variable `" +
+  			varname + "' in class `" + className + "'.  " +
+  			"Did you mean " + hintClass + "." + varname + "?"); 
+  		throw new ParseException();
+  	}
+  	if (!SymbolTable.symbolExists(varname)) {
+  		System.err.println("Error: reference to undefined variable `" +
+  			varname + "' in class `" + className + "'.");
+  		throw new ParseException();
+  	}
+  	// If we reach this point, it's a declared global variable.
+	return varname;
   }
 
   public String INPredicate(String predtarg) {
@@ -108,7 +135,7 @@ public class UMLExpr1 extends NodeUtilityClass {
   	return className + "INPredicate_V.st_" + predtarg;
   }
 
-  public String Assignment(String assignto, String assignfrom) {
+  public String Assignment(String assignto, String assignfrom) throws ParseException {
   	String newleft = InstVar(assignto);
   	return newleft + "=" + assignfrom + ";";
   }
@@ -155,6 +182,7 @@ TOKEN:
 |  < #DIGIT: ["0" - "9"] >
 |  < #LETTER: ["A"-"Z"] | ["a"-"z"] >
 |  <NUM: <CONSTANT> >
+|  <TRUTH: "true" | "TRUE" | "false" | "FALSE">
 |  <ID: (<LETTER> | "_")(<LETTER> | "_" | <DIGIT>)*  >
 |  <FULLID: <ID> <PERIOD> <ID>>
 
@@ -416,6 +444,15 @@ String primaryExpression() throws ParseException:
 	|
 		LOOKAHEAD(2)
 		temp = function()
+	|
+		t = <TRUTH> 
+		{
+			if (t.image.toUpperCase().equals("TRUE")) {
+				return "1";
+			} else {
+				return "0";
+			}
+		}
 	|
 		temp = numid()
 	)
