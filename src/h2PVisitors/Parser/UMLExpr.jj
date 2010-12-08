@@ -97,6 +97,13 @@ public class UMLExpr1 extends NodeUtilityClass {
   			temp = "Timer_V.";
   		}
   	}
+  	// Check the class first
+  	if (!SymbolTable.symbolExists(className, Symbol.SymbolType.CLASS)) {
+  		System.err.println("Error: reference to undefined class `" +
+  			className + "'."); 
+  		throw new ParseException();
+  	}
+  	// Does the variable exist within the class?
   	if (SymbolTable.symbolExistsInClass(varname, className)) {
   		return temp + varname;
   	}
@@ -108,6 +115,7 @@ public class UMLExpr1 extends NodeUtilityClass {
   			"Did you mean " + hintClass + "." + varname + "?"); 
   		throw new ParseException();
   	}
+  	// Does the variable exist at global scope?
   	if (!SymbolTable.symbolExists(varname)) {
   		System.err.println("Error: reference to undefined variable `" +
   			varname + "' in class `" + className + "'.");
@@ -158,8 +166,8 @@ TOKEN:
 |  <AND: "&&" | "&">
 |  <NOT: "~" | "!">
 |  <IMP: "->">
-|  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<" >
-|  <EQUALITY_OP: "==" | "<>"> 
+|  <COMPARE_OP: ">=" | "<=" | ">" | "<" >
+|  <EQUALITY_OP: "==" | "!=" | "<>"> 
 |  <ASSGNOP: ":=" | "=">
 |  <IN: "in">
 |  <WHEN: "when">
@@ -233,9 +241,9 @@ String function() throws ParseException:
 {
 	(
 		(
-			t = <ID> { funcID = t.image; }
+			t = <ID> { funcID = InstVar(t.image); }
 		|
-			t = <FULLID> { funcID = t.image; }
+			t = <FULLID> { funcID = InstVar(t.image); }
 		)
 		<LPARENS>
 		( parameterListStr = parameterList() )?
@@ -245,7 +253,10 @@ String function() throws ParseException:
 |	(
 		<IN>
 		<LPARENS>
-		t = <ID> { funcID = t.image; }
+		(
+			t = <ID> { funcID = InstVar(t.image); }
+		|	t = <FULLID> { funcID = InstVar(t.image); }
+		)
 		<RPARENS>
 	)
 	{ return INPredicate(funcID); }
@@ -352,7 +363,7 @@ String equalityExpression() throws ParseException:
 {
 	temp1 = relationalExpression()
 	(
-		t = <EQUALITY_OP> { temp2 = t.image; }
+		t = <EQUALITY_OP> { temp2 = t.image.replace("<>", "!="); }
 		temp3 = relationalExpression()
 	)*
 	{ return temp1 + temp2 + temp3; }

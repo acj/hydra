@@ -103,6 +103,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// mTypeList += strln (newType);
 		// don't forget that the mTypeList is a set
 		// not an n-tuple.
+		newType = newType.replace(".", "__");
 		if (!globalOutputs.ifInArray("mTypeList", newType)) {
 			globalOutputs.addStr("mTypeList", newType);
 		}
@@ -238,6 +239,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		/*
 		 * if (tNode.getParent() == null) return tmpART; if (tNode.getParent().getParent() == null) return tmpART;
 		 */
+		
+		// Do sanity check on the event
+		pinpv.ExpressionParser.Parse_Me(tNode, tNode.getDescription());
 
 		String grandpaType = tNode.getParent().getParent().getType();
 		if (grandpaType.equals("ActionNode")) {
@@ -251,7 +255,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			 * are atomic } elsif ( $event->{eventname} eq 'exit' ) { #exit actions #Actions are atomic }
 			 */
 			tmpART.addStrln("Action", tmpStr);
-		}
+		} // if (grandpaType.equals("ActionNode"))
 		if (grandpaType.equals("TransitionNode")) {
 			if (tNode.getEventType().equals("normal")) {
 
@@ -277,6 +281,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> ");
 				}
 
+				// Determine whether an argument is being passed with this signal
 				if (tNode.getVariable().length() > 0) {
 					// original code moved outside of if/then to avoid duplication!
 
@@ -296,7 +301,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					 * else { // original code moved outside of if/then to avoid duplication! // do nothing, nothing to
 					 * do! /* perl @outputTrans = visiteventNodePak->OnePartEventOutput( $thiseventnode, @outputTrans ); }
 					 */
-			}
+			} // if (tNode.getEventType().equals("normal"))
 			if (tNode.getEventType().equals("when")) {
 
 				String retVal = "";
@@ -307,13 +312,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 				 */
 				retVal = pinpv.ExpressionParser.Parse_Me(tNode, "when(" + tNode.getWhenVariable() + ")");
 				tmpStr += strln("        :: atomic{" + retVal + " -> ");
-			}
+			} // if (tNode.getEventType().equals("when"))
 			/*
 			 * perl #1st, ready ===> :: _SYSTEMCLASS__q?ready -> t?free; #2nd, carspeed(setspd) ===> ::
 			 * atomic{Control_q?carspeed ->Control_carspeed_p1?Control_V.setspd} -> t?free;
 			 */
 			tmpART.addStrln("Trans", tmpStr);
-		}
+		} // if (grandpaType.equals("TransitionNode"))
 
 		return tmpART; // output to @outputTrans
 	}
@@ -481,17 +486,25 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		if (tNode.getSignalName().length() > 0) {
-			if (tNode.getClassName().length() > 0) {
-
+			// #local check semantics to see if the local class has this InstVar
+			aNode destCN = searchUpForDest(tNode, "ClassNode");
+			Boolean intVarIsLocal; // Whether the argument is an mtype or an instance variable
+			String className = tNode.getClassName();
+			if (className == "") {
+				className = destCN.getID();
+				intVarIsLocal = true;
+			} else {
+				intVarIsLocal = false;
+			}
+			
+			if (className.length() > 0) {
 				addToMTypeList(tNode.getSignalName());
 
 				if (tNode.getIntVarName().length() > 0) {
 					// #ID '.' ID (var)
-					// #local check semantics to see if the local class has this InstVar
-					aNode destCN = searchUpForDest(tNode, "ClassNode");
 
-					String temp1, temp2;
-
+					String intVarName = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getIntVarName());
+					
 					/*
 					 * temp1 = " ".$temp1.$temp2.$temp3; temp2 = $msgintvarname."; ".$temp5.$msgsignalname."};" my
 					 * $temp1="atomic"."{"; * my $temp2=$msgclassname."_"; my $temp3=$msgsignalname."_p1!"; * my
@@ -501,11 +514,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 					// fixed version
 					// SK 050106 Flipped order of method name and parameter send to acvoid dead lock when rendezvous
 					// channels are used
+					String temp1, temp2;
 					// temp1 = tNode.getClassName() + "_q!" + tNode.getSignalName() + ";" + " "
 					// + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
 					// temp2 = tNode.getIntVarName() + "; ";
-					temp1 = " " + tNode.getClassName() + "_" + tNode.getSignalName() + "_p1!";
-					temp2 = tNode.getIntVarName() + "; " + tNode.getClassName() + "_q!" + tNode.getSignalName() + ";";
+					temp1 = " " + className + "_" + tNode.getSignalName() + "_p1!";
+					temp2 = intVarName + "; " + className + "_q!" + tNode.getSignalName() + ";";
 
 					// #test if $msgintvarname is an ID (the first character is [A-Z][a-z]) or a NUM (all characters are
 					// [0-9]+)
@@ -516,7 +530,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 					} else { // IntVarName is an ID
 						// push(@outputmessage," $temp1$temp2$temp3$temp4$msgintvarname; $temp5$msgsignalname};");
 						// SK 050106 Added an atomic here
-						tmpStr += strln("atomic{" + temp1 + destCN.getID() + "_V." + temp2 + "};");
+						if (intVarIsLocal) {
+							tmpStr += strln("atomic{" + temp1 + temp2 + "};");
+						} else {
+							tmpStr += strln("atomic{" + temp1 + destCN.getID() + "_V." + temp2 + "};");
+						}
 					}
 					/*
 					 * sub outputThreePartmessage (done)
@@ -524,7 +542,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 				} else {
 					// #ID '.' ID
-					tmpStr += strln("        " + tNode.getClassName() + "_q!" + tNode.getSignalName() + ";");
+					tmpStr += strln("        " + className + "_q!" + tNode.getSignalName() + ";");
 					/* perl (done) visitmessageNodePak->outputTwoPartmessage */
 				}
 			} else {
@@ -589,7 +607,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		addToMTypeList(tNode.getName());
-
+		
 		if (tNode.getSignalType().length() > 0) {
 
 			String className = tNode.getParent().getParent().getID();
@@ -650,6 +668,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			// from visittranactionNodePak->outputNewAction
 
 			// apparently semantics need not be checked. (!?)
+			// TODO: Could be parsed with the expression parser to check semantics
 			tmpStr += strln("        run " + tNode.getContent() + "();");
 		}
 		if (actType.equals("sendmsg")) {
@@ -679,10 +698,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (actType.equals("function")) {
 			// T ODO from visittranactionNodePak->outputFunction
 			String retVal = "";
-			if (! tNode.getParamList().equals("")) {
-				retVal = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getParamList());
-			}
-			tmpStr += strln("        " + tNode.getFunctionID() + "(" + retVal + ")");
+			retVal = pinpv.ExpressionParser.Parse_Me(tNode, 
+					tNode.getFunctionID() + "(" + tNode.getParamList() + ")");
+			tmpStr += strln("        " + retVal);
 		}
 
 		tmpART.addStrln("default", tmpStr);
@@ -1752,11 +1770,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 	protected String mbnhChanGlobalOutput() {
 		String tmpStr = "";
 
-		// Commented out to be in par with Dispatcher output removal #KL
-		// tmpStr += mbnhPut (0, "chan evq=[10] of {mtype,int};");
-		// tmpStr += mbnhPut (0, "chan evt=[10] of {mtype,int};");
-		// SK 050106 Reduced quete to 1
-		tmpStr += mbnhPut(0, "chan wait=[1] of {int,mtype};");
+		tmpStr += mbnhPut (0, "chan evq=[10] of {mtype,int};");
+		tmpStr += mbnhPut (0, "chan evt=[10] of {mtype,int};");
+		tmpStr += mbnhPut (0, "chan wait=[1] of {int,mtype};");
 
 		return tmpStr;
 	}
@@ -2585,7 +2601,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			AcceptReturnType transitionEventList, boolean ifTarget) {
 		AcceptReturnType TELentitity, transitionList;
 		anART.addStr("State", "        if");
-		boolean emtypTrans;
+		boolean emptyTrans;
 		String transitionMarkerStr = "";
 		// transitionMarkerStr = "printf (\" Beginning of Transition " + ".\\n\");";
 		String tmpStr = "";
@@ -2604,14 +2620,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 				evtNode = (EventNode) TELentitity.getSingle("event");
 			}
 
-			emtypTrans = false;
+			emptyTrans = false;
 			if (evtNodeSrc.equals("NOEVENT")) {
 				// commented out in 'original' code as well
 				// anART.addStr("State", " :: atomic{1 -> ");
 			}
 			if (evtNodeSrc.equals("EMPTYTRANS")) {
 				// sub EMPTYTRANSoutputState
-				emtypTrans = true;
+				emptyTrans = true;
 
 				Vector tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
@@ -2643,7 +2659,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					if (localRet != null) {
 						anART.moveStrKey("Trans", "State");
 					} else {
-						anART.addStr("State", "        :: atomic{" + transitionMarkerStr + "evt??" + evtNode.getName()
+						anART.addStr("State", "        :: atomic{" + transitionMarkerStr + "evt??" + evtNode.getName().replace(".", "__")
 								+ ",eval(_pid) -> ");
 					}
 				} else {
@@ -2651,7 +2667,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			}
 
-			if (!emtypTrans) {
+			if (!emptyTrans) {
 				anART.merge(sbnhOutputINPredicateZero(tNode, ifTarget));
 
 				// int iffirst = 1;

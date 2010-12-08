@@ -125,8 +125,8 @@ TOKEN: /* main items */
    <AND: "&&" | "&"> 
 |  <NOT: "~" | "!">
 |  <OR: "||" | "|">
-|  <COMPARE_OP: "!=" | ">=" | "<=" | ">" | "<">
-|  <EQUALITY_OP: "==" | "<>"> 
+|  <COMPARE_OP: ">=" | "<=" | ">" | "<">
+|  <EQUALITY_OP: "==" | "!=" | "<>"> 
 |  <IN: "in">
 |  <ASSIGNOP: ":=" | "=">
 
@@ -687,12 +687,16 @@ aNode event() throws ParseException:
 }
 {
 	(
-	  t = <ID> { eventName = t.image; }
-  	  ( 
-	    <LPARENS> 
-	    t = <ID> { eventWhenVar = t.image; }
-	    <RPARENS>
-	  )?
+		(
+			t = <ID> { eventName = t.image; }
+	  	|
+	  		t = <FULLID> { eventName = t.image; }
+	  	)
+		( 
+			<LPARENS> 
+			( eventWhenVar = expression() )?
+			<RPARENS>
+		)?
 	)
 	{ return new EventNode (eventName, "normal", eventWhenVar); }
 |
@@ -700,70 +704,12 @@ aNode event() throws ParseException:
 		<WHEN> <LPARENS>
 		(
 			LOOKAHEAD(2) 
-			eventWhenVar = complexguard()
+			eventWhenVar = expression()
 			| t = <ID> { eventWhenVar = t.image; }
 		)
 		<RPARENS>
 	)
 	{ return new EventNode (eventName, "when", eventWhenVar); }
-/*|
-	(
-	  <WHEN> <LPARENS>
-	  t = <ID> { eventWhenVar = t.image; }
-	  <RPARENS>
-	)
-	{ return new EventNode (eventName, "when", eventWhenVar); }*/
-}
-
-String complexguard() throws ParseException:
-{
-	String retVal = "";
-	String temp = "";
-	Token t;
-}
-{
-	retVal = expra()
-	( 
-	  t = <OR> { retVal += t.image; }
-	  temp = expra() { retVal += temp; }
-	)*
-	{ return retVal; }
-}
-
-String expra() throws ParseException:
-{
-	String retVal = "";
-	String temp = "";
-	Token t;
-}
-{
-	retVal = gdterm()
-	(
-	  t = <AND> { retVal += t.image; }
-	  temp = gdterm() { retVal += temp; } 
-	)*
-	{ return retVal; }
-}
-
-String gdterm() throws ParseException:
-{
-	Token t;
-	String retVal = "";
-}
-{
-	retVal = pred()
-	{ return retVal; }
-|	( // there is no <ID> term here?
-  	  t = <NOT> { retVal += t.image; }
-	  t = <ID>  { retVal += t.image; }
-	)
-	{ return retVal; } 
-|	(
-	  <LPARENS>
-	  retVal = complexguard()
-	  <RPARENS>
-	)
-	{  return ("(" + retVal + ")"); }
 }
 
 String guard() throws ParseException:
@@ -844,17 +790,22 @@ aNode message() throws ParseException:
 //	String temp;
 }
 {
-	t = <ID> { signalname = t.image; }
-	( 
-	  <PERIOD>
-	  t = <ID>  { classname = signalname;  signalname = t.image; }
-	  (
-	    <LPARENS>
-	    varname = numid()
-	    <RPARENS>
-	  )?
+	(
+		t = <ID> { signalname = t.image; }
+	|
+		t = <FULLID>
+		{
+			int dotPos = t.image.indexOf(".");
+			classname = t.image.substring(0, dotPos);
+			signalname = t.image.substring(dotPos + 1);
+		}
+	)
+	(
+	  	<LPARENS>
+	  	( varname = expression() )?
+		<RPARENS>
 	)?
-	{  return new MessageNode (classname, signalname, varname); }
+	{ return new MessageNode (classname, signalname, varname); }
 }
 
 aNode assignstmt() throws ParseException:
@@ -1045,7 +996,7 @@ String equalityExpression() throws ParseException:
 {
 	temp1 = relationalExpression()
 	(
-		t = <EQUALITY_OP> { temp2 = t.image; }
+		t = <EQUALITY_OP> { temp2 = t.image.replace("<>", "!="); }
 		temp3 = relationalExpression()
 	)*
 	{ return temp1 + temp2 + temp3; }
