@@ -7,9 +7,11 @@
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.Symbol;
 import h2PFoundation.SymbolTable;
 import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
+import h2PVisitors.Parser.ParseException;
 
 /**
  * @author karli
@@ -25,13 +27,19 @@ public class InstanceVariableNode extends aNode {
     
     /**
      * @param theID
+     * @throws ParseException 
      */
-    public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) {
+    public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) throws ParseException {
         super(noID(), "InstanceVariableNode");
         vType = theVType;
         tVariable = newVar;
         initValue = anInitValue;
         
+        if (SymbolTable.symbolExists(newVar, Symbol.SymbolType.CLASS)) {
+        	System.err.println("Error: name collision between instance variable `" +
+        			newVar + "' and an existing class.");
+        	throw new ParseException();
+        }
         SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, className);
     }
     
