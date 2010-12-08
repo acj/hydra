@@ -13,13 +13,13 @@ public class NodeUtilityClass {
 	}
 
 	/*------------------------------------------------------------*/
-	/* U tility F unctions
+	/* Utility Functions
 	 * 		These functions are non-instance-dependent utility
 	 * functions for use by all visitors.  Similar to Hydra perl's
 	 * universal class.  Think of this class as stateless.
 	 */
 	/*------------------------------------------------------------*/
-	// just a facy way of adding a newline to a printed string
+	// just a fancy way of adding a newline to a printed string
 	public String strln (String s){
 		return s + "\n";
 	}
@@ -28,6 +28,9 @@ public class NodeUtilityClass {
 		return strln("");
 	}
 
+	/*
+	 * Climb up the tree of nodes to find a node of the specified type.
+	 */
 	public aNode searchUpForDest(aNode source, String destType) {
 		aNode retDest = source;
 		
@@ -70,9 +73,11 @@ public class NodeUtilityClass {
 	}
 	
 	/*
+	 * Locates the child node (if any) that matches the given parameters.
+	 * 
 	 * NOTE! The parameters in this function are slightly different from the UniversalClass.FindLocalDestNode
 	 * version! Namely the entryName and NodeId parameters are switched!
-	 * */
+	 */
 	public aNode FindLocalDestNode (aNode tNode, String nodeType, String entryName, String nodeEntryVal) {
 		
 		ClassBodyNode searchNode = (ClassBodyNode)searchUpForDest(tNode, "ClassBodyNode");

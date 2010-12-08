@@ -1,9 +1,3 @@
-/*
- * Created on Sep 30, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PVisitors;
 
 import h2PFoundation.AcceptReturnType;
@@ -37,10 +31,10 @@ import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 
 /**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * ASTErrorChecker
+ * 
+ * Performs a battery of checks on the semantics of the parsed AST.  Any
+ * major problems are reported.
  */
 public class ASTErrorChecker extends aVisitor {
 
@@ -53,7 +47,7 @@ public class ASTErrorChecker extends aVisitor {
 	 *   Message
 	 */
 	/**
-	 * the AST Error Checka!
+	 * Default constructor
 	 */
 	public ASTErrorChecker() {
 		super();
@@ -473,15 +467,6 @@ public class ASTErrorChecker extends aVisitor {
 			if (!ifInParent(destClassBodyRef, "SignalNode", "name", tNode.getSignalName())) {
 				  tART.addStr("errors", "Message: (" + nodeName + ") in Class [" + tNode.getClassName() 
 						  + "] signal \"" + tNode.getSignalName() + "\" does not exist.");				
-			}
-		}
-		
-		if (tNode.getIntVarName().length() > 0) {
-			if (!ifInParent(classBodyRef, "InstanceVariableNode", "var", tNode.getIntVarName())) {
-				if (!isNum(tNode.getIntVarName())) { // check to make sure it's not a #.
-					  tART.addStr("errors", "Message: (" + nodeName + ") instance variable \"" 
-							  + tNode.getIntVarName() + "\" undeclared.");
-				}
 			}
 		}
 		
