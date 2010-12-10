@@ -18,19 +18,19 @@ import java.util.Vector;
 
 public class WorldUtilNode extends aNode {
 
-	public Vector allNodes;
-	protected Hashtable categorizedNodes;
-	protected Hashtable hashOfAllNodes;
-    protected Hashtable hashOfAllIDs;
+	public Vector<aNode> allNodes;
+	protected Hashtable<String, Vector<aNode>> categorizedNodes;
+	protected Hashtable<String, aNode> hashOfAllNodes;
+    protected Hashtable<String, Vector<aNode>> hashOfAllIDs;
 	protected aNode headNode = null;
     protected int latestUniqueID = 0;
 	
 	public WorldUtilNode() {
 		super("0", "WorldUtilNode");
-		allNodes = new Vector();
-		categorizedNodes = new Hashtable();
-        hashOfAllNodes = new Hashtable();
-        hashOfAllIDs = new Hashtable();
+		allNodes = new Vector<aNode>();
+		categorizedNodes = new Hashtable<String, Vector<aNode>>();
+        hashOfAllNodes = new Hashtable<String, aNode>();
+        hashOfAllIDs = new Hashtable<String, Vector<aNode>>();
         uniqueID = "0";
 	}
 	
@@ -38,7 +38,7 @@ public class WorldUtilNode extends aNode {
         if (theN == null) return;
 		allNodes.addElement(theN);
 		
-		Vector tmpV = getCategoryVector(theN.classType);
+		Vector<aNode> tmpV = getCategoryVector(theN.classType);
 		tmpV.addElement(theN);
 		if (tmpV.size() == 1) { // this is a new vector not in the hash
 			categorizedNodes.remove(theN.classType); // a precaution
@@ -56,20 +56,20 @@ public class WorldUtilNode extends aNode {
         hashOfAllNodes.put(theN.uniqueID, theN);
 	}
 	
-	public Vector getCategoryVector(String theCategory) {
-		Vector retV = (Vector)categorizedNodes.get(theCategory);
+	public Vector<aNode> getCategoryVector(String theCategory) {
+		Vector<aNode> retV = (Vector<aNode>)categorizedNodes.get(theCategory);
 		
 		if (retV == null) {
-			retV = new Vector();
+			retV = new Vector<aNode>();
 		}
 		return retV;
 	}
 	
-    public Vector getIDVector(String theID) {
-        Vector retV = (Vector)hashOfAllIDs.get(theID);
+    public Vector<aNode> getIDVector(String theID) {
+        Vector<aNode> retV = (Vector<aNode>)hashOfAllIDs.get(theID);
         
         if (retV == null) {
-            retV = new Vector();
+            retV = new Vector<aNode>();
         }
         return retV;
     }
