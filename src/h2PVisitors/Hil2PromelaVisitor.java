@@ -49,7 +49,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	protected int LEFTMARGIN = 10;
 
-	protected Vector tabVec = new Vector();
+	protected Vector<Integer> tabVec = new Vector<Integer>();
 
 	protected String mbnhSTR = "";
 
@@ -606,8 +606,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
-		addToMTypeList(tNode.getName());
-		
 		if (tNode.getSignalType().length() > 0) {
 
 			String className = tNode.getParent().getParent().getID();
@@ -775,8 +773,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String classID = tNode.getParent().getID();
 
 		// SK 050106 Reduced length of queue to 1
-		tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
 		// tmpART.addStr("Signal", "chan " + classID + "_q=[1] of {mtype};");
+		tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
 		tmpART.addStr("Signal", "chan " + classID + "_C=[0] of {bit};");
 
 		return tmpART;
@@ -1062,7 +1060,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	public AcceptReturnType cbnhGetClassINPredicatelist(ClassBodyNode tNode, AcceptReturnType INPredicateTarget) {
 		AcceptReturnType INPredicateHash, INPredicateList = new AcceptReturnType(); // default to empty list.
-		Vector vec = INPredicateTarget.getGen("default");
+		Vector<?> vec = INPredicateTarget.getGen("default");
 		ClassBodyNode cbRef;
 
 		for (int i = 0; i < vec.size(); i++) {
@@ -1330,7 +1328,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	}
 
 	public void csbhOutputTBridgeAndPID(AcceptReturnType anART) {
-		Vector vec = anART.getGen("WholeOutgoingTransitionlist");
+		Vector<?> vec = anART.getGen("WholeOutgoingTransitionlist");
 		if (vec.size() > 0) {
 			String tempStr = "";
 			for (int i = 0; i < vec.size(); i++) {
@@ -1495,7 +1493,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		for (int i = 0; i < tNode.transitionNodeChildren.size(); i++) {
 			TransitionNode currTransNode = (TransitionNode) tNode.transitionNodeChildren.get(i);
 			boolean found = false;
-			Vector vec = tmpART.getGen("WholeOutgoingTransitionlist");
+			Vector<?> vec = tmpART.getGen("WholeOutgoingTransitionlist");
 			for (int j = 0; j < vec.size(); j++) {
 				TransitionNode comparisonTransNode = (TransitionNode) vec.get(j);
 				if (currTransNode.getDestination().equals(comparisonTransNode.getDestination())) {
@@ -1793,7 +1791,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		int idx, wholeleng, leng;
 		int mod, divisor = 2;
-		Vector tmpout1 = new Vector();
+		Vector<String> tmpout1 = new Vector<String>();
 		String temp1 = "";
 
 		mod = tempMTL.length % divisor;
@@ -2122,7 +2120,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public boolean sbnhIfINPredicateTarget(StateBodyNode tNode, AcceptReturnType INPredicateTarget) {
 		ClassBodyNode classBodyRef = (ClassBodyNode) searchUpForDest(tNode, "ClassBodyNode");
 
-		Vector vec = INPredicateTarget.getGen("default");
+		Vector<?> vec = INPredicateTarget.getGen("default");
 		AcceptReturnType INPredicateHash, InPredicateList;
 		ClassBodyNode cbRef;
 
@@ -2201,7 +2199,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		AcceptReturnType TELentitity, transitionList;
 
 		sbnhFind_DestType(tNode);
-		Vector vec = transEventList.getGen("default");
+		Vector<?> vec = transEventList.getGen("default");
 		for (int i = 0; i < vec.size(); i++) {
 			TELentitity = (AcceptReturnType) vec.get(i);
 			if (TELentitity.getStr("event").equals(eventType)) {
@@ -2228,7 +2226,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		sbnhFind_DestType(tNode);
 
-		Vector vec = transEventList.getGen("default");
+		Vector<?> vec = transEventList.getGen("default");
 		for (int i = 0; i < vec.size(); i++) {
 			TELentitity = (AcceptReturnType) vec.get(i);
 			String eNodeSrc = TELentitity.getStr("event");
@@ -2606,7 +2604,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// transitionMarkerStr = "printf (\" Beginning of Transition " + ".\\n\");";
 		String tmpStr = "";
 
-		Vector vec = transitionEventList.getGen("default");
+		Vector<?> vec = transitionEventList.getGen("default");
 		for (int i = 0; i < vec.size(); i++) {
 			// safe to assume items are of type TransitionNode. (!?) (but is it transition node or transition body?
 			TELentitity = (AcceptReturnType) vec.get(i);
@@ -2629,7 +2627,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				// sub EMPTYTRANSoutputState
 				emptyTrans = true;
 
-				Vector tlvec = transitionList.getGen("default");
+				Vector<?> tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
 					String stTimeInvariant = stateTimeInvariant.substring(0); // TODO undef!?
@@ -2679,7 +2677,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				AcceptReturnType hasGuardParam = new AcceptReturnType();
 				// boolean firstGuard = true; // firstguard fix
 
-				Vector tlvec = transitionList.getGen("default");
+				Vector<?> tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
 					hasGuardParam.addSingle("default", new Boolean(false));
@@ -2811,10 +2809,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		int tNodeCount = tNode.transitionNodeChildren.size(); // number of Transition h2PNodes
-		if (tNode.getParent().getID().equals("DownRamping")) { // debug code previously: Wait.
-			int x = 1;
-
-		}
 
 		// T ODO call $iftarget = visitstatebodyNodePak->ifINPredicateTarget( $thisstatebodynode, \@INPredicateTarget );
 		boolean inPredicateTarget = sbnhIfINPredicateTarget(tNode, (AcceptReturnType) globalOutputs
@@ -2857,7 +2851,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 			// @outputState = visitstatebodyNodePak->IntraObjectOutput( $thisstatebodynode, \@transeventlist,
 			// \@outputState );
-			Vector vec = transitionEventList.getGen("default");
+			Vector<?> vec = transitionEventList.getGen("default");
 
 			for (int i = 0; i < vec.size(); i++) {
 				// TransitionBodyNode childNode = (TransitionBodyNode) vec.get(i); // safe to assume items are of type

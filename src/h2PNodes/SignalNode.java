@@ -25,10 +25,10 @@ public class SignalNode extends aNode {
     /**
      * @param theID
      */
-    public SignalNode(String sygname) {
+    public SignalNode(String signame) {
         super(noID(), "SignalNode");
         // TODO Auto-generated constructor stub
-        name = sygname;
+        name = signame;
     }
     
     public SignalNode(String sigName, String signalType, String className) {

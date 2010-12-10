@@ -25,11 +25,11 @@ import java.util.Vector;
  *  One difference: while addStr will merge new strings with old,
  *  addGen can only replace the old object with the new one.
  *  The hashtables are optional in order to avoid creating
- *  unecessary classes.
+ *  unnecessary classes.
  * 
  *  Order of string concatenations:
  *  All calls here append strings to the end of the current data.
- *  This mimmics the functionality of UniversalClass->jointwoarrays
+ *  This mimics the functionality of UniversalClass->jointwoarrays
  *  which appends $array1 to the end of $array2.  And so the string
  *  being appended to actually will refer to itself as the second
  *  parameter in the function.
@@ -43,9 +43,9 @@ import java.util.Vector;
 public class AcceptReturnType extends NodeUtilityClass {
 
 	// Generic Data Hashes:
-	protected Hashtable stringHash; // stores a hash of strings  
-	protected Hashtable genHash; // stores a hash of vectors of objects
-	protected Hashtable singleHash; // stores a hash of objects
+	protected Hashtable<String, String> stringHash; // stores a hash of strings  
+	protected Hashtable<String, Vector<Object>> genHash; // stores a hash of vectors of objects
+	protected Hashtable<String, Object> singleHash; // stores a hash of objects
 	
 	// default string value, equivalent to getStr("default")
 	protected String defaultValue = "";
@@ -77,7 +77,7 @@ public class AcceptReturnType extends NodeUtilityClass {
            return defaultValue;   
         }
 		if (stringHash == null) {
-			stringHash = new Hashtable();
+			stringHash = new Hashtable<String, String>();
 		}
 		String tmpStr = (String)stringHash.get(hashKey); // for now.
 		if (tmpStr == null) {
@@ -172,28 +172,28 @@ public class AcceptReturnType extends NodeUtilityClass {
 
     
 	/* ----------------- Object Vector ----------------- */
-	public Vector getGen (String hashKey) {
+	public Vector<Object> getGen (String hashKey) {
 		if (genHash == null) {
-			genHash = new Hashtable();
+			genHash = new Hashtable<String, Vector<Object>>();
 		}
-		Vector vec = (Vector) genHash.get(hashKey);
+		Vector<Object> vec = (Vector<Object>) genHash.get(hashKey);
 		if (vec == null) {
-			vec = new Vector();
+			vec = new Vector<Object>();
 			genHash.put(hashKey, vec);
 		}
 		return vec;
 	}
 	
 	public void addGen (String hashKey, Object hashValue) {
-		Vector vec = getGen (hashKey);
+		Vector<Object> vec = getGen (hashKey);
 		vec.addElement(hashValue);
 	}
 	
-	public void addGenVec (String hashKey, Vector hashValues) {
+	public void addGenVec (String hashKey, Vector<Object> hashValues) {
 		if (genHash == null) {
-			genHash = new Hashtable();
+			genHash = new Hashtable<String, Vector<Object>>();
 		}
-		Vector vec = getGen (hashKey);
+		Vector<Object> vec = getGen (hashKey);
 		for (int i = 0; i < hashValues.size(); i++) {
 		  vec.addElement(hashValues.get(i));
 		}		
@@ -202,7 +202,7 @@ public class AcceptReturnType extends NodeUtilityClass {
 	/* ----------------- Single Object Hashes ----------------- */
 	public void addSingle(String hashKey, Object hashValue) {
 		if (singleHash == null) {
-			singleHash = new Hashtable();
+			singleHash = new Hashtable<String, Object>();
 		}
 		//hashTableRemove(singleHash,hashKey);
 		singleHash.remove(hashKey);
@@ -211,7 +211,7 @@ public class AcceptReturnType extends NodeUtilityClass {
 	
 	public Object getSingle (String hashKey) {
 		if (singleHash == null) {
-			singleHash = new Hashtable();
+			singleHash = new Hashtable<String, Object>();
 		}
 		
 		Object obj = singleHash.get(hashKey);
@@ -231,7 +231,7 @@ public class AcceptReturnType extends NodeUtilityClass {
 		//defaultValue += newART.defaultValue;
 		mergeDefV(newART.defaultValue);
 
-		Enumeration eHV;
+		Enumeration<String> eHV;
 		if (newART.stringHash != null) {
 		  eHV = newART.stringHash.keys();
 		
@@ -321,8 +321,6 @@ public class AcceptReturnType extends NodeUtilityClass {
     public boolean writeFile (String hashKey, FileOutputStream fos) {
         boolean success = true;
         
-        String finalStr = "";
-        
         try {
             //FileOutputStream fos = new FileOutputStream(filename);
             
@@ -392,7 +390,7 @@ public class AcceptReturnType extends NodeUtilityClass {
 		
 
 		if (stringHash != null) {
-			Enumeration eHV;
+			Enumeration<String> eHV;
 			eHV = stringHash.keys();
 		
 			while (eHV.hasMoreElements()) {

@@ -42,7 +42,7 @@ public class PromelaInPredicateVisitor extends aVisitor {
 	}
 	
 	public void AddNewINPredicate (ClassBodyNode tNode, String target) {
-		Vector vec = INPredicateTarget.getGen("default");
+		Vector<Object> vec = INPredicateTarget.getGen("default");
 		AcceptReturnType INPredicateHash, InPredicateList;
 		ClassBodyNode cbRef;
 		

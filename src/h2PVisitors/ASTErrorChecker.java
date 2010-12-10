@@ -649,8 +649,6 @@ public class ASTErrorChecker extends aVisitor {
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
 		// TODO Auto-generated method stub
 		AcceptReturnType tART = new AcceptReturnType();
-		TransitionBodyNode tBody = (TransitionBodyNode) searchUpForDest(tNode, "TransitionBodyNode");
-		aNode classBodyRef = searchUpForDest (tNode, "ClassBodyNode");
 		String nodeName = tNode.getNodeName();
 		boolean validActionType = false;
 		boolean isMessageType = false;
