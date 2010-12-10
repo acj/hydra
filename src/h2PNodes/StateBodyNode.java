@@ -19,8 +19,8 @@ import java.util.Vector;
  */
 public class StateBodyNode extends aNode {
 
-	public Vector transitionNodeChildren;
-	public Vector actionNodeChildren;
+	public Vector<aNode> transitionNodeChildren;
+	public Vector<aNode> actionNodeChildren;
 	
     /**
      * @param theID
@@ -28,8 +28,8 @@ public class StateBodyNode extends aNode {
     public StateBodyNode() {
         super(noID(), "StateBodyNode", true);
         // TODO Auto-generated constructor stub
-        transitionNodeChildren = new Vector();
-        actionNodeChildren = new Vector();
+        transitionNodeChildren = new Vector<aNode>();
+        actionNodeChildren = new Vector<aNode>();
     }
     
     // transitionNodeChildren and actionNodeChildren are 

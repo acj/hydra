@@ -24,13 +24,13 @@ public abstract class aNode extends NodeUtilityClass {
     protected String ID, classType;
     protected aNode parent;
     // list of all former parent, most recent at end of list
-    protected Vector formerParent;
+    protected Vector<aNode> formerParent;
     protected boolean parentLives;
     protected String uniqueID = "";
     protected boolean usesParentID = false;
     protected boolean bodyNode = false;
     
-	public Vector children = new Vector(); // generic children nodes
+	public Vector<aNode> children = new Vector<aNode>(); // generic children nodes
 	//TODO make these children *protected* and wrap them around functions!
 	/**
 	 * 
@@ -41,7 +41,7 @@ public abstract class aNode extends NodeUtilityClass {
         classType = theClassType;
         parent = null;
         parentLives = false;
-        formerParent = new Vector();
+        formerParent = new Vector<aNode>();
 	}
 
 	public aNode(String theID, String theClassType, boolean isBodyNode) {
@@ -64,7 +64,7 @@ public abstract class aNode extends NodeUtilityClass {
 	}
 	
 	// calls accept on all members of a vector of children nodes
-	protected AcceptReturnType acceptChildren(aVisitor v, Vector otherChildren) {
+	protected AcceptReturnType acceptChildren(aVisitor v, Vector<aNode> otherChildren) {
 		// String tmpStr = "";
 		AcceptReturnType tmpART = new AcceptReturnType();
 		for (int i = 0; i < otherChildren.size(); i++) {
@@ -78,7 +78,7 @@ public abstract class aNode extends NodeUtilityClass {
 		return acceptChildrenOfType (v, childType, children);
 	}
 	
-	protected AcceptReturnType acceptChildrenOfType(aVisitor v, String childType, Vector otherChildren) {
+	protected AcceptReturnType acceptChildrenOfType(aVisitor v, String childType, Vector<aNode> otherChildren) {
 		// String tmpStr = "";
 		AcceptReturnType tmpART = new AcceptReturnType();
 		for (int i = 0; i < otherChildren.size(); i++) {
@@ -154,7 +154,7 @@ public abstract class aNode extends NodeUtilityClass {
       	}
     }
 
-    public Vector getFormerParentVec () {
+    public Vector<aNode> getFormerParentVec () {
     	return formerParent;
     }
     

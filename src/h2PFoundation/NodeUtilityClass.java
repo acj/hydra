@@ -93,8 +93,8 @@ public class NodeUtilityClass {
 		return null;
 	}
 	
-	public Vector getTokenizedStrToVec(String dataStr, String token) {
-		Vector vec = new Vector();
+	public Vector<String> getTokenizedStrToVec(String dataStr, String token) {
+		Vector<String> vec = new Vector<String>();
 		int startP, i;
 		String currStr = "";
 
@@ -121,7 +121,7 @@ public class NodeUtilityClass {
 	}
 	
 	public String[] getTokenizedStrToArray(String dataStr, String token) {
-		Vector vec = getTokenizedStrToVec(dataStr, token);
+		Vector<String> vec = getTokenizedStrToVec(dataStr, token);
 		
 		String retVal[] = new String[vec.size()];
 		for (int i = 0; i < vec.size(); i++) {
@@ -156,8 +156,8 @@ public class NodeUtilityClass {
 		return FormatOutputSeparateType (theType, ", ", outputData);
 	}
 	
-    public ArrayList VectorToArrayList(Vector v) {
-         ArrayList ret = new ArrayList(v);
+    public ArrayList<?> VectorToArrayList(Vector<?> v) {
+         ArrayList<?> ret = new ArrayList<Object>(v);
          
          return ret;
     }

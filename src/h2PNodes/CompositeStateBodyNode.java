@@ -23,7 +23,7 @@ public class CompositeStateBodyNode extends aNode {
 	// TODO verify that this only has one history child
     protected HistoryNode tHistoryChild = null;
     protected boolean hasHistoryNodeVar = false;
-    public Vector transitionNodeChildren;
+    public Vector<aNode> transitionNodeChildren;
 
     /**
      * @param theID
@@ -31,7 +31,7 @@ public class CompositeStateBodyNode extends aNode {
     public CompositeStateBodyNode() {
         super(noID(), "CompositeStateBodyNode", true);
         // TODO Auto-generated constructor stub
-        transitionNodeChildren = new Vector();
+        transitionNodeChildren = new Vector<aNode>();
     }
     
 	/* (non-Javadoc)
