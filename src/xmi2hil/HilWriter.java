@@ -37,12 +37,12 @@ public class HilWriter {
 		//Generate the HIL file
 		Visitor v = new ToHilVisitor();
 		v.visitModel(umlModel);
-		List data = ((ToHilVisitor) v).getData();
+		List<?> data = ((ToHilVisitor) v).getData();
 
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(target));
 
-			Iterator it = data.iterator();
+			Iterator<?> it = data.iterator();
 
 			while (it.hasNext()) {
 

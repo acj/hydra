@@ -57,7 +57,7 @@ public abstract class Visitor {
 	}
 
 	/** @modelguid {A424C30D-A830-4F34-A429-0330BDB7F974} */
-	public void visitPseudotate(PseudoState e) {
+	public void visitPseudoState(PseudoState e) {
 	}
 
 	/** @modelguid {FF68B4B3-D9B4-4E28-883B-20505FE028F8} */

@@ -19,7 +19,7 @@ public class PseudoState extends StateVertex {
 	public void accept(Visitor v) {
 		//super.accept(v);
 		
-		v.visitPseudotate(this);
+		v.visitPseudoState(this);
 	}
 
 }

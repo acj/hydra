@@ -5,30 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import umlModel.ActionExpression;
-import umlModel.Attribute;
-import umlModel.BooleanExpression;
-import umlModel.CallEvent;
-import umlModel.CompositeState;
-import umlModel.Constraint;
-import umlModel.DataType;
-import umlModel.Expression;
-import umlModel.FinalState;
-import umlModel.Guard;
-import umlModel.Model;
-import umlModel.ModelElement;
-import umlModel.Operation;
-import umlModel.Parameter;
-import umlModel.PseudoState;
-import umlModel.SimpleState;
-import umlModel.State;
-import umlModel.StateMachine;
-import umlModel.StateVertex;
-import umlModel.Stereotype;
-import umlModel.Transition;
-import umlModel.UMLClass;
-import umlModel.UninterpretedAction;
-import umlModel.Visitor;
+import umlModel.*;
 
 /**
  * 
@@ -40,10 +17,10 @@ public class ToHilVisitor extends Visitor {
 	private String tempString;
 
 	/** @modelguid {0302A65E-E86D-435B-9F75-9ACD77739933} */
-	private ArrayList tempList;
+	private ArrayList<String> tempList;
 
 	/** @modelguid {B4FAB7B7-B60D-415D-A5E1-9F470C3E33E5} */
-	private List data;
+	private List<String> data;
 
 	/*
 	 * (non-Javadoc)
@@ -52,7 +29,6 @@ public class ToHilVisitor extends Visitor {
 	 *      {25BC9078-BCE7-4FEE-9B4B-A66595DCE200} @modelguid {25BC9078-BCE7-4FEE-9B4B-A66595DCE200}
 	 */
 	public void visitActionExpression(ActionExpression e) {
-		// TODO Auto-generated method stub
 		super.visitActionExpression(e);
 	}
 
@@ -62,9 +38,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitAttribute(xmiParser.Attribute) @modelguid {AA3CA29B-1DD4-4A4E-BEC0-8D33BE4E6C60}
 	 */
 	public void visitAttribute(Attribute e) {
-		// TODO Auto-generated method stub
-		// super.visitAttribute(e);
-
 		// Get the initialValue if there is one
 		if (e.initialValue != null) {
 			e.initialValue.accept(this);
@@ -98,7 +71,6 @@ public class ToHilVisitor extends Visitor {
 	 *      {2D2E64EE-3A64-4391-9C29-756C69FCC57E} @modelguid {2D2E64EE-3A64-4391-9C29-756C69FCC57E}
 	 */
 	public void visitBooleanExpression(BooleanExpression e) {
-		// TODO Auto-generated method stub
 		super.visitBooleanExpression(e);
 	}
 
@@ -108,7 +80,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitCallEvent(xmiParser.CallEvent) @modelguid {6BFA0B85-1DAE-448F-A2BA-7F162FCB113F}
 	 */
 	public void visitCallEvent(CallEvent e) {
-		// TODO Auto-generated method stub
 		super.visitCallEvent(e);
 	}
 
@@ -118,12 +89,10 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitClass(xmiParser.Class) @modelguid {AC1B1BB8-CA84-44E7-B967-DDF14D4A6071}
 	 */
 	public void visitClass(UMLClass e) {
-		// super.visitClass(e);
-		
 		data.add("Class " + e.name + " {");
 
 		// Iterate the features, i.e. attributes and operations
-		Iterator it = e.feature.values().iterator();
+		Iterator<?> it = e.feature.values().iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
@@ -144,8 +113,6 @@ public class ToHilVisitor extends Visitor {
 	 *      {99E0CEBB-9986-4BF9-8C29-6A6AC38D2CA5} @modelguid {99E0CEBB-9986-4BF9-8C29-6A6AC38D2CA5}
 	 */
 	public void visitCompositeState(CompositeState e) {
-		// super.visitCompositeState(e);
-
 		if (e.subvertex.size() == 0) {
 			// We have a single state, no container
 			String statename = e.name;
@@ -177,7 +144,7 @@ public class ToHilVisitor extends Visitor {
 			}
 
 			// Generate the transitions
-			Iterator it = e.outgoing.iterator();
+			Iterator<?> it = e.outgoing.iterator();
 			while (it.hasNext()) {
 				Transition trans = (Transition) it.next();
 				trans.accept(this);
@@ -204,7 +171,7 @@ public class ToHilVisitor extends Visitor {
 			}
 
 			// Generate the transitions
-			Iterator it = e.outgoing.iterator();
+			Iterator<?> it = e.outgoing.iterator();
 			while (it.hasNext()) {
 				Transition trans = (Transition) it.next();
 				trans.accept(this);
@@ -229,7 +196,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitDataType(xmiParser.DataType) @modelguid {66181506-751F-40F8-B21C-D5D22E59BF4D}
 	 */
 	public void visitDataType(DataType e) {
-		// TODO Auto-generated method stub
 		super.visitDataType(e);
 	}
 
@@ -239,7 +205,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitFinalState(xmiParser.FinalState) @modelguid {37735AD5-1F69-4E94-9FAA-7B7D1F9B4A60}
 	 */
 	public void visitFinalState(FinalState e) {
-		// TODO Auto-generated method stub
 		super.visitFinalState(e);
 	}
 
@@ -249,7 +214,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitGuard(xmiParser.Guard) @modelguid {F40D8817-3578-4E47-863C-5DB32F6AFB3D}
 	 */
 	public void visitGuard(Guard e) {
-		// TODO Auto-generated method stub
 		super.visitGuard(e);
 	}
 
@@ -259,9 +223,7 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitModel(xmiParser.Model) @modelguid {5DD58A0A-DA38-466C-B87D-8380BAABA58F}
 	 */
 	public void visitModel(Model e) {
-		// super.visitModel(e);
-
-		data = new ArrayList();
+		data = new ArrayList<String>();
 
 		data.add("Formalize as promela ;");
 		
@@ -271,7 +233,7 @@ public class ToHilVisitor extends Visitor {
 		modelName=modelName.replaceAll(" ","_");
 		data.add("Model " + modelName + "{");
 
-		Iterator it = e.ownedElement.values().iterator();
+		Iterator<?> it = e.ownedElement.values().iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
@@ -286,18 +248,16 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitOperation(xmiParser.Operation) @modelguid {EE37F5D7-8685-4A52-A095-79DD3E878CD9}
 	 */
 	public void visitOperation(Operation e) {
-		// super.visitOperation(e);
-
 		// Gather parameters, don't worry about return value for HIL
-		tempList = new ArrayList();
-		Iterator it = e.parameter.iterator();
+		tempList = new ArrayList<String>();
+		Iterator<?> it = e.parameter.iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
 
 		StringBuffer parameters = new StringBuffer("");
 
-		Iterator parIt = tempList.iterator();
+		Iterator<String> parIt = tempList.iterator();
 		while (parIt.hasNext()) {
 			String thisParamter = (String) parIt.next();
 			parameters.append(thisParamter + ", ");
@@ -320,9 +280,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitParameter(xmiParser.Parameter) @modelguid {A297F408-F28E-4499-8750-A1ED80D8604F}
 	 */
 	public void visitParameter(Parameter e) {
-		// TODO Auto-generated method stub
-		// super.visitParameter(e);
-
 		// Hydra does not care about return values
 		if (!e.kind.equals("return")) {
 			if(e.type==null)
@@ -340,15 +297,13 @@ public class ToHilVisitor extends Visitor {
 	 * 
 	 * @see xmi2hil.Visitor#visitPseudotate(xmiParser.PseudoState) @modelguid {25657E58-B9DE-4A8D-BC5C-6A74AC219CFF}
 	 */
-	public void visitPseudotate(PseudoState e) {
-		// super.visitPseudotate(e);
-
+	public void visitPseudoState(PseudoState e) {
 		if (!e.kind.equals("initial")) {
 			// We only handle initial states
 			return;
 		}
 
-		Iterator it = e.outgoing.iterator();
+		Iterator<?> it = e.outgoing.iterator();
 		int i = 0;
 
 		while (it.hasNext()) {
@@ -378,8 +333,8 @@ public class ToHilVisitor extends Visitor {
 		StringTokenizer st = new StringTokenizer(action, " ;");
 		StringBuffer actionString = new StringBuffer();
 
-		ArrayList actions = new ArrayList();
-		ArrayList signals = new ArrayList();
+		ArrayList<String> actions = new ArrayList<String>();
+		ArrayList<String> signals = new ArrayList<String>();
 
 		while (st.hasMoreElements()) {
 			String thisAction = st.nextToken();
@@ -402,7 +357,7 @@ public class ToHilVisitor extends Visitor {
 		if (actions.size() != 0) {
 			actionString.append("/");
 		}
-		Iterator it = actions.iterator();
+		Iterator<String> it = actions.iterator();
 		while (it.hasNext()) {
 			String thisAction = (String) it.next();
 			// Append to the output
@@ -430,7 +385,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitSimpleState(xmiParser.SimpleState) @modelguid {DAED55E9-CF3C-4305-9CD2-A00EDBFA902B}
 	 */
 	public void visitSimpleState(SimpleState e) {
-		// TODO Auto-generated method stub
 		super.visitSimpleState(e);
 	}
 
@@ -440,8 +394,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitState(xmiParser.State) @modelguid {353DC03D-8211-4B8B-8A0D-E4BD8169BC1F}
 	 */
 	public void visitState(State e) {
-		// super.visitState(e);
-
 		if (e instanceof CompositeState) {
 			CompositeState cs = (CompositeState) e;
 			cs.accept(this);
@@ -456,7 +408,6 @@ public class ToHilVisitor extends Visitor {
 	 *      {E48FCE1C-D780-4F4B-8F56-663867D86233} @modelguid {E48FCE1C-D780-4F4B-8F56-663867D86233}
 	 */
 	public void visitStateMachine(StateMachine e) {
-		// TODO Auto-generated method stub
 		super.visitStateMachine(e);
 
 		e.top.accept(this);
@@ -468,8 +419,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see xmi2hil.Visitor#visitTransition(xmiParser.Transition) @modelguid {4377D3A3-2865-4BDA-8AB2-DAB362781557}
 	 */
 	public void visitTransition(Transition e) {
-		// super.visitTransition(e);
-	
 		String trigger = "";
 		String guard = "";
 		String action = "";
@@ -479,7 +428,7 @@ public class ToHilVisitor extends Visitor {
 			trigger = e.trigger.name;
 
 			// That's where the parameters will end up in
-			tempList = new ArrayList();
+			tempList = new ArrayList<String>();
 
 			CallEvent triggerEvent = null;
 
@@ -494,7 +443,7 @@ public class ToHilVisitor extends Visitor {
 				System.err.println("Check triggerEvent " + triggerEvent
 						+ ", if it seems normal try to delete, save, and rename (XDE bug!)");
 			} else if (triggerEvent.operation.parameter != null) {
-				Iterator pit = triggerEvent.operation.parameter.iterator();
+				Iterator<?> pit = triggerEvent.operation.parameter.iterator();
 				while (pit.hasNext()) {
 					Parameter par = (Parameter) pit.next();
 					if (!par.kind.equals("return")) {
@@ -506,7 +455,7 @@ public class ToHilVisitor extends Visitor {
 				if (tempList.size() != 0) {
 					trigger = trigger + "(";
 
-					Iterator tempIt = tempList.iterator();
+					Iterator<String> tempIt = tempList.iterator();
 					while (tempIt.hasNext()) {
 						String thisPar = (String) tempIt.next();
 						trigger = trigger + (thisPar + ",");
@@ -547,7 +496,6 @@ public class ToHilVisitor extends Visitor {
 	 *      {737735CA-249F-4FD6-928F-3070EAF57C72} @modelguid {737735CA-249F-4FD6-928F-3070EAF57C72}
 	 */
 	public void visitUninterpretedAction(UninterpretedAction e) {
-		// TODO Auto-generated method stub
 		super.visitUninterpretedAction(e);
 	}
 
@@ -557,7 +505,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see java.lang.Object#hashCode() @modelguid {6D9C3D8B-3E87-430F-B35C-0B9C7215636A}
 	 */
 	public int hashCode() {
-		// TODO Auto-generated method stub
 		return super.hashCode();
 	}
 
@@ -567,7 +514,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see java.lang.Object#equals(java.lang.Object) @modelguid {211A89D7-B0C8-44E9-A3F7-4F7CF0B4C4BD}
 	 */
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
 		return super.equals(obj);
 	}
 
@@ -577,7 +523,6 @@ public class ToHilVisitor extends Visitor {
 	 * @see java.lang.Object#toString() @modelguid {2ABB2DB4-AECB-453D-858A-4CC2910B94CF}
 	 */
 	public String toString() {
-		// TODO Auto-generated method stub
 		return super.toString();
 	}
 
@@ -593,7 +538,7 @@ public class ToHilVisitor extends Visitor {
 	}
 
 	/** @modelguid {A2552BB6-09B0-4B2B-B117-D1DC93D8349D} */
-	public List getData() {
+	public List<String> getData() {
 		return data;
 	}
 

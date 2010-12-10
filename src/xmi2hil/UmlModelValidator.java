@@ -35,7 +35,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {BF83D59D-4214-4B10-BEAB-8FD0B68841AD}
 	 */
 	public void visitActionExpression(ActionExpression e) {
-		// TODO Auto-generated method stub
 		super.visitActionExpression(e);
 	}
 
@@ -44,9 +43,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {74E873D6-EA57-41A0-BFED-D32408E5E563}
 	 */
 	public void visitAttribute(Attribute e) {
-		// TODO Auto-generated method stub
-		//super.visitAttribute(e);
-
 		//Get the initialValue if there is one
 		if (e.initialValue != null) {
 			e.initialValue.accept(this);
@@ -59,7 +55,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {2A22081D-6E2A-4D87-81AA-C74A1C0C727C}
 	 */
 	public void visitBooleanExpression(BooleanExpression e) {
-		// TODO Auto-generated method stub
 		super.visitBooleanExpression(e);
 	}
 
@@ -68,7 +63,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {9F4C69F8-EB12-4E08-B339-AF45A7A03CE4}
 	 */
 	public void visitCallEvent(CallEvent e) {
-		// TODO Auto-generated method stub
 		super.visitCallEvent(e);
 	}
 	
@@ -82,8 +76,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {DD1C5C38-5315-4129-89EF-5E2B35B9859C}
 	 */
 	public void visitClass(UMLClass e) {
-		//super.visitClass(e);
-
 		String className=e.name;
 		currentClassName=e.name;
 		
@@ -93,7 +85,7 @@ public class UmlModelValidator extends Visitor {
 		}
 
 		//Iterate the features, i.e. attributes and operations
-		Iterator it = e.feature.values().iterator();
+		Iterator<?> it = e.feature.values().iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
@@ -134,23 +126,20 @@ public class UmlModelValidator extends Visitor {
 			}
 
 			//Generate the transitions			
-			Iterator it = e.outgoing.iterator();
+			Iterator<?> it = e.outgoing.iterator();
 			while (it.hasNext()) {
 				Transition trans = (Transition) it.next();
 				trans.accept(this);
 			}
-
-			//data.add("\t}");
 		} else {
 			//We have a container state
-			//String compositeName = e.name;
 
 			//Make sure we do not have the top container here
 			//The top container will be the only one with container == null
 			if (e.container != null) {
 				//data.add("\tCompositeState " + compositeName + " {");
 			}
-			Iterator it = e.subvertex.values().iterator();
+			Iterator<?> it = e.subvertex.values().iterator();
 			while (it.hasNext()) {
 				StateVertex sv = (StateVertex) it.next();
 				sv.accept(this);
@@ -168,7 +157,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {C6CE4318-6498-4D1D-A67F-8E2C5878E5FA}
 	 */
 	public void visitDataType(DataType e) {
-		// TODO Auto-generated method stub
 		super.visitDataType(e);
 	}
 
@@ -177,7 +165,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {8D803F6E-8F82-4610-9743-62D437FD255B}
 	 */
 	public void visitFinalState(FinalState e) {
-		// TODO Auto-generated method stub
 		super.visitFinalState(e);
 	}
 
@@ -186,7 +173,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {87046A62-AD81-43E2-9C3B-AC2075255311}
 	 */
 	public void visitGuard(Guard e) {
-		// TODO Auto-generated method stub
 		super.visitGuard(e);
 	}
 
@@ -195,20 +181,10 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {58629D2D-97B5-444D-A2D9-4DBDEBFCDED8}
 	 */
 	public void visitModel(Model e) {
-		//super.visitModel(e);
-
-//		data = new ArrayList();
-//
-//		data.add("Formalize as promela ;");
-//		data.add("Model " + e.name + "{");
-
-		Iterator it = e.ownedElement.values().iterator();
+		Iterator<?> it = e.ownedElement.values().iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
-
-//		data.add("");
-//		data.add("}");
 	}
 
 	/* (non-Javadoc)
@@ -216,19 +192,15 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {1E6D37E4-FF15-44AD-AF49-897573F1E1EC}
 	 */
 	public void visitOperation(Operation e) {
-		//super.visitOperation(e);
-		
 		String operationName=e.name;
 		
-		//if(!operationName.matches("[a-zA-Z]*\\p{Space}*\\(([a-z]\\p{Space}*,?\\p{Space}*)*\\)"))
 		if(!operationName.matches("[a-zA-Z][a-zA-Z0-9]*"))
 		{
 			System.err.println("Syntax error in operation name: " + operationName);
 		}
 		
 		//Visit all parameters
-		//ArrayList tempList = new ArrayList();
-		Iterator it = e.parameter.iterator();
+		Iterator<?> it = e.parameter.iterator();
 		while (it.hasNext()) {
 			((ModelElement) it.next()).accept(this);
 		}
@@ -240,27 +212,17 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {5E91A64B-5F9F-4CDE-B0C6-3188246AE2DC}
 	 */
 	public void visitParameter(Parameter e) {
-		// TODO Auto-generated method stub
-		//super.visitParameter(e);
-		
 		if(!e.type.name.matches("[a-zA-Z][a-zA-Z0-9]*"))
 		{
 			System.err.println("Syntax error in parameter: " + e.type.name);
 		}
-
-//		//Hydra does not care about return values
-//		if (!e.type.name.equals("return")) {
-//			tempList.add(e.type.name);
-//		}
 	}
 
 	/* (non-Javadoc)
 	 * @see xmi2hil.Visitor#visitPseudotate(xmiParser.PseudoState)
 	 * @modelguid {6360D8A1-45E1-4931-851A-005E71F18C25}
 	 */
-	public void visitPseudotate(PseudoState e) {
-		//super.visitPseudotate(e);
-
+	public void visitPseudoState(PseudoState e) {
 		if (!e.kind.equals("initial")) {
 			//We only handle initial states
 			return;
@@ -271,7 +233,7 @@ public class UmlModelValidator extends Visitor {
 			System.err.println("Error: Initial state in container [" + e.container.name + "] of class [" + currentClassName + "] has no outgoing transitions.");    
 		}
 
-		Iterator it = e.outgoing.iterator();
+		Iterator<?> it = e.outgoing.iterator();
 		int i = 0;
 
 		while (it.hasNext()) {
@@ -281,11 +243,9 @@ public class UmlModelValidator extends Visitor {
 			String action = "";
 			if (trans.effect != null) {
 				action = trans.effect.script.body;
-				boolean sytanxCheckPassed = syntaxCheckAction(action);
+				// TODO: Do something with this return value.
+				boolean syntaxCheckPassed = syntaxCheckAction(action);
 			}
-
-			String target = trans.target.name;
-
 		}
 	}
 
@@ -297,18 +257,18 @@ public class UmlModelValidator extends Visitor {
 
 		StringTokenizer st = new StringTokenizer(action, " ;");
 
-		ArrayList actions = new ArrayList();
-		ArrayList signals = new ArrayList();
+		ArrayList<String> actions = new ArrayList<String>();
+		ArrayList<String> signals = new ArrayList<String>();
 
 		while (st.hasMoreElements()) {
 			String thisAction = st.nextToken();
 
-			//First we shave off the () if we have not parameters (Hydra wants it like that)
+			// First we shave off the () if we have not parameters (Hydra wants it like that)
 			if (thisAction.endsWith("()")) {
 				thisAction = thisAction.substring(0, thisAction.length() - 2);
 			}
 
-			//Seperate actions from signals
+			// Separate actions from signals
 			if (thisAction.startsWith("^")) {
 				signals.add(thisAction);
 			} else {
@@ -316,19 +276,19 @@ public class UmlModelValidator extends Visitor {
 			}
 		}
 
-		//Process the actions first
-		Iterator it = actions.iterator();
-		while (it.hasNext()) {
-			//String thisAction = (String) it.next();
-			//Check syntax
-		}
-
-		//Then do the signals
-		it = signals.iterator();
-		while (it.hasNext()) {
-			//String thisSignal = (String) it.next();
-			//Check syntax
-		}
+//		// Process the actions first
+//		Iterator<String> it = actions.iterator();
+//		while (it.hasNext()) {
+//			//String thisAction = (String) it.next();
+//			// TODO: Check syntax
+//		}
+//
+//		// Then do the signals
+//		it = signals.iterator();
+//		while (it.hasNext()) {
+//			//String thisSignal = (String) it.next();
+//			// TODO: Check syntax
+//		}
 
 		return true;
 	}
@@ -338,7 +298,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {4913AE2C-A50E-4CC7-B71A-95789E6BBDA6}
 	 */
 	public void visitSimpleState(SimpleState e) {
-		// TODO Auto-generated method stub
 		super.visitSimpleState(e);
 	}
 
@@ -347,8 +306,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {D8DF3CAB-9E72-4449-AC9E-DE41497A091D}
 	 */
 	public void visitState(State e) {
-		//super.visitState(e);
-
 		if (e instanceof CompositeState) {
 			CompositeState cs = (CompositeState) e;
 			cs.accept(this);
@@ -361,7 +318,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {61B01AD2-234D-44CC-A22B-E440CF7A0793}
 	 */
 	public void visitStateMachine(StateMachine e) {
-		// TODO Auto-generated method stub
 		super.visitStateMachine(e);
 
 		e.top.accept(this);
@@ -372,8 +328,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {996C4305-A279-4296-89E2-FB670C465836}
 	 */
 	public void visitTransition(Transition e) {
-		//super.visitTransition(e);
-
 		String trigger;
 		String guard;
 		String action;
@@ -387,7 +341,8 @@ public class UmlModelValidator extends Visitor {
 		}
 		if (e.effect != null) {
 			action = e.effect.script.body;
-			boolean sytnaxCheckPassed=syntaxCheckAction(action);
+			// TODO: Do something with this return value
+			boolean syntaxCheckPassed = syntaxCheckAction(action);
 		}
 		if (e.target != null) {
 			target = e.target.name;
@@ -399,7 +354,6 @@ public class UmlModelValidator extends Visitor {
 	 * @modelguid {C6BF2394-5B85-4416-A99D-5FA0CC0FDF8A}
 	 */
 	public void visitUninterpretedAction(UninterpretedAction e) {
-		// TODO Auto-generated method stub
 		super.visitUninterpretedAction(e);
 	}
 
@@ -409,8 +363,6 @@ public class UmlModelValidator extends Visitor {
 	 */
 	public void visitExpression(Expression e) {
 		super.visitExpression(e);
-
-//		tempString = e.body;
 	}
 
 }

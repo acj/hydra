@@ -284,7 +284,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitDriverFileNode(h2PNodes.DriverFileNode)
 	 */
 	public AcceptReturnType visitDriverFileNode(DriverFileNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitDriverFileNode(tNode);
 	}
 
@@ -292,7 +291,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitEnumNode(h2PNodes.EnumNode)
 	 */
 	public AcceptReturnType visitEnumNode(EnumNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitEnumNode(tNode);
 	}
 	
@@ -413,7 +411,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitInstanceVariableNode(h2PNodes.InstanceVariableNode)
 	 */
 	public AcceptReturnType visitInstanceVariableNode(InstanceVariableNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitInstanceVariableNode(tNode);
 	}
 
@@ -421,7 +418,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitJoinNode(h2PNodes.JoinNode)
 	 */
 	public AcceptReturnType visitJoinNode(JoinNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitJoinNode(tNode);
 	}
 
@@ -550,7 +546,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitNode(h2PNodes.aNode)
 	 */
 	public AcceptReturnType visitNode(aNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitNode(tNode);
 	}
 
@@ -558,7 +553,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitNullNode(h2PNodes.NullNode)
 	 */
 	public AcceptReturnType visitNullNode(NullNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitNullNode(tNode);
 	}
 
@@ -567,7 +561,6 @@ public class ASTErrorChecker extends aVisitor {
 	 */
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
 		// TODO should this check for duplicate signals?
-		// TODO Auto-generated method stub
 		return super.visitSignalNode(tNode);
 	}
 
@@ -647,7 +640,6 @@ public class ASTErrorChecker extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode)
 	 */
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType tART = new AcceptReturnType();
 		String nodeName = tNode.getNodeName();
 		boolean validActionType = false;
