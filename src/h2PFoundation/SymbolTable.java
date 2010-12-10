@@ -12,16 +12,16 @@ public class SymbolTable {
 		symbols = new HashMap<String, Symbol>();
 	}
 	
-	public static void addSymbol(String n, SymbolType t, String oc) {
-		if (symbols.containsKey(n)) {
-			System.err.println("Warning: redefining existing symbol " + n);
-		}
-		if (oc != "") {
+	public static void addSymbol(String name, SymbolType type, String owningClass) {
+		if (owningClass != "") {
 			// Mangle the variable name to include the class name
-			n = mangleSymbolName(n, oc);
+			name = mangleSymbolName(name, owningClass);
 		}
-		Symbol sym = new Symbol(n, t, oc);
-		symbols.put(n, sym);
+		if (symbols.containsKey(name)) {
+			System.err.println("Warning: redefining existing symbol " + name);
+		}
+		Symbol sym = new Symbol(name, type, owningClass);
+		symbols.put(name, sym);
 	}
 	
 	public static Boolean symbolExists(String name) {
