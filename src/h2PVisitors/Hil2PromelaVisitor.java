@@ -500,6 +500,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 */
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
+		
+		addToMTypeList(tNode.getName());
 
 		if (tNode.getSignalType().length() > 0) {
 			String className = tNode.getParent().getParent().getID();
