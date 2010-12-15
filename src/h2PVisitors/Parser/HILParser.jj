@@ -1,5 +1,5 @@
 /**
- * UMLParser.jj
+ * HILParser.jj
  * 
  * Hydra HIL parser
  *
@@ -24,16 +24,16 @@ options {
   STATIC = false;
 }
 
-PARSER_BEGIN(UMLParser1)
+PARSER_BEGIN(HILParser)
 
 package h2PVisitors.Parser;
 import h2PNodes.*;
 import h2PFoundation.*;
 
-public class UMLParser1 extends NodeUtilityClass {
+public class HILParser extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
 
-    public UMLParser1 (WorldUtilNode theRootNode) {
+    public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);    	
     }
 
@@ -52,7 +52,7 @@ public class UMLParser1 extends NodeUtilityClass {
     }
 }
 
-PARSER_END(UMLParser1)
+PARSER_END(HILParser)
 
 <*>SKIP : /* skip is necessary in expressions too! */
 {

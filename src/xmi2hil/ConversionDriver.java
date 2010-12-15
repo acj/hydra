@@ -12,7 +12,7 @@ import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
 import h2PVisitors.ASTErrorChecker;
 import h2PVisitors.Parser.ParseException;
-import h2PVisitors.Parser.UMLParser1;
+import h2PVisitors.Parser.HILParser;
 
 import java.io.File;
 import java.io.Reader;
@@ -33,7 +33,7 @@ import xmiParser.XmiParserComponent;
 public class ConversionDriver extends NodeUtilityClass {
     WorldUtilNode rootNode;
     Hil2PromelaVisitor funkyVisitor;
-    UMLParser1 tHILParser;
+    HILParser tHILParser;
     StringBuffer hilIntermediate;
     AcceptReturnType errors;
     String promelaOutput = "";
@@ -109,7 +109,7 @@ public class ConversionDriver extends NodeUtilityClass {
         Reader dataStream = new StringReader (hilIntermediate.toString());
         
         rootNode = new WorldUtilNode();
-        tHILParser = new UMLParser1(dataStream);
+        tHILParser = new HILParser(dataStream);
         tHILParser.setRootNode(rootNode);
         ASTErrorChecker errorChecker = new ASTErrorChecker();       
         funkyVisitor = new Hil2PromelaVisitor();

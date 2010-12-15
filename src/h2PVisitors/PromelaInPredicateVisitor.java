@@ -15,7 +15,7 @@ import h2PNodes.StateNode;
 import h2PNodes.TransitionBodyNode;
 import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
-import h2PVisitors.Parser.UMLExpr1;
+import h2PVisitors.Parser.UMLExpr;
 
 import java.util.Vector;
 
@@ -27,14 +27,14 @@ import java.util.Vector;
 public class PromelaInPredicateVisitor extends aVisitor {
 
 	public AcceptReturnType INPredicateTarget;
-	public UMLExpr1 ExpressionParser;
+	public UMLExpr ExpressionParser;
 	
 	public PromelaInPredicateVisitor(AcceptReturnType globalOutputs) {
 		super();
 		
 		INPredicateTarget = new AcceptReturnType();
 		callVisitNodeAlways = false; 
-		ExpressionParser = new UMLExpr1(globalOutputs, this);
+		ExpressionParser = new UMLExpr(globalOutputs, this);
 	}
 
 	public void INTarget (ClassBodyNode tNode, String target) {

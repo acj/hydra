@@ -29,7 +29,7 @@ options {
   STATIC = false;
 }
 
-PARSER_BEGIN(UMLExpr1)
+PARSER_BEGIN(UMLExpr)
 
 package h2PVisitors.Parser;
 
@@ -38,14 +38,14 @@ import h2PVisitors.*;
 import java.io.*;
 import h2PFoundation.*;
 
-public class UMLExpr1 extends NodeUtilityClass {
+public class UMLExpr extends NodeUtilityClass {
   public String finalStr = "";
   protected aNode classRef;
   protected AcceptReturnType globalOutputs;
   protected PromelaInPredicateVisitor pinpv;
   protected Reader dataStream;
 
-  public UMLExpr1(AcceptReturnType theGlobalOutputs, PromelaInPredicateVisitor THEpinpv) {
+  public UMLExpr(AcceptReturnType theGlobalOutputs, PromelaInPredicateVisitor THEpinpv) {
   	this(new StringReader("This is a test string"));
   	globalOutputs = theGlobalOutputs;
   	pinpv = THEpinpv;
@@ -149,7 +149,7 @@ public class UMLExpr1 extends NodeUtilityClass {
   }
 }
 
-PARSER_END(UMLExpr1)
+PARSER_END(UMLExpr)
 
 SKIP:
 {
