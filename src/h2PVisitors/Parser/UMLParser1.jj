@@ -943,11 +943,6 @@ String pred() throws ParseException:
 	)  { return retVal; }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// Expression parsing rules
-//
-// !!! Please keep in sync with UMLExpr.jj !!!
-
 String expression() throws ParseException:
 {
 	String retVal = "";
@@ -971,7 +966,6 @@ String logicalExpression() throws ParseException:
 	{ return retVal; }
 }
 
-// Expressions with a logical "AND"
 String booleanExpression() throws ParseException:
 {
 	String retVal = "";

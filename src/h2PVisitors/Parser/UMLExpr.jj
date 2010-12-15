@@ -310,11 +310,6 @@ String whenclause() throws ParseException:
 	{ return retVal; }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// Expression parsing rules
-//
-// !!! Please keep in sync with UMLParser1.jj !!!
-
 String expression() throws ParseException:
 {
 	String retVal = "";
