@@ -1,0 +1,63 @@
+<html>
+<head>
+  <title>Hydra - Getting Started</title>
+</head>
+<body bgcolor="white">
+<p>
+  <table border=0 width="100%">
+    <tr><td bgcolor="darkblue" width="100%">
+        <font color=white size=5><b>Hydra - Getting Started</b></font>
+    </td></tr>
+  </table>
+
+<h3>Obtaining the Hydra distribution</h3>
+
+Source and binary versions of Hydra are available at <a href="http://www.cse.msu.edu/~acj/hydra">http://www.cse.msu.edu/~acj/hydra</a>.
+
+<h3>Building Hydra</h3>
+
+<p>
+To build the source version of Hydra, unpack the distribution and then run <tt>make</tt> from the top-level directory.
+</p>
+
+<p>
+If you downloaded the binary version, then you can skip to the next section.
+</p>
+
+<h3>Running Hydra and Performing Analysis</h3>
+
+<p>
+At its core, Hydra is a tool for transforming a UML behavioral model into a <a href="http://en.wikipedia.org/Promela">Promela</a> model that can be formally analyzed.  The Promela model can be used to verify that specific properties are true for every possible execution of the system described in the UML model.  For example, we might want to ensure that the variable <tt>WidgetsAvailable</tt> is never negative or greater than 10.
+</p>
+
+<p>
+In order to analyze a model, copy an XMI (XML Metadata Interchange) version of the model into the hydra directory.  Most software modeling tools offer an option to export the current model into XMI.
+</p>
+
+<p>
+Running Hydra with no arguments will produce the following output:
+</p>
+
+<blockquote>
+<tt>$ <b>java -jar hydra.jar</b>
+<br/><br/>Hydra v4.0
+
+<br/><br/>Usage: java -jar hydra.jar &lt;model XMI input&gt; &lt;Promela output&gt; [intermediate HIL output]
+
+<br/><br/>Hydra was developed by the Software Engineering and Network Systems Group
+<br/>at Michigan State University.
+</tt>
+</blockquote>
+
+<p>
+If your XMI file is named <tt>MyModel.xmi</tt>, then the following command will tell Hydra to translate your model into Promela:
+</p>
+
+<p style="text-indent:0.25in"><tt>java -jar hydra.jar MyModel.xmi MyPromelaModel.pr</tt></p>
+
+<p>
+The last argument, <tt>MyPromelaModel.pr</tt>, is the Promela file that Hydra will produce.
+</p>
+
+</body>
+</html>
