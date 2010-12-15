@@ -1,5 +1,7 @@
-all: parser doc
-	javac -nowarn -cp src src/h2PFoundation/*.java \
+all: parser src jar doc
+
+src:
+	javac -d build -nowarn -cp src src/h2PFoundation/*.java \
 		src/h2PVisitors/*.java src/promelaParser/*.java \
 		src/xmi2hil/*.java \
 		src/h2PNodes/*.java \
@@ -9,6 +11,9 @@ all: parser doc
 
 parser:
 	cd ./src/h2PVisitors/Parser && ./generate-parser.sh > /dev/null && cd ../../../
+
+jar:
+	cd build && jar -cfe ../hydra.jar MainDriver h2PFoundation h2PVisitors xmi2hil h2PNodes promelaParser umlModel xmiParser MainDriver.class && cd ..
 
 doc:
 	javadoc -classpath src -protected -d docs/classes h2PFoundation h2PVisitors promelaParser h2PNodes umlModel xmiParser
