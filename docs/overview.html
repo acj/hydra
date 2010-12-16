@@ -1,0 +1,60 @@
+<html>
+<head>
+  <title>Hydra - Overview</title>
+</head>
+<body bgcolor="white">
+<p>
+  <table border=0 width="100%">
+    <tr><td bgcolor="darkblue" width="100%">
+        <font color=white size=5><b>Hydra - Overview</b></font>
+    </td></tr>
+  </table>
+
+<h3><tt>MainDriver</tt> class</h3>
+
+<p>
+The <tt>MainDriver</tt> class takes care of bootstrapping and instrumenting Hydra.  It parses the arguments that are passed on the command line and begins the process of parsing the XMI file being used as input.
+</p>
+
+<h3><tt>h2PFoundation</tt> package</h3>
+
+<p>
+The <tt>h2PFoundation</tt> package contains foundation classes that support the translation of the Hydra Intermediate Language (HIL) into Promela.  This includes utility classes for supporting parse tree nodes, as well as classes that define the HIL-to-Promela ("h2P") parser's symbol table.
+</p>
+
+<h3><tt>h2PNodes</tt> package</h3>
+
+<p>
+The <tt>h2PNodes</tt> package contains a class for each of the nodes that can exist in a HIL parse tree.
+</p>
+
+<h3><tt>h2PVisitors</tt> package</h3>
+
+<p>
+The <tt>h2PVisitors</tt> package contains classes that support the <a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor design pattern</a> that is used to walk the HIL parse tree and perform pre- and post-processing steps on the tree (e.g., flattening composite states in some circumstances) to facilitate the translation of HIL into Promela.
+</p>
+
+<p>
+The <tt>h2PVisitors.Parser</tt> sub-package contains the <a href="http://en.wikipedia.org/wiki/LL(k)">LL(<i>k</i>)</a> grammars for the HIL parser and the UML expression parser.
+</p>
+
+<h3><tt>umlModel</tt> package</h3>
+
+<p>
+The <tt>umlModel</tt> package contains classes that define a framework for representing a UML model.  When XMI input models are parsed, a facsimile of the model is created using the classes in this package before the model is translated into HIL.
+</p>
+
+<h3><tt>xmi2hil</tt> package</h3>
+
+<p>
+The <tt>xmi2hil</tt> package contains a set of classes that support the translation of XMI input data into the Hydra Intermediate Language (HIL).  The <tt>ConversionDriver</tt> class is normally instantiated first and is responsible for instrumenting the translation process.
+</p>
+
+<h3><tt>xmiParser</tt> package</h3>
+
+<p>
+The <tt>xmiParser</tt> package contains a set of classes that perform the parsing of XMI input data.  They leverage the classes in <tt>umlModel</tt> and build a faithful model of the UML model stored in the XMI input data.
+</p>
+
+</body>
+</html>
