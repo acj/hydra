@@ -2,7 +2,6 @@ package umlModel;
 
 import java.io.File;
 
-import promelaParser.FormalModelFile;
 
 
 /**
@@ -33,7 +32,7 @@ public class Model extends Namespace implements FormalModelFile{
 	}
 
 	/* (non-Javadoc)
-	 * @see promelaParser.FormalModelFile#setFile(java.io.File)
+	 * @see umlModel.FormalModelFile#setFile(java.io.File)
 	 * @modelguid {A2E31EBC-9CF2-4B9D-8BC0-3B8B5A131ED6}
 	 */
 	public void setFile(File file) {

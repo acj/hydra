@@ -1,4 +1,4 @@
-package promelaParser;
+package umlModel;
 
 import java.io.File;
 
