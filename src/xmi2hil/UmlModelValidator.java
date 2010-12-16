@@ -27,7 +27,11 @@ import umlModel.UMLClass;
 import umlModel.UninterpretedAction;
 import umlModel.Visitor;
 
-/** @modelguid {C7CD8188-A5AF-4FDB-9754-F712A3E48175} */
+/**
+ * Performs validation of the UML model that is built from XMI data.
+ *  
+ * @modelguid {C7CD8188-A5AF-4FDB-9754-F712A3E48175}
+ */
 public class UmlModelValidator extends Visitor {
 
 	/* (non-Javadoc)

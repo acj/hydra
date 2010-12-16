@@ -25,10 +25,8 @@ import umlModel.Visitor;
 import xmiParser.XmiParserComponent;
 
 /**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Instruments the conversion of XMI data into the Hydra Intermediate
+ * Language (HIL) and writing the result to disk.
  */
 public class ConversionDriver extends NodeUtilityClass {
     WorldUtilNode rootNode;
@@ -45,25 +43,20 @@ public class ConversionDriver extends NodeUtilityClass {
     boolean makeHilIntermediate = false;
     
 	/**
-	 * 
+	 * Default constructor
 	 */
 	public ConversionDriver() {
 		super();
-		// TODO Auto-generated constructor stub
 		errors = new AcceptReturnType();
 	}
     
     public ConversionDriver(String theInputFilename) {
         this(new File(theInputFilename));
-        // TODO Auto-generated constructor stub
-        //inputFilename = theInputFilename;
         setInputFilename(theInputFilename);
     }
     
     public ConversionDriver(File theInputFile) {
         this();
-        // TODO Auto-generated constructor stub
-        //sourceFile = theInputFile;
         setSourceFile(theInputFile);
     }
     
@@ -73,11 +66,8 @@ public class ConversionDriver extends NodeUtilityClass {
           return;   
         }
         
-        // Right now the parser only seems to read directly from a file
-        // I hope this can change later
         XmiParserComponent parser=new XmiParserComponent();
         parser.isVerbose = !isSilent;
-        //File source=new File(inputFilename);
 
         if(!sourceFile.exists() && !isSilent)
         {
@@ -92,8 +82,8 @@ public class ConversionDriver extends NodeUtilityClass {
         // convert the UML model to a hil source
         Visitor v = new ToHilVisitor();
         v.visitModel(model);
-        List data = ((ToHilVisitor) v).getData();
-        Iterator it = data.iterator();
+        List<String> data = ((ToHilVisitor) v).getData();
+        Iterator<String> it = data.iterator();
 
         // write the hil source to a string
         hilIntermediate = new StringBuffer();

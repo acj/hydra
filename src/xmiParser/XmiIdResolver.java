@@ -31,20 +31,22 @@ import umlModel.UMLClass;
 import umlModel.UninterpretedAction;
 
 /**
+ * Traverses the DOM tree and creates a skeleton element for each XMI ID.
+ * 
  * @modelguid {CB41373F-1775-48D2-9C9B-DB3F95611D56}
  */
 public class XmiIdResolver {
 	/**
 	 * @modelguid {67E74CF8-8190-42DD-8F4C-C03B6B3CAB88}
 	 */
-	private java.util.HashMap modelElements;
+	private java.util.HashMap<String, ModelElement> modelElements;
 
 	/**
 	 * @modelguid {F84ADA02-4CEB-4D60-B5AD-9B7113E5A10E}
 	 */
 	public XmiIdResolver() {
 		super();
-		modelElements = new HashMap();
+		modelElements = new HashMap<String, ModelElement>();
 	}
 
 	public boolean isVerbose = true;
@@ -138,22 +140,22 @@ public class XmiIdResolver {
 					newElement = newFS;
 
 				} else if (thisNode.getNodeName().equals("UML:Transition")) {
-					// A transtion
+					// A transition
 					Transition newTrans = new Transition();
 					newElement = newTrans;
 
 				} else if (thisNode.getNodeName().equals("UML:DataType")) {
-					// A transtion
+					// A transition
 					DataType newDT = new DataType();
 					newElement = newDT;
 
 				} else if (thisNode.getNodeName().equals("UML:UninterpretedAction")) {
-					// A transtion
+					// A transition
 					UninterpretedAction newUA = new UninterpretedAction();
 					newElement = newUA;
 
 				} else if (thisNode.getNodeName().equals("UML:CallEvent")) {
-					// A transtion
+					// A transition
 					CallEvent newCE = new CallEvent();
 					newElement = newCE;
 
@@ -186,7 +188,7 @@ public class XmiIdResolver {
 					newSS.referenceState = attributes.getNamedItem("referenceState").getNodeValue();
 
 				} else if (thisNode.getNodeName().equals("UML:SynchState")) {
-					// A synch syate (bound attribute not used by XDE)
+					// A synch state (bound attribute not used by XDE)
 					SynchState newSS = new SynchState();
 					newElement = newSS;
 				}
@@ -196,13 +198,6 @@ public class XmiIdResolver {
 					if (attributes.getNamedItem("name") != null) {
 						newElement.name = attributes.getNamedItem("name").getNodeValue();
 					}
-
-					// TODO Copy and paste it to all other elements, had to take it out because stereotype does not have
-					// it
-					// if (attributes.getNamedItem("isSpecification") != null) {
-					// newElement.isSpecification = parseBoolean(attributes.getNamedItem("isSpecification")
-					// .getNodeValue());
-					// }
 
 					if (attributes.getNamedItem("xmi.id") != null) {
 						newElement.xmiID = attributes.getNamedItem("xmi.id").getNodeValue();
@@ -239,7 +234,7 @@ public class XmiIdResolver {
 		returnValue = (ModelElement) modelElements.get(id);
 
 		if (returnValue == null) {
-			// System.err.println("Faile to resolve id" + id);
+			// System.err.println("Failed to resolve id" + id);
 			return null;
 		}
 		// else
@@ -256,7 +251,7 @@ public class XmiIdResolver {
 		}
 
 		if (returnValue == null) {
-			// System.err.println("Failde to resolve " + node.toString());
+			// System.err.println("Failed to resolve " + node.toString());
 			return null;
 		}
 		// else

@@ -18,18 +18,14 @@ import umlModel.Visitor;
 
 
 /**
- * @author konradsa
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- * @modelguid {21811F9F-0F8C-460D-B6A7-D30FFADD5C57}
+ * Handles writing HIL data to disk.
  */
 public class HilWriter {
 
 	/** @modelguid {BD199D39-7858-4689-A1EE-F27E17F51BDE} */
 	public void writeToHilFile(Model umlModel, File target) {
 
-		//TODO fixc the validator, gets me in an infinite loop as of now
+		//TODO fix the validator, gets me in an infinite loop as of now
 		//Validate the model
 		//Visitor v=new UmlModelValidator();
 		//v.visitModel(umlModel);

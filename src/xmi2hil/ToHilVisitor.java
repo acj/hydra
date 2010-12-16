@@ -8,7 +8,9 @@ import java.util.StringTokenizer;
 import umlModel.*;
 
 /**
- * 
+ * Visits each node in the XMI parse tree and generates the corresponding
+ * bit of Hydra Intermediate Language (HIL).
+ *  
  * @modelguid {2812E3EA-C920-4765-83A7-68594E3D46C9}
  */
 public class ToHilVisitor extends Visitor {

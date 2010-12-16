@@ -37,7 +37,12 @@ import umlModel.UninterpretedAction;
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 
-/** @modelguid {4F11A787-BEE6-4D3C-A92E-D8F8C04618B4} */
+/**
+ * Performs the work of parsing XMI data and constructing a
+ * faithful model of the UML model that is encoded in the XMI.
+ * 
+ * @modelguid {4F11A787-BEE6-4D3C-A92E-D8F8C04618B4}
+ */
 public class XmiParserComponent {
 
 	/**
@@ -163,7 +168,7 @@ public class XmiParserComponent {
 
 	/** @modelguid {2BD1F209-95A5-4D65-B2B8-C0AD3B13B776} */
 	private void processBehavioralFeatureParameter(Node node, ModelElement prevElement) {
-		// Tells us that a paramter is coming, usually a return value
+		// Tells us that a parameter is coming, usually a return value
 		BehavioralFeature bf = (BehavioralFeature) prevElement;
 		while (node.hasChildNodes()) {
 			Node theChild = node.getFirstChild();
@@ -199,7 +204,7 @@ public class XmiParserComponent {
 
 	/** @modelguid {54674610-196A-40BD-AE35-4F8AB844DDAD} */
 	private void processCompositeState(Node node, ModelElement newElement) {
-		// TODO deferrable event mssing
+		// TODO deferrable event missing
 		// TODO internal transition missing
 
 		// A composite state
