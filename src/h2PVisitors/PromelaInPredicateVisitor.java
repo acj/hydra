@@ -19,10 +19,9 @@ import h2PVisitors.Parser.UMLExpr;
 
 import java.util.Vector;
 
-// PromelaInPredicateVisitor
-/*
- *  Uses the Expression Grammar to fin "in" predicates in an expression
- *  in order to buil an INPredicateTarget list for a given model.
+/**
+ * Uses the Expression Grammar to find "in" predicates in an expression
+ * in order to build an INPredicateTarget list for a given model.
  */
 public class PromelaInPredicateVisitor extends aVisitor {
 

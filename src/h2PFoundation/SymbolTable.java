@@ -5,6 +5,9 @@ import h2PFoundation.Symbol.SymbolType;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * Constructs a symbol table to support the HIL and UML parsers.
+ */
 public class SymbolTable {
 	private static HashMap<String, Symbol> symbols;
 	

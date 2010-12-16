@@ -32,8 +32,8 @@ import h2PNodes.WorldUtilNode;
 import h2PNodes.aNode;
 
 
-/*
- * The purpose of this class is to flatten 
+/**
+ * Handles the flattening of composite states.
  */
 public class CStateFlattenerVisitor extends aVisitor {
 
@@ -63,12 +63,10 @@ public class CStateFlattenerVisitor extends aVisitor {
 	}
 	
 	public AcceptReturnType visitActionNode(ActionNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitActionNode(tNode);
 	}
 
 	public AcceptReturnType visitClassBodyNode(ClassBodyNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitClassBodyNode(tNode);
 		
 		retART.merge(tNode.acceptChildren(this));
@@ -77,7 +75,6 @@ public class CStateFlattenerVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitClassNode(ClassNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitClassNode(tNode);
 		
 		retART.merge(tNode.acceptChildren(this));
@@ -87,7 +84,6 @@ public class CStateFlattenerVisitor extends aVisitor {
 
 	public AcceptReturnType visitCompositeStateBodyNode(
 			CompositeStateBodyNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType dumbART = super.visitCompositeStateBodyNode(tNode);
 		
 		// merge composite state children first.
@@ -102,7 +98,6 @@ public class CStateFlattenerVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitCompositeStateNode(tNode);
 		
 		retART.merge(tNode.acceptChildren(this));
@@ -112,7 +107,6 @@ public class CStateFlattenerVisitor extends aVisitor {
 
 	public AcceptReturnType visitConcurrentCompositeBodyNode(
 			ConcurrentCompositeBodyNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitConcurrentCompositeBodyNode(tNode);
 		
 		retART.merge(tNode.acceptChildren(this));
@@ -122,7 +116,6 @@ public class CStateFlattenerVisitor extends aVisitor {
 
 	public AcceptReturnType visitConcurrentCompositeNode(
 			ConcurrentCompositeNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitConcurrentCompositeNode(tNode);
 		
 		retART.merge(tNode.acceptChildren(this));
@@ -131,42 +124,30 @@ public class CStateFlattenerVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitDriverFileNode(DriverFileNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitDriverFileNode(tNode);
 	}
 
 	public AcceptReturnType visitEnumNode(EnumNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitEnumNode(tNode);
 	}
 	public AcceptReturnType visitEventNode(EventNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitEventNode(tNode);
 	}
 
 	public AcceptReturnType visitHistoryNode(HistoryNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitHistoryNode(tNode);
 	}
 
 	public AcceptReturnType visitInitNode(InitNode tNode) {
 		// Check to see if this init node is the child of a compositeState node
 		// that is in the process of being flattened.
-		
-		/*
-		if (!tNode.getParent().getType().equals("CompositeStateBodyNode")) {
-			return super.visitInitNode(tNode);					
-		}
-		if (!canBeFlattened(tParent)) {
-		}
-		*/
 		CompositeStateBodyNode tParent = (CompositeStateBodyNode)tNode.getParent(); 
 		if (!isFlattenableAsParent(tParent)) {
 			return super.visitInitNode(tNode);								
 		}
 		AcceptReturnType retART = super.visitInitNode(tNode);
 		
-		// Create a new state node (and it's body!)
+		// Create a new state node (and its body!)
 		// Give the state the name of the composite state.
 		StateNode newSNode = new StateNode(tParent.getID());
 		StateBodyNode newSBNode = new StateBodyNode();
@@ -193,93 +174,71 @@ public class CStateFlattenerVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitInstanceVariableNode(InstanceVariableNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitInstanceVariableNode(tNode);
 	}
 
 	public AcceptReturnType visitJoinNode(JoinNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitJoinNode(tNode);
 	}
 
 	public AcceptReturnType visitMessageNode(MessageNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitMessageNode(tNode);
 	}
 
 	public AcceptReturnType visitMessagesNode(MessagesNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitMessagesNode(tNode);
 	}
 
 	public AcceptReturnType visitModelBodyNode(ModelBodyNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitModelBodyNode(tNode);
-		
 		retART.merge(tNode.acceptChildren(this));
-		
 		return retART;
 	}
 
 	public AcceptReturnType visitModelNode(ModelNode tNode) {
-		// TODO Auto-generated method stub
 		AcceptReturnType retART = super.visitModelNode(tNode);
-		
 		retART.merge(tNode.acceptChildren(this));
-		
 		return retART;
 	}
 
 	public AcceptReturnType visitNode(aNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitNode(tNode);
 	}
 
 	public AcceptReturnType visitNullNode(NullNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitNullNode(tNode);
 	}
 
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitSignalNode(tNode);
 	}
 
 	public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitStateBodyNode(tNode);
 	}
 
 	public AcceptReturnType visitStateNode(StateNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitStateNode(tNode);
 	}
 
 	public AcceptReturnType visitTimeInvariantNode(TimeInvariantNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitTimeInvariantNode(tNode);
 	}
 
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitTransitionActionNode(tNode);
 	}
 
 	public AcceptReturnType visitTransitionActionsNode(
 			TransitionActionsNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitTransitionActionsNode(tNode);
 	}
 
 	public AcceptReturnType visitTransitionBodyNode(TransitionBodyNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitTransitionBodyNode(tNode);
 	}
 
 	public AcceptReturnType visitTransitionNode(TransitionNode tNode) {
-		// TODO Auto-generated method stub
 		return super.visitTransitionNode(tNode);
-	}
-
-	
+	}	
 }

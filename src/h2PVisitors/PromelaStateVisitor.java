@@ -7,8 +7,11 @@ import h2PNodes.StateNode;
 import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 
+/**
+ * Supports Hil2PromelaVisitor by generating Promela code for composite
+ * states.
+ */
 public class PromelaStateVisitor extends aVisitor {
-
 	protected aNode CSNode = null;
 	protected AcceptReturnType outsideOutput;
 	
@@ -32,32 +35,11 @@ public class PromelaStateVisitor extends aVisitor {
 		outsideOutput = theART;
 	}
 	
-	// if necessary: (it's not.)
 	public AcceptReturnType getOutputART () {
 		return outsideOutput;
 	}
 	
-	// TODO i should double check, but I *think* i got this one right.
-    // TODO eliminate
 	public boolean ifInArray (AcceptReturnType anART, String hashKey, String searchVal) {
-        // Note: the original code assumed that a global copy of the output was kept,
-        // here this is no longer necessary as we only look at partial copies of the output
-        // we can thus limit to looking at the actual output we're generating!
-        
-        /*
-		String entities[] = anART.getStrSplit(hashKey);
-		
-		/*if (entities.length == 4) { //TODO what the heck!?
-			return false;
-		}* / // we don't need THIS anymore! 
-		AcceptReturnType tmpART = new AcceptReturnType();
-		
-		for (int i = 0; i < entities.length; i++) {
-			if (i >= 4) {
-				tmpART.addStr(hashKey, entities[i]);
-			}
-        return tmpART.ifInArray(hashKey, searchVal);
-		}*/
         return anART.ifInArray(hashKey, searchVal);        
 	}
 	
@@ -110,13 +92,11 @@ public class PromelaStateVisitor extends aVisitor {
 				if (!outsideOutput.ifInArray("mTypeList", "st_" + dest)) {
 					outsideOutput.addStr("mTypeList", "st_" + dest);
 				}
-				
 			}
-			return tmpART; // (if 2nd if fails... ) #don't output anything
+			return tmpART;
 		}
-		// #get $classNode
 		aNode classNode = searchUpForDest(tNode, "ClassNode");
-		SorCSorCCS = SearchIncluding(classNode, dest); //#inner function, search if $dest is in the subtree of $modelbodyNode (including) or not
+		SorCSorCCS = SearchIncluding(classNode, dest);
 		if (SorCSorCCS != null) {
 			if (SorCSorCCS.getType().equals("StateNode")) {
 				outputString = "        :: atomic{m == st_" + dest + " -> goto " + dest + "; skip;};";
@@ -138,9 +118,7 @@ public class PromelaStateVisitor extends aVisitor {
 				}
 			}
 		}
-		
 		return tmpART;
-		
 	}
 
 	public AcceptReturnType visitStateNode(StateNode tNode) {
@@ -157,8 +135,6 @@ public class PromelaStateVisitor extends aVisitor {
 				}
 			}
 		}
-		// }
-		
 		return tmpART;
 	}
 
@@ -172,14 +148,8 @@ public class PromelaStateVisitor extends aVisitor {
 			if (   (childNode.getType().equals("TransitionNode"))     || (childNode.getType().equals("StateNode"))
 			    || (childNode.getType().equals("CompositeStateNode")) || (childNode.getType().equals("ConcurrentCompositeNode"))) {
 				tmpART.merge(childNode.accept(this));
-				// TODO check to see if the "outgoing" requirement is necessary here.
-/*				TransitionNode tnNode = (TransitionNode)childNode;
-				if (!tnNode.getDestinationType().equals("Outgoing")) {*
-				tmpART.merge(tnNode.accept(this));
-//				} */
 			}
 		}
-		
 		return tmpART;
 	}
 
@@ -193,11 +163,8 @@ public class PromelaStateVisitor extends aVisitor {
 				
 			if (childNode.getType().equals("CompositeStateNode"))  {
 				tmpART.merge(childNode.accept(this));
-				// TODO check to see if the "outgoing" requirement is necessary here. too!
 			}
 		}
-		
 		return tmpART;
 	}
-
 }

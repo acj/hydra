@@ -9,36 +9,25 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-
-/*
- *  Generic Return Type for aVisitor's Accept routine.
- *  It is intended to contain a set of strings referenced
- *  by a hash.   It also contains an optional generic
- *  hash that can be used to return any object type (held in a 
- *  vector for multiple objects).
- *  For convenience it also contains a default String type
- *  to return stuff.
- *  Note: the Generic and String Hash tables are *independent*
- *  and so they permit the same hash code for two different
- *  objects.  However, different functions are used to access
- *  the two hashes, thus making it harder to confuse the two.
- *  One difference: while addStr will merge new strings with old,
- *  addGen can only replace the old object with the new one.
- *  The hashtables are optional in order to avoid creating
- *  unnecessary classes.
+/**
+ *  Generic return type for aVisitor's Accept routine.  It is intended
+ *  to contain a set of strings referenced by a hash.   It also contains
+ *  an optional generic hash that can be used to return any object type
+ *  (held in a vector for multiple objects).
+ *  
+ *  For convenience, this class also contains a default String type to return
+ *  generic data.
+ *  
+ *  Note: the Generic and String Hash tables are *independent* and so they
+ *  permit the same hash code for two different objects.  However, different
+ *  functions are used to access the two hashes, thus making it harder to
+ *  confuse the two. There is one difference: while addStr will merge new
+ *  strings with old, addGen can only replace the old object with the new one.
+ *  The hash tables are optional in order to avoid creating unnecessary
+ *  classes.
  * 
  *  Order of string concatenations:
- *  All calls here append strings to the end of the current data.
- *  This mimics the functionality of UniversalClass->jointwoarrays
- *  which appends $array1 to the end of $array2.  And so the string
- *  being appended to actually will refer to itself as the second
- *  parameter in the function.
- *  i.e. @outputAction = jointwoarrays(@outputtransitionbody, @outputAction);
- *  here outputAction has the transition body appended to it.  Using 
- *  AcceptReturnType we have:
- *  [AcceptReturnType].merge([TransitionBodyNode].Accept());
- *  [AcceptReturnType].moveStrKey ("transitions", "Actions");
- * 
+ *  	All calls here append strings to the end of the current data.
  */
 public class AcceptReturnType extends NodeUtilityClass {
 
@@ -64,9 +53,7 @@ public class AcceptReturnType extends NodeUtilityClass {
 		return defaultValue;
 	}
 
-	// No longer of use
 	public void mergeDefV(String moreDefV) {
-		//defaultValue += moreDefV;
 		addStr("default", moreDefV);
 	}
 

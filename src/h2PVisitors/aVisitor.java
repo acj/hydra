@@ -38,8 +38,7 @@ import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 
 /**
- * @author karli TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
- *         Style - Code Templates
+ * Abstract visitor class.
  */
 public abstract class aVisitor extends NodeUtilityClass {
 	protected boolean callVisitNodeAlways; /* defaults to true */

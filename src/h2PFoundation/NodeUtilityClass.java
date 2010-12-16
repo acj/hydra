@@ -6,19 +6,15 @@ import h2PNodes.aNode;
 import java.util.ArrayList;
 import java.util.Vector;
 
+/**
+ * Handles common functionality for all visitor instances.
+ */
 public class NodeUtilityClass {
 
 	public NodeUtilityClass() {
 		super();
 	}
 
-	/*------------------------------------------------------------*/
-	/* Utility Functions
-	 * 		These functions are non-instance-dependent utility
-	 * functions for use by all visitors.  Similar to Hydra perl's
-	 * universal class.  Think of this class as stateless.
-	 */
-	/*------------------------------------------------------------*/
 	// just a fancy way of adding a newline to a printed string
 	public String strln (String s){
 		return s + "\n";
@@ -43,12 +39,6 @@ public class NodeUtilityClass {
 		
 		return retDest;
 	}
-	
-	/*
-	public aNode getWorldRootNode(aNode source) {
-		return searchUpForDest (source, "WorldUtilNode");
-	}
-	*/
 	
 	/* prints part of the promela file to the current output stream*/
 	public void print (String s) {
@@ -145,9 +135,8 @@ public class NodeUtilityClass {
 		String tmpStr = "";
 		
 		for (int i = 0; i < entities.length; i++) {
-			tmpStr += entities[i] /*+ "\n"*/;
+			tmpStr += entities[i];
 		}
-		// tmpStr += "\n";
 		tmpStr = theType + " " + tmpStr;
 		return tmpStr;
 	}
@@ -201,14 +190,6 @@ public class NodeUtilityClass {
     }
     
     public boolean ifInParent(aNode parentObject, String searchType, String varName, String searchName) {
-    	/*
-    	for (int i = 0; i < parentObject.children.size(); i++) {
-    		aNode childNode = (aNode) parentObject.children.get(i);
-    		if ((childNode.getType().equals(searchType)) && (childNode.getID().equals(searchName))) {
-    			return true;
-    		}
-    	}
-    	return false;*/
     	return (ifInParentAsNode(parentObject, searchType, varName, searchName) != null);
     }
     

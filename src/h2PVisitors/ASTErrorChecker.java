@@ -31,8 +31,6 @@ import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 
 /**
- * ASTErrorChecker
- * 
  * Performs a battery of checks on the semantics of the parsed AST.  Any
  * major problems are reported.
  */

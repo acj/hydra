@@ -41,8 +41,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * @author karli TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
- *         Style - Code Templates
+ * Visitor class to generate the Promela code for each node in the HIL
+ * parse tree.
  */
 public class Hil2PromelaVisitor extends aVisitor {
 	protected String stateTimeInvariant = "";
