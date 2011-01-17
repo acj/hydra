@@ -1,0 +1,2923 @@
+   0  $accept : spec $end
+
+   1  spec : FORMALIZE AS language ';' model
+   2       | model
+
+   3  language : PROMELA
+   4           | SMV
+   5           | ALLOY
+   6           | VHDL
+
+   7  model : MODEL ID '{' modelbody '}'
+   8        | MODEL '{' modelbody '}'
+
+   9  modelbody : modelstmt
+  10            | modelbody modelstmt
+
+  11  modelstmt : DRIVERFILE ID ';'
+  12            | CLASS ID '{' classbody '}'
+  13            | CLASS ID '{' '}'
+  14            | ASSOCIATION ID '{' assocbody '}'
+  15            | AGGREGATION '{' agbody '}'
+
+  16  classbody : classstmt
+  17            | classbody classstmt
+
+  18  classstmt : signal
+  19            | cstate
+  20            | ccstate
+  21            | init
+  22            | join
+  23            | state
+  24            | instvar
+  25            | AGSUBCONST ADORNS ID '{' agsubbody '}'
+  26            | GENERALIZATION '{' genbody '}'
+  27            | ordconst
+
+  28  signal : SIGNAL ID ';'
+  29         | SIGNAL ID '(' ')' ';'
+  30         | SIGNAL ID '(' ID ')' ';'
+
+  31  cstate : CSTATE ID '{' cstatebody '}'
+  32         | CSTATE ID '{' '}'
+
+  33  cstatebody : cstatestmt
+  34             | cstatebody cstatestmt
+
+  35  cstatestmt : state
+  36             | init
+  37             | cstate
+  38             | join
+  39             | history
+  40             | ccstate
+  41             | transition
+  42             | actofstate
+
+  43  state : STATE ID '{' '}'
+  44        | STATE ID '{' statebody '}'
+
+  45  statebody : statestmt
+  46            | statebody statestmt
+
+  47  statestmt : transition
+  48            | actofstate
+
+  49  transition : TRANS TO ID ';'
+  50             | TRANS '"' '"' TO ID ';'
+  51             | TRANS '"' transitionbody '"' TO ID ';'
+
+  52  actofstate : ACTION '"' '"' ';'
+  53             | ACTION '"' transitionbody '"' ';'
+  54             | INVARIANT '"' invtype '/' INVARIANTEXPRESSION '"' ';'
+
+  55  invtype : INVTYPENAME
+
+  56  ccstate : CCSTATE ID '{' ccstatebody '}'
+
+  57  ccstatebody : ccstatestmt
+  58              | ccstatebody ccstatestmt
+
+  59  ccstatestmt : cstate
+
+  60  init : INIT ID ';'
+  61       | INIT '"' '"' ID ';'
+  62       | INIT '"' transitionbody '"' ID ';'
+
+  63  join : JOIN ID FROM ID TO ID ';'
+
+  64  history : HISTORY ID ';'
+  65          | HISTORY '"' '"' ID ';'
+  66          | HISTORY '"' transitionbody '"' ID ';'
+
+  67  instvar : INSTVAR ID ID ';'
+  68          | INSTVAR ID ID ASSIGNOP numid ';'
+
+  69  numid : ID
+  70        | NUM
+
+  71  assocbody : ID '[' ID ']' ID '[' ID ']' ordconst
+  72            | ID '[' ID ']' ID '[' ID ']'
+
+  73  agsubbody :
+
+  74  genbody : SUPER ID SUB ID
+
+  75  ordconst : ORDCONST ADORNS ID
+
+  76  agbody : WHOLE ID '[' ID ']' PART ID '[' ID ']'
+
+  77  transitionbody : event guard '/' actions '^' messages
+  78                 | event guard
+  79                 | event '/' actions
+  80                 | event '^' messages
+  81                 | event guard '/' actions
+  82                 | event guard '^' messages
+  83                 | event '/' actions '^' messages
+  84                 | guard
+  85                 | guard '/' actions
+  86                 | guard '/' actions '^' messages
+  87                 | guard '^' messages
+  88                 | '/' actions
+  89                 | '/' actions '^' messages
+  90                 | '^' messages
+  91                 | event
+
+  92  event : ID
+  93        | ID '(' ID ')'
+  94        | WHEN '(' complexguard ')'
+  95        | WHEN '(' ID ')'
+
+  96  complexguard : expra
+  97               | complexguard OR expra
+
+  98  expra : gdterm
+  99        | expra AND gdterm
+
+ 100  gdterm : pred
+ 101         | NOT ID
+ 102         | '(' complexguard ')'
+
+ 103  guard : EXPRESSION
+
+ 104  actions : action
+ 105          | actions ';' action
+
+ 106  action : NEW '(' ID ')'
+ 107         | SEND '(' message ')'
+ 108         | assignstmt
+ 109         | printstmt
+ 110         | function
+
+ 111  messages : message
+ 112           | messages '^' message
+
+ 113  message : ID '.' ID
+ 114          | ID
+ 115          | ID '.' ID '(' numid ')'
+
+ 116  assignstmt : ID ASSIGNOP stmtpm
+
+ 117  stmtpm : stmtdm
+ 118         | stmtpm '+' stmtdm
+ 119         | stmtpm '-' stmtdm
+
+ 120  stmtdm : actterm
+ 121         | stmtdm '*' actterm
+ 122         | stmtdm '/' actterm
+
+ 123  actterm : ID
+ 124          | NUM
+ 125          | '-' NUM
+ 126          | '-' ID
+ 127          | '(' stmtpm ')'
+ 128          | functioninassign
+
+ 129  printstmt : PRINT '(' PRINTEXPRESSION ')'
+ 130            | PRINT '(' PRINTEXPRESSION ',' parmlist ')'
+
+ 131  function : ID '(' parmlist ')'
+
+ 132  functioninassign : ID '(' parmlist ')'
+
+ 133  parmlist : parm
+ 134           | parmlist ',' parm
+
+ 135  parm : ID
+ 136       | NUM
+ 137       | pred
+
+ 138  pred : stmtpm COMPARE_OP numid
+ 139       | IN '(' ID ')'
+
+state 0
+	$accept : . spec $end  (0)
+
+	FORMALIZE  shift 1
+	MODEL  shift 2
+	.  error
+
+	spec  goto 3
+	model  goto 4
+
+
+state 1
+	spec : FORMALIZE . AS language ';' model  (1)
+
+	AS  shift 5
+	.  error
+
+
+state 2
+	model : MODEL . ID '{' modelbody '}'  (7)
+	model : MODEL . '{' modelbody '}'  (8)
+
+	ID  shift 6
+	'{'  shift 7
+	.  error
+
+
+state 3
+	$accept : spec . $end  (0)
+
+	$end  accept
+
+
+state 4
+	spec : model .  (2)
+
+	.  reduce 2
+
+
+state 5
+	spec : FORMALIZE AS . language ';' model  (1)
+
+	PROMELA  shift 8
+	SMV  shift 9
+	ALLOY  shift 10
+	VHDL  shift 11
+	.  error
+
+	language  goto 12
+
+
+state 6
+	model : MODEL ID . '{' modelbody '}'  (7)
+
+	'{'  shift 13
+	.  error
+
+
+state 7
+	model : MODEL '{' . modelbody '}'  (8)
+
+	DRIVERFILE  shift 14
+	CLASS  shift 15
+	ASSOCIATION  shift 16
+	AGGREGATION  shift 17
+	.  error
+
+	modelbody  goto 18
+	modelstmt  goto 19
+
+
+state 8
+	language : PROMELA .  (3)
+
+	.  reduce 3
+
+
+state 9
+	language : SMV .  (4)
+
+	.  reduce 4
+
+
+state 10
+	language : ALLOY .  (5)
+
+	.  reduce 5
+
+
+state 11
+	language : VHDL .  (6)
+
+	.  reduce 6
+
+
+state 12
+	spec : FORMALIZE AS language . ';' model  (1)
+
+	';'  shift 20
+	.  error
+
+
+state 13
+	model : MODEL ID '{' . modelbody '}'  (7)
+
+	DRIVERFILE  shift 14
+	CLASS  shift 15
+	ASSOCIATION  shift 16
+	AGGREGATION  shift 17
+	.  error
+
+	modelbody  goto 21
+	modelstmt  goto 19
+
+
+state 14
+	modelstmt : DRIVERFILE . ID ';'  (11)
+
+	ID  shift 22
+	.  error
+
+
+state 15
+	modelstmt : CLASS . ID '{' classbody '}'  (12)
+	modelstmt : CLASS . ID '{' '}'  (13)
+
+	ID  shift 23
+	.  error
+
+
+state 16
+	modelstmt : ASSOCIATION . ID '{' assocbody '}'  (14)
+
+	ID  shift 24
+	.  error
+
+
+state 17
+	modelstmt : AGGREGATION . '{' agbody '}'  (15)
+
+	'{'  shift 25
+	.  error
+
+
+state 18
+	model : MODEL '{' modelbody . '}'  (8)
+	modelbody : modelbody . modelstmt  (10)
+
+	DRIVERFILE  shift 14
+	CLASS  shift 15
+	ASSOCIATION  shift 16
+	AGGREGATION  shift 17
+	'}'  shift 26
+	.  error
+
+	modelstmt  goto 27
+
+
+state 19
+	modelbody : modelstmt .  (9)
+
+	.  reduce 9
+
+
+state 20
+	spec : FORMALIZE AS language ';' . model  (1)
+
+	MODEL  shift 2
+	.  error
+
+	model  goto 28
+
+
+state 21
+	model : MODEL ID '{' modelbody . '}'  (7)
+	modelbody : modelbody . modelstmt  (10)
+
+	DRIVERFILE  shift 14
+	CLASS  shift 15
+	ASSOCIATION  shift 16
+	AGGREGATION  shift 17
+	'}'  shift 29
+	.  error
+
+	modelstmt  goto 27
+
+
+state 22
+	modelstmt : DRIVERFILE ID . ';'  (11)
+
+	';'  shift 30
+	.  error
+
+
+state 23
+	modelstmt : CLASS ID . '{' classbody '}'  (12)
+	modelstmt : CLASS ID . '{' '}'  (13)
+
+	'{'  shift 31
+	.  error
+
+
+state 24
+	modelstmt : ASSOCIATION ID . '{' assocbody '}'  (14)
+
+	'{'  shift 32
+	.  error
+
+
+state 25
+	modelstmt : AGGREGATION '{' . agbody '}'  (15)
+
+	WHOLE  shift 33
+	.  error
+
+	agbody  goto 34
+
+
+state 26
+	model : MODEL '{' modelbody '}' .  (8)
+
+	.  reduce 8
+
+
+state 27
+	modelbody : modelbody modelstmt .  (10)
+
+	.  reduce 10
+
+
+state 28
+	spec : FORMALIZE AS language ';' model .  (1)
+
+	.  reduce 1
+
+
+state 29
+	model : MODEL ID '{' modelbody '}' .  (7)
+
+	.  reduce 7
+
+
+state 30
+	modelstmt : DRIVERFILE ID ';' .  (11)
+
+	.  reduce 11
+
+
+state 31
+	modelstmt : CLASS ID '{' . classbody '}'  (12)
+	modelstmt : CLASS ID '{' . '}'  (13)
+
+	AGSUBCONST  shift 35
+	ORDCONST  shift 36
+	GENERALIZATION  shift 37
+	SIGNAL  shift 38
+	CSTATE  shift 39
+	STATE  shift 40
+	CCSTATE  shift 41
+	INIT  shift 42
+	JOIN  shift 43
+	INSTVAR  shift 44
+	'}'  shift 45
+	.  error
+
+	classbody  goto 46
+	classstmt  goto 47
+	signal  goto 48
+	cstate  goto 49
+	ccstate  goto 50
+	init  goto 51
+	join  goto 52
+	state  goto 53
+	instvar  goto 54
+	ordconst  goto 55
+
+
+state 32
+	modelstmt : ASSOCIATION ID '{' . assocbody '}'  (14)
+
+	ID  shift 56
+	.  error
+
+	assocbody  goto 57
+
+
+state 33
+	agbody : WHOLE . ID '[' ID ']' PART ID '[' ID ']'  (76)
+
+	ID  shift 58
+	.  error
+
+
+state 34
+	modelstmt : AGGREGATION '{' agbody . '}'  (15)
+
+	'}'  shift 59
+	.  error
+
+
+state 35
+	classstmt : AGSUBCONST . ADORNS ID '{' agsubbody '}'  (25)
+
+	ADORNS  shift 60
+	.  error
+
+
+state 36
+	ordconst : ORDCONST . ADORNS ID  (75)
+
+	ADORNS  shift 61
+	.  error
+
+
+state 37
+	classstmt : GENERALIZATION . '{' genbody '}'  (26)
+
+	'{'  shift 62
+	.  error
+
+
+state 38
+	signal : SIGNAL . ID ';'  (28)
+	signal : SIGNAL . ID '(' ')' ';'  (29)
+	signal : SIGNAL . ID '(' ID ')' ';'  (30)
+
+	ID  shift 63
+	.  error
+
+
+state 39
+	cstate : CSTATE . ID '{' cstatebody '}'  (31)
+	cstate : CSTATE . ID '{' '}'  (32)
+
+	ID  shift 64
+	.  error
+
+
+state 40
+	state : STATE . ID '{' '}'  (43)
+	state : STATE . ID '{' statebody '}'  (44)
+
+	ID  shift 65
+	.  error
+
+
+state 41
+	ccstate : CCSTATE . ID '{' ccstatebody '}'  (56)
+
+	ID  shift 66
+	.  error
+
+
+state 42
+	init : INIT . ID ';'  (60)
+	init : INIT . '"' '"' ID ';'  (61)
+	init : INIT . '"' transitionbody '"' ID ';'  (62)
+
+	ID  shift 67
+	'"'  shift 68
+	.  error
+
+
+state 43
+	join : JOIN . ID FROM ID TO ID ';'  (63)
+
+	ID  shift 69
+	.  error
+
+
+state 44
+	instvar : INSTVAR . ID ID ';'  (67)
+	instvar : INSTVAR . ID ID ASSIGNOP numid ';'  (68)
+
+	ID  shift 70
+	.  error
+
+
+state 45
+	modelstmt : CLASS ID '{' '}' .  (13)
+
+	.  reduce 13
+
+
+state 46
+	modelstmt : CLASS ID '{' classbody . '}'  (12)
+	classbody : classbody . classstmt  (17)
+
+	AGSUBCONST  shift 35
+	ORDCONST  shift 36
+	GENERALIZATION  shift 37
+	SIGNAL  shift 38
+	CSTATE  shift 39
+	STATE  shift 40
+	CCSTATE  shift 41
+	INIT  shift 42
+	JOIN  shift 43
+	INSTVAR  shift 44
+	'}'  shift 71
+	.  error
+
+	classstmt  goto 72
+	signal  goto 48
+	cstate  goto 49
+	ccstate  goto 50
+	init  goto 51
+	join  goto 52
+	state  goto 53
+	instvar  goto 54
+	ordconst  goto 55
+
+
+state 47
+	classbody : classstmt .  (16)
+
+	.  reduce 16
+
+
+state 48
+	classstmt : signal .  (18)
+
+	.  reduce 18
+
+
+state 49
+	classstmt : cstate .  (19)
+
+	.  reduce 19
+
+
+state 50
+	classstmt : ccstate .  (20)
+
+	.  reduce 20
+
+
+state 51
+	classstmt : init .  (21)
+
+	.  reduce 21
+
+
+state 52
+	classstmt : join .  (22)
+
+	.  reduce 22
+
+
+state 53
+	classstmt : state .  (23)
+
+	.  reduce 23
+
+
+state 54
+	classstmt : instvar .  (24)
+
+	.  reduce 24
+
+
+state 55
+	classstmt : ordconst .  (27)
+
+	.  reduce 27
+
+
+state 56
+	assocbody : ID . '[' ID ']' ID '[' ID ']' ordconst  (71)
+	assocbody : ID . '[' ID ']' ID '[' ID ']'  (72)
+
+	'['  shift 73
+	.  error
+
+
+state 57
+	modelstmt : ASSOCIATION ID '{' assocbody . '}'  (14)
+
+	'}'  shift 74
+	.  error
+
+
+state 58
+	agbody : WHOLE ID . '[' ID ']' PART ID '[' ID ']'  (76)
+
+	'['  shift 75
+	.  error
+
+
+state 59
+	modelstmt : AGGREGATION '{' agbody '}' .  (15)
+
+	.  reduce 15
+
+
+state 60
+	classstmt : AGSUBCONST ADORNS . ID '{' agsubbody '}'  (25)
+
+	ID  shift 76
+	.  error
+
+
+state 61
+	ordconst : ORDCONST ADORNS . ID  (75)
+
+	ID  shift 77
+	.  error
+
+
+state 62
+	classstmt : GENERALIZATION '{' . genbody '}'  (26)
+
+	SUPER  shift 78
+	.  error
+
+	genbody  goto 79
+
+
+state 63
+	signal : SIGNAL ID . ';'  (28)
+	signal : SIGNAL ID . '(' ')' ';'  (29)
+	signal : SIGNAL ID . '(' ID ')' ';'  (30)
+
+	';'  shift 80
+	'('  shift 81
+	.  error
+
+
+state 64
+	cstate : CSTATE ID . '{' cstatebody '}'  (31)
+	cstate : CSTATE ID . '{' '}'  (32)
+
+	'{'  shift 82
+	.  error
+
+
+state 65
+	state : STATE ID . '{' '}'  (43)
+	state : STATE ID . '{' statebody '}'  (44)
+
+	'{'  shift 83
+	.  error
+
+
+state 66
+	ccstate : CCSTATE ID . '{' ccstatebody '}'  (56)
+
+	'{'  shift 84
+	.  error
+
+
+state 67
+	init : INIT ID . ';'  (60)
+
+	';'  shift 85
+	.  error
+
+
+state 68
+	init : INIT '"' . '"' ID ';'  (61)
+	init : INIT '"' . transitionbody '"' ID ';'  (62)
+
+	ID  shift 86
+	EXPRESSION  shift 87
+	WHEN  shift 88
+	'"'  shift 89
+	'/'  shift 90
+	'^'  shift 91
+	.  error
+
+	transitionbody  goto 92
+	event  goto 93
+	guard  goto 94
+
+
+state 69
+	join : JOIN ID . FROM ID TO ID ';'  (63)
+
+	FROM  shift 95
+	.  error
+
+
+state 70
+	instvar : INSTVAR ID . ID ';'  (67)
+	instvar : INSTVAR ID . ID ASSIGNOP numid ';'  (68)
+
+	ID  shift 96
+	.  error
+
+
+state 71
+	modelstmt : CLASS ID '{' classbody '}' .  (12)
+
+	.  reduce 12
+
+
+state 72
+	classbody : classbody classstmt .  (17)
+
+	.  reduce 17
+
+
+state 73
+	assocbody : ID '[' . ID ']' ID '[' ID ']' ordconst  (71)
+	assocbody : ID '[' . ID ']' ID '[' ID ']'  (72)
+
+	ID  shift 97
+	.  error
+
+
+state 74
+	modelstmt : ASSOCIATION ID '{' assocbody '}' .  (14)
+
+	.  reduce 14
+
+
+state 75
+	agbody : WHOLE ID '[' . ID ']' PART ID '[' ID ']'  (76)
+
+	ID  shift 98
+	.  error
+
+
+state 76
+	classstmt : AGSUBCONST ADORNS ID . '{' agsubbody '}'  (25)
+
+	'{'  shift 99
+	.  error
+
+
+state 77
+	ordconst : ORDCONST ADORNS ID .  (75)
+
+	.  reduce 75
+
+
+state 78
+	genbody : SUPER . ID SUB ID  (74)
+
+	ID  shift 100
+	.  error
+
+
+state 79
+	classstmt : GENERALIZATION '{' genbody . '}'  (26)
+
+	'}'  shift 101
+	.  error
+
+
+state 80
+	signal : SIGNAL ID ';' .  (28)
+
+	.  reduce 28
+
+
+state 81
+	signal : SIGNAL ID '(' . ')' ';'  (29)
+	signal : SIGNAL ID '(' . ID ')' ';'  (30)
+
+	ID  shift 102
+	')'  shift 103
+	.  error
+
+
+state 82
+	cstate : CSTATE ID '{' . cstatebody '}'  (31)
+	cstate : CSTATE ID '{' . '}'  (32)
+
+	CSTATE  shift 39
+	STATE  shift 40
+	TRANS  shift 104
+	ACTION  shift 105
+	CCSTATE  shift 41
+	INIT  shift 42
+	JOIN  shift 43
+	HISTORY  shift 106
+	INVARIANT  shift 107
+	'}'  shift 108
+	.  error
+
+	cstate  goto 109
+	ccstate  goto 110
+	init  goto 111
+	join  goto 112
+	state  goto 113
+	cstatebody  goto 114
+	cstatestmt  goto 115
+	history  goto 116
+	transition  goto 117
+	actofstate  goto 118
+
+
+state 83
+	state : STATE ID '{' . '}'  (43)
+	state : STATE ID '{' . statebody '}'  (44)
+
+	TRANS  shift 104
+	ACTION  shift 105
+	INVARIANT  shift 107
+	'}'  shift 119
+	.  error
+
+	transition  goto 120
+	actofstate  goto 121
+	statebody  goto 122
+	statestmt  goto 123
+
+
+state 84
+	ccstate : CCSTATE ID '{' . ccstatebody '}'  (56)
+
+	CSTATE  shift 39
+	.  error
+
+	cstate  goto 124
+	ccstatebody  goto 125
+	ccstatestmt  goto 126
+
+
+state 85
+	init : INIT ID ';' .  (60)
+
+	.  reduce 60
+
+
+state 86
+	event : ID .  (92)
+	event : ID . '(' ID ')'  (93)
+
+	'('  shift 127
+	EXPRESSION  reduce 92
+	'"'  reduce 92
+	'/'  reduce 92
+	'^'  reduce 92
+
+
+state 87
+	guard : EXPRESSION .  (103)
+
+	.  reduce 103
+
+
+state 88
+	event : WHEN . '(' complexguard ')'  (94)
+	event : WHEN . '(' ID ')'  (95)
+
+	'('  shift 128
+	.  error
+
+
+state 89
+	init : INIT '"' '"' . ID ';'  (61)
+
+	ID  shift 129
+	.  error
+
+
+state 90
+	transitionbody : '/' . actions  (88)
+	transitionbody : '/' . actions '^' messages  (89)
+
+	ID  shift 130
+	NEW  shift 131
+	SEND  shift 132
+	PRINT  shift 133
+	.  error
+
+	actions  goto 134
+	action  goto 135
+	assignstmt  goto 136
+	printstmt  goto 137
+	function  goto 138
+
+
+state 91
+	transitionbody : '^' . messages  (90)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 140
+	message  goto 141
+
+
+state 92
+	init : INIT '"' transitionbody . '"' ID ';'  (62)
+
+	'"'  shift 142
+	.  error
+
+
+state 93
+	transitionbody : event . guard '/' actions '^' messages  (77)
+	transitionbody : event . guard  (78)
+	transitionbody : event . '/' actions  (79)
+	transitionbody : event . '^' messages  (80)
+	transitionbody : event . guard '/' actions  (81)
+	transitionbody : event . guard '^' messages  (82)
+	transitionbody : event . '/' actions '^' messages  (83)
+	transitionbody : event .  (91)
+
+	EXPRESSION  shift 87
+	'/'  shift 143
+	'^'  shift 144
+	'"'  reduce 91
+
+	guard  goto 145
+
+
+state 94
+	transitionbody : guard .  (84)
+	transitionbody : guard . '/' actions  (85)
+	transitionbody : guard . '/' actions '^' messages  (86)
+	transitionbody : guard . '^' messages  (87)
+
+	'/'  shift 146
+	'^'  shift 147
+	'"'  reduce 84
+
+
+state 95
+	join : JOIN ID FROM . ID TO ID ';'  (63)
+
+	ID  shift 148
+	.  error
+
+
+state 96
+	instvar : INSTVAR ID ID . ';'  (67)
+	instvar : INSTVAR ID ID . ASSIGNOP numid ';'  (68)
+
+	ASSIGNOP  shift 149
+	';'  shift 150
+	.  error
+
+
+state 97
+	assocbody : ID '[' ID . ']' ID '[' ID ']' ordconst  (71)
+	assocbody : ID '[' ID . ']' ID '[' ID ']'  (72)
+
+	']'  shift 151
+	.  error
+
+
+state 98
+	agbody : WHOLE ID '[' ID . ']' PART ID '[' ID ']'  (76)
+
+	']'  shift 152
+	.  error
+
+
+state 99
+	classstmt : AGSUBCONST ADORNS ID '{' . agsubbody '}'  (25)
+	agsubbody : .  (73)
+
+	.  reduce 73
+
+	agsubbody  goto 153
+
+
+state 100
+	genbody : SUPER ID . SUB ID  (74)
+
+	SUB  shift 154
+	.  error
+
+
+state 101
+	classstmt : GENERALIZATION '{' genbody '}' .  (26)
+
+	.  reduce 26
+
+
+state 102
+	signal : SIGNAL ID '(' ID . ')' ';'  (30)
+
+	')'  shift 155
+	.  error
+
+
+state 103
+	signal : SIGNAL ID '(' ')' . ';'  (29)
+
+	';'  shift 156
+	.  error
+
+
+state 104
+	transition : TRANS . TO ID ';'  (49)
+	transition : TRANS . '"' '"' TO ID ';'  (50)
+	transition : TRANS . '"' transitionbody '"' TO ID ';'  (51)
+
+	TO  shift 157
+	'"'  shift 158
+	.  error
+
+
+state 105
+	actofstate : ACTION . '"' '"' ';'  (52)
+	actofstate : ACTION . '"' transitionbody '"' ';'  (53)
+
+	'"'  shift 159
+	.  error
+
+
+state 106
+	history : HISTORY . ID ';'  (64)
+	history : HISTORY . '"' '"' ID ';'  (65)
+	history : HISTORY . '"' transitionbody '"' ID ';'  (66)
+
+	ID  shift 160
+	'"'  shift 161
+	.  error
+
+
+state 107
+	actofstate : INVARIANT . '"' invtype '/' INVARIANTEXPRESSION '"' ';'  (54)
+
+	'"'  shift 162
+	.  error
+
+
+state 108
+	cstate : CSTATE ID '{' '}' .  (32)
+
+	.  reduce 32
+
+
+state 109
+	cstatestmt : cstate .  (37)
+
+	.  reduce 37
+
+
+state 110
+	cstatestmt : ccstate .  (40)
+
+	.  reduce 40
+
+
+state 111
+	cstatestmt : init .  (36)
+
+	.  reduce 36
+
+
+state 112
+	cstatestmt : join .  (38)
+
+	.  reduce 38
+
+
+state 113
+	cstatestmt : state .  (35)
+
+	.  reduce 35
+
+
+state 114
+	cstate : CSTATE ID '{' cstatebody . '}'  (31)
+	cstatebody : cstatebody . cstatestmt  (34)
+
+	CSTATE  shift 39
+	STATE  shift 40
+	TRANS  shift 104
+	ACTION  shift 105
+	CCSTATE  shift 41
+	INIT  shift 42
+	JOIN  shift 43
+	HISTORY  shift 106
+	INVARIANT  shift 107
+	'}'  shift 163
+	.  error
+
+	cstate  goto 109
+	ccstate  goto 110
+	init  goto 111
+	join  goto 112
+	state  goto 113
+	cstatestmt  goto 164
+	history  goto 116
+	transition  goto 117
+	actofstate  goto 118
+
+
+state 115
+	cstatebody : cstatestmt .  (33)
+
+	.  reduce 33
+
+
+state 116
+	cstatestmt : history .  (39)
+
+	.  reduce 39
+
+
+state 117
+	cstatestmt : transition .  (41)
+
+	.  reduce 41
+
+
+state 118
+	cstatestmt : actofstate .  (42)
+
+	.  reduce 42
+
+
+state 119
+	state : STATE ID '{' '}' .  (43)
+
+	.  reduce 43
+
+
+state 120
+	statestmt : transition .  (47)
+
+	.  reduce 47
+
+
+state 121
+	statestmt : actofstate .  (48)
+
+	.  reduce 48
+
+
+state 122
+	state : STATE ID '{' statebody . '}'  (44)
+	statebody : statebody . statestmt  (46)
+
+	TRANS  shift 104
+	ACTION  shift 105
+	INVARIANT  shift 107
+	'}'  shift 165
+	.  error
+
+	transition  goto 120
+	actofstate  goto 121
+	statestmt  goto 166
+
+
+state 123
+	statebody : statestmt .  (45)
+
+	.  reduce 45
+
+
+state 124
+	ccstatestmt : cstate .  (59)
+
+	.  reduce 59
+
+
+state 125
+	ccstate : CCSTATE ID '{' ccstatebody . '}'  (56)
+	ccstatebody : ccstatebody . ccstatestmt  (58)
+
+	CSTATE  shift 39
+	'}'  shift 167
+	.  error
+
+	cstate  goto 124
+	ccstatestmt  goto 168
+
+
+state 126
+	ccstatebody : ccstatestmt .  (57)
+
+	.  reduce 57
+
+
+state 127
+	event : ID '(' . ID ')'  (93)
+
+	ID  shift 169
+	.  error
+
+
+state 128
+	event : WHEN '(' . complexguard ')'  (94)
+	event : WHEN '(' . ID ')'  (95)
+
+	ID  shift 170
+	NUM  shift 171
+	NOT  shift 172
+	IN  shift 173
+	'('  shift 174
+	'-'  shift 175
+	.  error
+
+	complexguard  goto 176
+	expra  goto 177
+	gdterm  goto 178
+	pred  goto 179
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 129
+	init : INIT '"' '"' ID . ';'  (61)
+
+	';'  shift 184
+	.  error
+
+
+state 130
+	assignstmt : ID . ASSIGNOP stmtpm  (116)
+	function : ID . '(' parmlist ')'  (131)
+
+	ASSIGNOP  shift 185
+	'('  shift 186
+	.  error
+
+
+state 131
+	action : NEW . '(' ID ')'  (106)
+
+	'('  shift 187
+	.  error
+
+
+state 132
+	action : SEND . '(' message ')'  (107)
+
+	'('  shift 188
+	.  error
+
+
+state 133
+	printstmt : PRINT . '(' PRINTEXPRESSION ')'  (129)
+	printstmt : PRINT . '(' PRINTEXPRESSION ',' parmlist ')'  (130)
+
+	'('  shift 189
+	.  error
+
+
+state 134
+	transitionbody : '/' actions .  (88)
+	transitionbody : '/' actions . '^' messages  (89)
+	actions : actions . ';' action  (105)
+
+	';'  shift 190
+	'^'  shift 191
+	'"'  reduce 88
+
+
+state 135
+	actions : action .  (104)
+
+	.  reduce 104
+
+
+state 136
+	action : assignstmt .  (108)
+
+	.  reduce 108
+
+
+state 137
+	action : printstmt .  (109)
+
+	.  reduce 109
+
+
+state 138
+	action : function .  (110)
+
+	.  reduce 110
+
+
+state 139
+	message : ID . '.' ID  (113)
+	message : ID .  (114)
+	message : ID . '.' ID '(' numid ')'  (115)
+
+	'.'  shift 192
+	')'  reduce 114
+	'"'  reduce 114
+	'^'  reduce 114
+
+
+state 140
+	transitionbody : '^' messages .  (90)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 90
+
+
+state 141
+	messages : message .  (111)
+
+	.  reduce 111
+
+
+state 142
+	init : INIT '"' transitionbody '"' . ID ';'  (62)
+
+	ID  shift 194
+	.  error
+
+
+state 143
+	transitionbody : event '/' . actions  (79)
+	transitionbody : event '/' . actions '^' messages  (83)
+
+	ID  shift 130
+	NEW  shift 131
+	SEND  shift 132
+	PRINT  shift 133
+	.  error
+
+	actions  goto 195
+	action  goto 135
+	assignstmt  goto 136
+	printstmt  goto 137
+	function  goto 138
+
+
+state 144
+	transitionbody : event '^' . messages  (80)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 196
+	message  goto 141
+
+
+state 145
+	transitionbody : event guard . '/' actions '^' messages  (77)
+	transitionbody : event guard .  (78)
+	transitionbody : event guard . '/' actions  (81)
+	transitionbody : event guard . '^' messages  (82)
+
+	'/'  shift 197
+	'^'  shift 198
+	'"'  reduce 78
+
+
+state 146
+	transitionbody : guard '/' . actions  (85)
+	transitionbody : guard '/' . actions '^' messages  (86)
+
+	ID  shift 130
+	NEW  shift 131
+	SEND  shift 132
+	PRINT  shift 133
+	.  error
+
+	actions  goto 199
+	action  goto 135
+	assignstmt  goto 136
+	printstmt  goto 137
+	function  goto 138
+
+
+state 147
+	transitionbody : guard '^' . messages  (87)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 200
+	message  goto 141
+
+
+state 148
+	join : JOIN ID FROM ID . TO ID ';'  (63)
+
+	TO  shift 201
+	.  error
+
+
+state 149
+	instvar : INSTVAR ID ID ASSIGNOP . numid ';'  (68)
+
+	ID  shift 202
+	NUM  shift 203
+	.  error
+
+	numid  goto 204
+
+
+state 150
+	instvar : INSTVAR ID ID ';' .  (67)
+
+	.  reduce 67
+
+
+state 151
+	assocbody : ID '[' ID ']' . ID '[' ID ']' ordconst  (71)
+	assocbody : ID '[' ID ']' . ID '[' ID ']'  (72)
+
+	ID  shift 205
+	.  error
+
+
+state 152
+	agbody : WHOLE ID '[' ID ']' . PART ID '[' ID ']'  (76)
+
+	PART  shift 206
+	.  error
+
+
+state 153
+	classstmt : AGSUBCONST ADORNS ID '{' agsubbody . '}'  (25)
+
+	'}'  shift 207
+	.  error
+
+
+state 154
+	genbody : SUPER ID SUB . ID  (74)
+
+	ID  shift 208
+	.  error
+
+
+state 155
+	signal : SIGNAL ID '(' ID ')' . ';'  (30)
+
+	';'  shift 209
+	.  error
+
+
+state 156
+	signal : SIGNAL ID '(' ')' ';' .  (29)
+
+	.  reduce 29
+
+
+state 157
+	transition : TRANS TO . ID ';'  (49)
+
+	ID  shift 210
+	.  error
+
+
+state 158
+	transition : TRANS '"' . '"' TO ID ';'  (50)
+	transition : TRANS '"' . transitionbody '"' TO ID ';'  (51)
+
+	ID  shift 86
+	EXPRESSION  shift 87
+	WHEN  shift 88
+	'"'  shift 211
+	'/'  shift 90
+	'^'  shift 91
+	.  error
+
+	transitionbody  goto 212
+	event  goto 93
+	guard  goto 94
+
+
+state 159
+	actofstate : ACTION '"' . '"' ';'  (52)
+	actofstate : ACTION '"' . transitionbody '"' ';'  (53)
+
+	ID  shift 86
+	EXPRESSION  shift 87
+	WHEN  shift 88
+	'"'  shift 213
+	'/'  shift 90
+	'^'  shift 91
+	.  error
+
+	transitionbody  goto 214
+	event  goto 93
+	guard  goto 94
+
+
+state 160
+	history : HISTORY ID . ';'  (64)
+
+	';'  shift 215
+	.  error
+
+
+state 161
+	history : HISTORY '"' . '"' ID ';'  (65)
+	history : HISTORY '"' . transitionbody '"' ID ';'  (66)
+
+	ID  shift 86
+	EXPRESSION  shift 87
+	WHEN  shift 88
+	'"'  shift 216
+	'/'  shift 90
+	'^'  shift 91
+	.  error
+
+	transitionbody  goto 217
+	event  goto 93
+	guard  goto 94
+
+
+state 162
+	actofstate : INVARIANT '"' . invtype '/' INVARIANTEXPRESSION '"' ';'  (54)
+
+	INVTYPENAME  shift 218
+	.  error
+
+	invtype  goto 219
+
+
+state 163
+	cstate : CSTATE ID '{' cstatebody '}' .  (31)
+
+	.  reduce 31
+
+
+state 164
+	cstatebody : cstatebody cstatestmt .  (34)
+
+	.  reduce 34
+
+
+state 165
+	state : STATE ID '{' statebody '}' .  (44)
+
+	.  reduce 44
+
+
+state 166
+	statebody : statebody statestmt .  (46)
+
+	.  reduce 46
+
+
+state 167
+	ccstate : CCSTATE ID '{' ccstatebody '}' .  (56)
+
+	.  reduce 56
+
+
+state 168
+	ccstatebody : ccstatebody ccstatestmt .  (58)
+
+	.  reduce 58
+
+
+state 169
+	event : ID '(' ID . ')'  (93)
+
+	')'  shift 220
+	.  error
+
+
+state 170
+	event : WHEN '(' ID . ')'  (95)
+	actterm : ID .  (123)
+	functioninassign : ID . '(' parmlist ')'  (132)
+
+	'('  shift 221
+	')'  shift 222
+	COMPARE_OP  reduce 123
+	'/'  reduce 123
+	'+'  reduce 123
+	'-'  reduce 123
+	'*'  reduce 123
+
+
+state 171
+	actterm : NUM .  (124)
+
+	.  reduce 124
+
+
+state 172
+	gdterm : NOT . ID  (101)
+
+	ID  shift 223
+	.  error
+
+
+state 173
+	pred : IN . '(' ID ')'  (139)
+
+	'('  shift 224
+	.  error
+
+
+state 174
+	gdterm : '(' . complexguard ')'  (102)
+	actterm : '(' . stmtpm ')'  (127)
+
+	ID  shift 225
+	NUM  shift 171
+	NOT  shift 172
+	IN  shift 173
+	'('  shift 174
+	'-'  shift 175
+	.  error
+
+	complexguard  goto 226
+	expra  goto 177
+	gdterm  goto 178
+	pred  goto 179
+	stmtpm  goto 227
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 175
+	actterm : '-' . NUM  (125)
+	actterm : '-' . ID  (126)
+
+	ID  shift 228
+	NUM  shift 229
+	.  error
+
+
+state 176
+	event : WHEN '(' complexguard . ')'  (94)
+	complexguard : complexguard . OR expra  (97)
+
+	OR  shift 230
+	')'  shift 231
+	.  error
+
+
+state 177
+	complexguard : expra .  (96)
+	expra : expra . AND gdterm  (99)
+
+	AND  shift 232
+	OR  reduce 96
+	')'  reduce 96
+
+
+state 178
+	expra : gdterm .  (98)
+
+	.  reduce 98
+
+
+state 179
+	gdterm : pred .  (100)
+
+	.  reduce 100
+
+
+state 180
+	stmtpm : stmtpm . '+' stmtdm  (118)
+	stmtpm : stmtpm . '-' stmtdm  (119)
+	pred : stmtpm . COMPARE_OP numid  (138)
+
+	COMPARE_OP  shift 233
+	'+'  shift 234
+	'-'  shift 235
+	.  error
+
+
+state 181
+	stmtpm : stmtdm .  (117)
+	stmtdm : stmtdm . '*' actterm  (121)
+	stmtdm : stmtdm . '/' actterm  (122)
+
+	'/'  shift 236
+	'*'  shift 237
+	COMPARE_OP  reduce 117
+	';'  reduce 117
+	')'  reduce 117
+	'"'  reduce 117
+	'^'  reduce 117
+	'+'  reduce 117
+	'-'  reduce 117
+
+
+state 182
+	stmtdm : actterm .  (120)
+
+	.  reduce 120
+
+
+state 183
+	actterm : functioninassign .  (128)
+
+	.  reduce 128
+
+
+state 184
+	init : INIT '"' '"' ID ';' .  (61)
+
+	.  reduce 61
+
+
+state 185
+	assignstmt : ID ASSIGNOP . stmtpm  (116)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	stmtpm  goto 239
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 186
+	function : ID '(' . parmlist ')'  (131)
+
+	ID  shift 240
+	NUM  shift 241
+	IN  shift 173
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	pred  goto 242
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+	parmlist  goto 243
+	parm  goto 244
+
+
+state 187
+	action : NEW '(' . ID ')'  (106)
+
+	ID  shift 245
+	.  error
+
+
+state 188
+	action : SEND '(' . message ')'  (107)
+
+	ID  shift 139
+	.  error
+
+	message  goto 246
+
+
+state 189
+	printstmt : PRINT '(' . PRINTEXPRESSION ')'  (129)
+	printstmt : PRINT '(' . PRINTEXPRESSION ',' parmlist ')'  (130)
+
+	PRINTEXPRESSION  shift 247
+	.  error
+
+
+state 190
+	actions : actions ';' . action  (105)
+
+	ID  shift 130
+	NEW  shift 131
+	SEND  shift 132
+	PRINT  shift 133
+	.  error
+
+	action  goto 248
+	assignstmt  goto 136
+	printstmt  goto 137
+	function  goto 138
+
+
+state 191
+	transitionbody : '/' actions '^' . messages  (89)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 249
+	message  goto 141
+
+
+state 192
+	message : ID '.' . ID  (113)
+	message : ID '.' . ID '(' numid ')'  (115)
+
+	ID  shift 250
+	.  error
+
+
+state 193
+	messages : messages '^' . message  (112)
+
+	ID  shift 139
+	.  error
+
+	message  goto 251
+
+
+state 194
+	init : INIT '"' transitionbody '"' ID . ';'  (62)
+
+	';'  shift 252
+	.  error
+
+
+state 195
+	transitionbody : event '/' actions .  (79)
+	transitionbody : event '/' actions . '^' messages  (83)
+	actions : actions . ';' action  (105)
+
+	';'  shift 190
+	'^'  shift 253
+	'"'  reduce 79
+
+
+state 196
+	transitionbody : event '^' messages .  (80)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 80
+
+
+state 197
+	transitionbody : event guard '/' . actions '^' messages  (77)
+	transitionbody : event guard '/' . actions  (81)
+
+	ID  shift 130
+	NEW  shift 131
+	SEND  shift 132
+	PRINT  shift 133
+	.  error
+
+	actions  goto 254
+	action  goto 135
+	assignstmt  goto 136
+	printstmt  goto 137
+	function  goto 138
+
+
+state 198
+	transitionbody : event guard '^' . messages  (82)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 255
+	message  goto 141
+
+
+state 199
+	transitionbody : guard '/' actions .  (85)
+	transitionbody : guard '/' actions . '^' messages  (86)
+	actions : actions . ';' action  (105)
+
+	';'  shift 190
+	'^'  shift 256
+	'"'  reduce 85
+
+
+state 200
+	transitionbody : guard '^' messages .  (87)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 87
+
+
+state 201
+	join : JOIN ID FROM ID TO . ID ';'  (63)
+
+	ID  shift 257
+	.  error
+
+
+state 202
+	numid : ID .  (69)
+
+	.  reduce 69
+
+
+state 203
+	numid : NUM .  (70)
+
+	.  reduce 70
+
+
+state 204
+	instvar : INSTVAR ID ID ASSIGNOP numid . ';'  (68)
+
+	';'  shift 258
+	.  error
+
+
+state 205
+	assocbody : ID '[' ID ']' ID . '[' ID ']' ordconst  (71)
+	assocbody : ID '[' ID ']' ID . '[' ID ']'  (72)
+
+	'['  shift 259
+	.  error
+
+
+state 206
+	agbody : WHOLE ID '[' ID ']' PART . ID '[' ID ']'  (76)
+
+	ID  shift 260
+	.  error
+
+
+state 207
+	classstmt : AGSUBCONST ADORNS ID '{' agsubbody '}' .  (25)
+
+	.  reduce 25
+
+
+state 208
+	genbody : SUPER ID SUB ID .  (74)
+
+	.  reduce 74
+
+
+state 209
+	signal : SIGNAL ID '(' ID ')' ';' .  (30)
+
+	.  reduce 30
+
+
+state 210
+	transition : TRANS TO ID . ';'  (49)
+
+	';'  shift 261
+	.  error
+
+
+state 211
+	transition : TRANS '"' '"' . TO ID ';'  (50)
+
+	TO  shift 262
+	.  error
+
+
+state 212
+	transition : TRANS '"' transitionbody . '"' TO ID ';'  (51)
+
+	'"'  shift 263
+	.  error
+
+
+state 213
+	actofstate : ACTION '"' '"' . ';'  (52)
+
+	';'  shift 264
+	.  error
+
+
+state 214
+	actofstate : ACTION '"' transitionbody . '"' ';'  (53)
+
+	'"'  shift 265
+	.  error
+
+
+state 215
+	history : HISTORY ID ';' .  (64)
+
+	.  reduce 64
+
+
+state 216
+	history : HISTORY '"' '"' . ID ';'  (65)
+
+	ID  shift 266
+	.  error
+
+
+state 217
+	history : HISTORY '"' transitionbody . '"' ID ';'  (66)
+
+	'"'  shift 267
+	.  error
+
+
+state 218
+	invtype : INVTYPENAME .  (55)
+
+	.  reduce 55
+
+
+state 219
+	actofstate : INVARIANT '"' invtype . '/' INVARIANTEXPRESSION '"' ';'  (54)
+
+	'/'  shift 268
+	.  error
+
+
+state 220
+	event : ID '(' ID ')' .  (93)
+
+	.  reduce 93
+
+
+state 221
+	functioninassign : ID '(' . parmlist ')'  (132)
+
+	ID  shift 240
+	NUM  shift 241
+	IN  shift 173
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	pred  goto 242
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+	parmlist  goto 269
+	parm  goto 244
+
+
+state 222
+	event : WHEN '(' ID ')' .  (95)
+
+	.  reduce 95
+
+
+state 223
+	gdterm : NOT ID .  (101)
+
+	.  reduce 101
+
+
+state 224
+	pred : IN '(' . ID ')'  (139)
+
+	ID  shift 270
+	.  error
+
+
+state 225
+	actterm : ID .  (123)
+	functioninassign : ID . '(' parmlist ')'  (132)
+
+	'('  shift 221
+	COMPARE_OP  reduce 123
+	';'  reduce 123
+	')'  reduce 123
+	'"'  reduce 123
+	'/'  reduce 123
+	'^'  reduce 123
+	'+'  reduce 123
+	'-'  reduce 123
+	'*'  reduce 123
+
+
+state 226
+	complexguard : complexguard . OR expra  (97)
+	gdterm : '(' complexguard . ')'  (102)
+
+	OR  shift 230
+	')'  shift 271
+	.  error
+
+
+state 227
+	stmtpm : stmtpm . '+' stmtdm  (118)
+	stmtpm : stmtpm . '-' stmtdm  (119)
+	actterm : '(' stmtpm . ')'  (127)
+	pred : stmtpm . COMPARE_OP numid  (138)
+
+	COMPARE_OP  shift 233
+	')'  shift 272
+	'+'  shift 234
+	'-'  shift 235
+	.  error
+
+
+state 228
+	actterm : '-' ID .  (126)
+
+	.  reduce 126
+
+
+state 229
+	actterm : '-' NUM .  (125)
+
+	.  reduce 125
+
+
+state 230
+	complexguard : complexguard OR . expra  (97)
+
+	ID  shift 225
+	NUM  shift 171
+	NOT  shift 172
+	IN  shift 173
+	'('  shift 174
+	'-'  shift 175
+	.  error
+
+	expra  goto 273
+	gdterm  goto 178
+	pred  goto 179
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 231
+	event : WHEN '(' complexguard ')' .  (94)
+
+	.  reduce 94
+
+
+state 232
+	expra : expra AND . gdterm  (99)
+
+	ID  shift 225
+	NUM  shift 171
+	NOT  shift 172
+	IN  shift 173
+	'('  shift 174
+	'-'  shift 175
+	.  error
+
+	gdterm  goto 274
+	pred  goto 179
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 233
+	pred : stmtpm COMPARE_OP . numid  (138)
+
+	ID  shift 202
+	NUM  shift 203
+	.  error
+
+	numid  goto 275
+
+
+state 234
+	stmtpm : stmtpm '+' . stmtdm  (118)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	stmtdm  goto 276
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 235
+	stmtpm : stmtpm '-' . stmtdm  (119)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	stmtdm  goto 277
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 236
+	stmtdm : stmtdm '/' . actterm  (122)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	actterm  goto 278
+	functioninassign  goto 183
+
+
+state 237
+	stmtdm : stmtdm '*' . actterm  (121)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	actterm  goto 279
+	functioninassign  goto 183
+
+
+state 238
+	actterm : '(' . stmtpm ')'  (127)
+
+	ID  shift 225
+	NUM  shift 171
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	stmtpm  goto 280
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+
+
+state 239
+	assignstmt : ID ASSIGNOP stmtpm .  (116)
+	stmtpm : stmtpm . '+' stmtdm  (118)
+	stmtpm : stmtpm . '-' stmtdm  (119)
+
+	'+'  shift 234
+	'-'  shift 235
+	';'  reduce 116
+	'"'  reduce 116
+	'^'  reduce 116
+
+
+state 240
+	actterm : ID .  (123)
+	functioninassign : ID . '(' parmlist ')'  (132)
+	parm : ID .  (135)
+
+	'('  shift 221
+	COMPARE_OP  reduce 123
+	')'  reduce 135
+	'/'  reduce 123
+	'+'  reduce 123
+	'-'  reduce 123
+	'*'  reduce 123
+	','  reduce 135
+
+
+state 241
+	actterm : NUM .  (124)
+	parm : NUM .  (136)
+
+	COMPARE_OP  reduce 124
+	')'  reduce 136
+	'/'  reduce 124
+	'+'  reduce 124
+	'-'  reduce 124
+	'*'  reduce 124
+	','  reduce 136
+
+
+state 242
+	parm : pred .  (137)
+
+	.  reduce 137
+
+
+state 243
+	function : ID '(' parmlist . ')'  (131)
+	parmlist : parmlist . ',' parm  (134)
+
+	')'  shift 281
+	','  shift 282
+	.  error
+
+
+state 244
+	parmlist : parm .  (133)
+
+	.  reduce 133
+
+
+state 245
+	action : NEW '(' ID . ')'  (106)
+
+	')'  shift 283
+	.  error
+
+
+state 246
+	action : SEND '(' message . ')'  (107)
+
+	')'  shift 284
+	.  error
+
+
+state 247
+	printstmt : PRINT '(' PRINTEXPRESSION . ')'  (129)
+	printstmt : PRINT '(' PRINTEXPRESSION . ',' parmlist ')'  (130)
+
+	')'  shift 285
+	','  shift 286
+	.  error
+
+
+state 248
+	actions : actions ';' action .  (105)
+
+	.  reduce 105
+
+
+state 249
+	transitionbody : '/' actions '^' messages .  (89)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 89
+
+
+state 250
+	message : ID '.' ID .  (113)
+	message : ID '.' ID . '(' numid ')'  (115)
+
+	'('  shift 287
+	')'  reduce 113
+	'"'  reduce 113
+	'^'  reduce 113
+
+
+state 251
+	messages : messages '^' message .  (112)
+
+	.  reduce 112
+
+
+state 252
+	init : INIT '"' transitionbody '"' ID ';' .  (62)
+
+	.  reduce 62
+
+
+state 253
+	transitionbody : event '/' actions '^' . messages  (83)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 288
+	message  goto 141
+
+
+state 254
+	transitionbody : event guard '/' actions . '^' messages  (77)
+	transitionbody : event guard '/' actions .  (81)
+	actions : actions . ';' action  (105)
+
+	';'  shift 190
+	'^'  shift 289
+	'"'  reduce 81
+
+
+state 255
+	transitionbody : event guard '^' messages .  (82)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 82
+
+
+state 256
+	transitionbody : guard '/' actions '^' . messages  (86)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 290
+	message  goto 141
+
+
+state 257
+	join : JOIN ID FROM ID TO ID . ';'  (63)
+
+	';'  shift 291
+	.  error
+
+
+state 258
+	instvar : INSTVAR ID ID ASSIGNOP numid ';' .  (68)
+
+	.  reduce 68
+
+
+state 259
+	assocbody : ID '[' ID ']' ID '[' . ID ']' ordconst  (71)
+	assocbody : ID '[' ID ']' ID '[' . ID ']'  (72)
+
+	ID  shift 292
+	.  error
+
+
+state 260
+	agbody : WHOLE ID '[' ID ']' PART ID . '[' ID ']'  (76)
+
+	'['  shift 293
+	.  error
+
+
+state 261
+	transition : TRANS TO ID ';' .  (49)
+
+	.  reduce 49
+
+
+state 262
+	transition : TRANS '"' '"' TO . ID ';'  (50)
+
+	ID  shift 294
+	.  error
+
+
+state 263
+	transition : TRANS '"' transitionbody '"' . TO ID ';'  (51)
+
+	TO  shift 295
+	.  error
+
+
+state 264
+	actofstate : ACTION '"' '"' ';' .  (52)
+
+	.  reduce 52
+
+
+state 265
+	actofstate : ACTION '"' transitionbody '"' . ';'  (53)
+
+	';'  shift 296
+	.  error
+
+
+state 266
+	history : HISTORY '"' '"' ID . ';'  (65)
+
+	';'  shift 297
+	.  error
+
+
+state 267
+	history : HISTORY '"' transitionbody '"' . ID ';'  (66)
+
+	ID  shift 298
+	.  error
+
+
+state 268
+	actofstate : INVARIANT '"' invtype '/' . INVARIANTEXPRESSION '"' ';'  (54)
+
+	INVARIANTEXPRESSION  shift 299
+	.  error
+
+
+state 269
+	functioninassign : ID '(' parmlist . ')'  (132)
+	parmlist : parmlist . ',' parm  (134)
+
+	')'  shift 300
+	','  shift 282
+	.  error
+
+
+state 270
+	pred : IN '(' ID . ')'  (139)
+
+	')'  shift 301
+	.  error
+
+
+state 271
+	gdterm : '(' complexguard ')' .  (102)
+
+	.  reduce 102
+
+
+state 272
+	actterm : '(' stmtpm ')' .  (127)
+
+	.  reduce 127
+
+
+state 273
+	complexguard : complexguard OR expra .  (97)
+	expra : expra . AND gdterm  (99)
+
+	AND  shift 232
+	OR  reduce 97
+	')'  reduce 97
+
+
+state 274
+	expra : expra AND gdterm .  (99)
+
+	.  reduce 99
+
+
+state 275
+	pred : stmtpm COMPARE_OP numid .  (138)
+
+	.  reduce 138
+
+
+state 276
+	stmtpm : stmtpm '+' stmtdm .  (118)
+	stmtdm : stmtdm . '*' actterm  (121)
+	stmtdm : stmtdm . '/' actterm  (122)
+
+	'/'  shift 236
+	'*'  shift 237
+	COMPARE_OP  reduce 118
+	';'  reduce 118
+	')'  reduce 118
+	'"'  reduce 118
+	'^'  reduce 118
+	'+'  reduce 118
+	'-'  reduce 118
+
+
+state 277
+	stmtpm : stmtpm '-' stmtdm .  (119)
+	stmtdm : stmtdm . '*' actterm  (121)
+	stmtdm : stmtdm . '/' actterm  (122)
+
+	'/'  shift 236
+	'*'  shift 237
+	COMPARE_OP  reduce 119
+	';'  reduce 119
+	')'  reduce 119
+	'"'  reduce 119
+	'^'  reduce 119
+	'+'  reduce 119
+	'-'  reduce 119
+
+
+state 278
+	stmtdm : stmtdm '/' actterm .  (122)
+
+	.  reduce 122
+
+
+state 279
+	stmtdm : stmtdm '*' actterm .  (121)
+
+	.  reduce 121
+
+
+state 280
+	stmtpm : stmtpm . '+' stmtdm  (118)
+	stmtpm : stmtpm . '-' stmtdm  (119)
+	actterm : '(' stmtpm . ')'  (127)
+
+	')'  shift 272
+	'+'  shift 234
+	'-'  shift 235
+	.  error
+
+
+state 281
+	function : ID '(' parmlist ')' .  (131)
+
+	.  reduce 131
+
+
+state 282
+	parmlist : parmlist ',' . parm  (134)
+
+	ID  shift 240
+	NUM  shift 241
+	IN  shift 173
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	pred  goto 242
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+	parm  goto 302
+
+
+state 283
+	action : NEW '(' ID ')' .  (106)
+
+	.  reduce 106
+
+
+state 284
+	action : SEND '(' message ')' .  (107)
+
+	.  reduce 107
+
+
+state 285
+	printstmt : PRINT '(' PRINTEXPRESSION ')' .  (129)
+
+	.  reduce 129
+
+
+state 286
+	printstmt : PRINT '(' PRINTEXPRESSION ',' . parmlist ')'  (130)
+
+	ID  shift 240
+	NUM  shift 241
+	IN  shift 173
+	'('  shift 238
+	'-'  shift 175
+	.  error
+
+	pred  goto 242
+	stmtpm  goto 180
+	stmtdm  goto 181
+	actterm  goto 182
+	functioninassign  goto 183
+	parmlist  goto 303
+	parm  goto 244
+
+
+state 287
+	message : ID '.' ID '(' . numid ')'  (115)
+
+	ID  shift 202
+	NUM  shift 203
+	.  error
+
+	numid  goto 304
+
+
+state 288
+	transitionbody : event '/' actions '^' messages .  (83)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 83
+
+
+state 289
+	transitionbody : event guard '/' actions '^' . messages  (77)
+
+	ID  shift 139
+	.  error
+
+	messages  goto 305
+	message  goto 141
+
+
+state 290
+	transitionbody : guard '/' actions '^' messages .  (86)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 86
+
+
+state 291
+	join : JOIN ID FROM ID TO ID ';' .  (63)
+
+	.  reduce 63
+
+
+state 292
+	assocbody : ID '[' ID ']' ID '[' ID . ']' ordconst  (71)
+	assocbody : ID '[' ID ']' ID '[' ID . ']'  (72)
+
+	']'  shift 306
+	.  error
+
+
+state 293
+	agbody : WHOLE ID '[' ID ']' PART ID '[' . ID ']'  (76)
+
+	ID  shift 307
+	.  error
+
+
+state 294
+	transition : TRANS '"' '"' TO ID . ';'  (50)
+
+	';'  shift 308
+	.  error
+
+
+state 295
+	transition : TRANS '"' transitionbody '"' TO . ID ';'  (51)
+
+	ID  shift 309
+	.  error
+
+
+state 296
+	actofstate : ACTION '"' transitionbody '"' ';' .  (53)
+
+	.  reduce 53
+
+
+state 297
+	history : HISTORY '"' '"' ID ';' .  (65)
+
+	.  reduce 65
+
+
+state 298
+	history : HISTORY '"' transitionbody '"' ID . ';'  (66)
+
+	';'  shift 310
+	.  error
+
+
+state 299
+	actofstate : INVARIANT '"' invtype '/' INVARIANTEXPRESSION . '"' ';'  (54)
+
+	'"'  shift 311
+	.  error
+
+
+state 300
+	functioninassign : ID '(' parmlist ')' .  (132)
+
+	.  reduce 132
+
+
+state 301
+	pred : IN '(' ID ')' .  (139)
+
+	.  reduce 139
+
+
+state 302
+	parmlist : parmlist ',' parm .  (134)
+
+	.  reduce 134
+
+
+state 303
+	printstmt : PRINT '(' PRINTEXPRESSION ',' parmlist . ')'  (130)
+	parmlist : parmlist . ',' parm  (134)
+
+	')'  shift 312
+	','  shift 282
+	.  error
+
+
+state 304
+	message : ID '.' ID '(' numid . ')'  (115)
+
+	')'  shift 313
+	.  error
+
+
+state 305
+	transitionbody : event guard '/' actions '^' messages .  (77)
+	messages : messages . '^' message  (112)
+
+	'^'  shift 193
+	'"'  reduce 77
+
+
+state 306
+	assocbody : ID '[' ID ']' ID '[' ID ']' . ordconst  (71)
+	assocbody : ID '[' ID ']' ID '[' ID ']' .  (72)
+
+	ORDCONST  shift 36
+	'}'  reduce 72
+
+	ordconst  goto 314
+
+
+state 307
+	agbody : WHOLE ID '[' ID ']' PART ID '[' ID . ']'  (76)
+
+	']'  shift 315
+	.  error
+
+
+state 308
+	transition : TRANS '"' '"' TO ID ';' .  (50)
+
+	.  reduce 50
+
+
+state 309
+	transition : TRANS '"' transitionbody '"' TO ID . ';'  (51)
+
+	';'  shift 316
+	.  error
+
+
+state 310
+	history : HISTORY '"' transitionbody '"' ID ';' .  (66)
+
+	.  reduce 66
+
+
+state 311
+	actofstate : INVARIANT '"' invtype '/' INVARIANTEXPRESSION '"' . ';'  (54)
+
+	';'  shift 317
+	.  error
+
+
+state 312
+	printstmt : PRINT '(' PRINTEXPRESSION ',' parmlist ')' .  (130)
+
+	.  reduce 130
+
+
+state 313
+	message : ID '.' ID '(' numid ')' .  (115)
+
+	.  reduce 115
+
+
+state 314
+	assocbody : ID '[' ID ']' ID '[' ID ']' ordconst .  (71)
+
+	.  reduce 71
+
+
+state 315
+	agbody : WHOLE ID '[' ID ']' PART ID '[' ID ']' .  (76)
+
+	.  reduce 76
+
+
+state 316
+	transition : TRANS '"' transitionbody '"' TO ID ';' .  (51)
+
+	.  reduce 51
+
+
+state 317
+	actofstate : INVARIANT '"' invtype '/' INVARIANTEXPRESSION '"' ';' .  (54)
+
+	.  reduce 54
+
+
+65 terminals, 51 nonterminals
+140 grammar rules, 318 states

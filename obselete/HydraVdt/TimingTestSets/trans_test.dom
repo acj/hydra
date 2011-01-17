@@ -1,0 +1,271 @@
+# DoME 5.3 model; type: MSU-UML Class Diagram (HIL)
+[ProtoDoMEGraph
+  modelTypeName: 'MSU-UML Class Diagram (HIL)'!
+  specFile: 'c:\Program Files\DOME\tools\msu-uml\specs\msu-class.met'!
+  nodes: [OrderedCollection
+    [GraphParentLabel
+      position: [Point 48 35]
+      id: 211559275495427!
+    ]
+
+    [ProtoDoMENode
+      name: 'TestClass'!
+      position: [Point 229 90]
+      components: [PartitionedCollection
+	key: #elements!
+	value: [PartitionedCollection
+	  key: #attributes!
+	  value: [SortedCollection
+	    [ProtoDoMEElement
+	      name: 'new Attribute'!
+	      position: [Point -32 -12]
+	      id: 211559277264913!
+	      properties: [GrapEPropertyDictionary
+		key: #attributeValue!
+		value: ''!
+		key: #attributeName!
+		value: 'x'!
+		key: #specClass!
+		value: 202124556435481!
+		key: #attributeType!
+		value: #short!
+	      ]
+
+	    ]
+
+	    [ProtoDoMEElement
+	      name: 'new Attribute'!
+	      position: [Point -32 0]
+	      id: 211559320715266!
+	      properties: [GrapEPropertyDictionary
+		key: #attributeValue!
+		value: ''!
+		key: #specClass!
+		value: 202124556435481!
+		key: #attributeName!
+		value: 'testtimer'!
+		key: #attributeType!
+		value: #timer!
+	      ]
+
+	    ]
+
+	  ]
+	  key: #operations!
+	  value: [SortedCollection
+	    [ProtoDoMEElement
+	      name: 'new Operation'!
+	      position: [Point -32 20]
+	      id: 211559277264914!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 202124556435486!
+		key: #operationName!
+		value: 'test'!
+	      ]
+
+	    ]
+
+	  ]
+	]
+
+      ]
+
+      subdiagrams: [OrderedCollection
+	[ProtoDoMEGraph
+	  modelTypeName: 'MSU-UML State Diagram'!
+	  specFile: 'c:\Program Files\DOME\tools\msu-uml\specs\msu-state.met'!
+	  nodes: [OrderedCollection
+	    [GraphParentLabel
+	      position: [Point 50 35]
+	      id: 211559275495440!
+	    ]
+
+	    [ProtoDoMENode
+	      name: 's1'!
+	      position: [Point 157 126]
+	      id: 211559275495433!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 203100238184461!
+		key: #time_invariant!
+		value: [OrderedCollection 'testtimer<=5'!]
+	      ]
+
+	    ]
+
+	    [ProtoDoMENode
+	      name: 's2'!
+	      position: [Point 330 113]
+	      id: 211559275495436!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 203100238184461!
+	      ]
+
+	    ]
+
+	    [ProtoDoMENode
+	      name: 'new Node'!
+	      position: [Point 60 61]
+	      id: 211559275495432!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 203100453732386!
+	      ]
+
+	    ]
+
+	    [ProtoDoMENode
+	      name: 's3'!
+	      position: [Point 351 251]
+	      id: 211559275495439!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 203100238184461!
+	      ]
+
+	    ]
+
+	  ]
+	  arcs: [OrderedCollection
+	    [ProtoDoMEArc
+	      indexedOrigin: [GrapEThingAddress
+		id: 211559275495432!
+	      ]
+
+	      indexedDestination: [GrapEThingAddress
+		id: 211559275495433!
+	      ]
+
+	      components: [PartitionedCollection
+		key: #accessories!
+		value: [OrderedCollection
+		  [GrapEArcName
+		    name: 'new Start_Transition'!
+		    position: [Point 0 0]
+		    id: 211559275495431!
+		  ]
+
+		]
+	      ]
+
+	      id: 211559275495430!
+	      properties: [GrapEPropertyDictionary
+		key: #specClass!
+		value: 205692994191366!
+	      ]
+
+	    ]
+
+	    [ProtoDoMEArc
+	      indexedOrigin: [GrapEThingAddress
+		id: 211559275495433!
+	      ]
+
+	      indexedDestination: [GrapEThingAddress
+		id: 211559275495436!
+	      ]
+
+	      components: [PartitionedCollection
+		key: #accessories!
+		value: [OrderedCollection
+		  [GrapEArcName
+		    name: 'new Transition'!
+		    position: [Point 0 0]
+		    id: 211559275495435!
+		  ]
+
+		]
+	      ]
+
+	      id: 211559275495434!
+	      properties: [GrapEPropertyDictionary
+		key: #guard!
+		value: 'x=1'!
+		key: #specClass!
+		value: 203100238184466!
+		key: #event!
+		value: 'test'!
+	      ]
+
+	    ]
+
+	    [ProtoDoMEArc
+	      indexedOrigin: [GrapEThingAddress
+		id: 211559275495433!
+	      ]
+
+	      indexedDestination: [GrapEThingAddress
+		id: 211559275495439!
+	      ]
+
+	      components: [PartitionedCollection
+		key: #accessories!
+		value: [OrderedCollection
+		  [GrapEArcName
+		    name: 'new Transition'!
+		    position: [Point -4 -1]
+		    id: 211559275495438!
+		  ]
+
+		]
+	      ]
+
+	      id: 211559275495437!
+	      properties: [GrapEPropertyDictionary
+		key: #guard!
+		value: 'x=0'!
+		key: #specClass!
+		value: 203100238184466!
+		key: #event!
+		value: ''!
+	      ]
+
+	    ]
+
+	  ]
+	  id: 211559275495429!
+	  properties: [GrapEPropertyDictionary
+	    key: #windowBounds!
+	    value: [Rectangle
+	      origin: [Point 151 23]
+	      corner: [Point 931 703]
+	    ]
+
+	  ]
+
+	]
+
+      ]
+      id: 211559275495428!
+      properties: [GrapEPropertyDictionary
+	key: #specClass!
+	value: 202124488998919!
+      ]
+
+    ]
+
+  ]
+  id: 211559275495426!
+  properties: [GrapEPropertyDictionary
+    key: #windowBounds!
+    value: [Rectangle
+      origin: [Point 5 25]
+      corner: [Point 785 705]
+    ]
+
+    key: #initialOpenGraphs!
+    value: [OrderedCollection
+      [GrapEThingAddress
+	id: 211559275495429!
+      ]
+
+      [GrapEThingAddress
+	id: 211559275495426!
+      ]
+
+    ]
+  ]
+
+]

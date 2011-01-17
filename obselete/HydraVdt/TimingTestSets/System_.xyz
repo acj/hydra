@@ -1,0 +1,163 @@
+Formalize as promela ;
+Model  System_{
+Class SingleAccessPoint {
+	InstanceVar byte sender  := 0;
+	InstanceVar byte recipient  := 0;
+	Signal start ();
+	Signal requestAccess (byte );
+	Signal setRecipient (byte );
+	State Idle  {
+		Transition "requestAccess(sender)" to GetReqest ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State GetReqest  {
+		Transition "setRecipient(recipient)" to Forward ;
+	}
+	State Forward  {
+		Transition "^CheckPoint.checkMsg(sender)^CheckPoint.setRecipient(recipient)" to Idle ;
+	}
+}
+Class _SYSTEMCLASS_ {
+	Signal ready ();
+	State s1  {
+		Transition "/new(SingleAccessPoint)" to s2 ;
+	}
+	State s2  {
+		Transition "ready/new(ExternalEntity1)" to s3 ;
+	}
+	Initial  "" s1 ;
+	State s3  {
+		Transition "ready/new(ExternalEntity2)" to s4 ;
+	}
+	State s4  {
+		Transition "ready/new(CheckPoint)" to s5 ;
+	}
+	State s5  {
+		Transition "ready/new(Authorization)" to s6 ;
+	}
+	State s6  {
+		Transition "ready/new(InternalEntity1)" to s7 ;
+	}
+	State s7  {
+		Transition "ready/new(InternalEntity2)" to s8 ;
+	}
+	State s8  {
+		Transition "ready^ExternalEntity1.start" to s9 ;
+	}
+	State s9  {
+		Transition "ready^ExternalEntity2.start" to s10 ;
+	}
+	State s10  {
+	}
+}
+Class ExternalEntity1 {
+	InstanceVar bool success  := 0;
+	InstanceVar bool newReq  := 1;
+	Signal start ();
+	Signal return (bool );
+	State Wait  {
+		Transition "start^_SYSTEMCLASS_.ready" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Wait ;
+	State Idle  {
+		Transition "^SingleAccessPoint.requestAccess(1)^SingleAccessPoint.setRecipient(1)" to WaitResponse ;
+		Transition "^SingleAccessPoint.requestAccess(1)^SingleAccessPoint.setRecipient(2)" to WaitResponse ;
+	}
+	State WaitResponse  {
+		Action "entry/success:=0;newReq:=0" ;
+		Transition "return(success)" to EvaluateSuccess ;
+	}
+	State EvaluateSuccess  {
+		Transition "/newReq:=1" to Idle ;
+	}
+}
+Class ExternalEntity2 {
+	InstanceVar bool success  := 0;
+	InstanceVar bool newReq  := 1;
+	Signal start ();
+	Signal return (bool );
+	State Wait  {
+		Transition "start^_SYSTEMCLASS_.ready" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Wait ;
+	State Idle  {
+		Transition "^SingleAccessPoint.requestAccess(2)^SingleAccessPoint.setRecipient(1)" to WaitResponse ;
+		Transition "^SingleAccessPoint.requestAccess(2)^SingleAccessPoint.setRecipient(2)" to WaitResponse ;
+	}
+	State WaitResponse  {
+		Action "entry/success:=0;newReq:=0" ;
+		Transition "return(success)" to EvaluateSuccess ;
+	}
+	State EvaluateSuccess  {
+		Transition "/newReq:=1" to Idle ;
+	}
+}
+Class Authorization {
+	InstanceVar byte sender  := 0;
+	Signal isAuthorized (byte );
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "isAuthorized(sender)" to Busy ;
+	}
+	State Busy  {
+		Transition "^CheckPoint.authOK(1)" to Idle ;
+		Transition "^CheckPoint.authOK(0)" to Idle ;
+	}
+}
+Class InternalEntity1 {
+	InstanceVar byte sender  := 0;
+	Signal access (byte );
+	State Idle  {
+		Transition "access(sender)[sender=1]^ExternalEntity1.return(1)" to Idle ;
+		Transition "access(sender)[sender=2]^ExternalEntity2.return(1)" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+}
+Class InternalEntity2 {
+	InstanceVar byte sender  := 0;
+	Signal access (byte );
+	State Idle  {
+		Transition "access(sender)[sender=1]^ExternalEntity1.return(1)" to Idle ;
+		Transition "access(sender)[sender=2]^ExternalEntity2.return(1)" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+}
+Class CheckPoint {
+	InstanceVar byte sender  := 0;
+	InstanceVar byte recipient  := 0;
+	InstanceVar byte grantAccess  := 2;
+	InstanceVar byte temp  := 0;
+	Signal checkMsg (byte );
+	Signal setRecipient (byte );
+	Signal authOK (bool );
+	State MainIdle  {
+		Action "entry/grantAccess:=2" ;
+		Transition "checkMsg(sender)" to getReq1 ;
+	}
+	State AccessDenied  {
+		Transition "[sender=1]^ExternalEntity1.return(0)" to MainIdle ;
+		Transition "[sender=2]^ExternalEntity2.return(0)" to MainIdle ;
+	}
+	State waitAuth  {
+		Transition "authOK(grantAccess)" to processRequest ;
+		Transition "checkMsg" to c1 ;
+	}
+	State AccessGranted  {
+		Transition "[recipient=1]^InternalEntity1.access(sender)" to MainIdle ;
+		Transition "[recipient=2]^InternalEntity2.access(sender)" to MainIdle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" MainIdle ;
+	State processRequest  {
+		Transition "[grantAccess=0]" to AccessDenied ;
+		Transition "[grantAccess=1]" to AccessGranted ;
+	}
+	State getReq1  {
+		Transition "setRecipient(recipient)^Authorization.isAuthorized(sender)" to waitAuth ;
+	}
+	State c1  {
+		Transition "setRecipient(temp)[temp=2]^ExternalEntity2.return(0)" to waitAuth ;
+		Transition "setRecipient(temp)[temp=1]^ExternalEntity1.return(0)" to waitAuth ;
+	}
+}
+
+}

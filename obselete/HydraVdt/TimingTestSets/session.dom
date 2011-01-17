@@ -1,0 +1,7 @@
+[GrapESession
+  properties: [GrapEPropertyDictionary
+    key: #recentFiles!
+    value: [OrderedCollection 'h:\Promela\Cruise Control\ACC_Class_Diagram_adapted.dom'! 'h:\Promela\Cruise Control\Class_Diagram_II.dom'! 'h:\Promela\Cruise Control\Class_Diagram.dom'! 'h:\HydraVcode\HydraVdt2-6\Railroad_dt_tinv.dom'!]
+  ]
+
+]

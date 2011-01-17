@@ -1,0 +1,64 @@
+Hydra Porting from Perl to Java Notes (Karli Lopez):
+
+- object parsing is no longer required since the object is already deemed "parsed"
+
+- the Error checker visitor is no longer needed as well (same reason)
+
+- everything else in HydraV.pl except SetNever() and Accept() can be removed.
+
+- are modelbody, classbody nodes necessary? Are they even present in the Java?
+
+- toHilVisitor classes resemble UML specs more closely
+
+ASTVisitorForPromela:
+ -PassOutputFileName() no longer needed
+ -SetNever() at first glance seems to be very important!!! what's more it
+    needs to call Spin for its execution.  However this may become part 
+    of a separate class
+ 
+ -visitmodelNode() does absolutely nothing! (!?!?)
+
+
+Java->Perl class relations:
+Model      -> modelNode
+           -> modelbodyNode
+visitModel -> visitmodelbodyNodePak (visitor)
+
+Class      -> ClassNode
+           -> classbodyNode
+visitClass -> visitclassbodyNodePak (visitor)
+
+ActionExpression -> 
+vA.E.            ->
+
+Attribute ->
+
+BooleanExpression ->
+
+CallEvent ->
+
+CompositeState ->
+
+DataType ->
+
+FinalState ->
+
+Guard ->
+
+Operation ->
+
+Parameter ->
+
+Pseudostate ->
+
+SimpleState ->
+
+State ->
+
+StateMachine ->
+
+Transition ->
+
+UninterpretedAction ->
+
+Expression ->

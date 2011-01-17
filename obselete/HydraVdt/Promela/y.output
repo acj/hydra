@@ -1,0 +1,698 @@
+   0  $accept : stmt $end
+
+   1  stmt : assignment
+   2       | guard
+   3       | parmlist
+   4       | whenclause
+
+   5  assignment : ID ASSGNOP stmtpm
+
+   6  stmtpm : stmtdm
+   7         | stmtpm '+' stmtdm
+   8         | stmtpm '-' stmtdm
+
+   9  stmtdm : actterm
+  10         | stmtdm '*' actterm
+  11         | stmtdm '/' actterm
+
+  12  actterm : ID
+  13          | NUM
+  14          | '-' NUM
+  15          | '-' ID
+  16          | '(' stmtpm ')'
+  17          | function
+
+  18  function : ID '(' parmlist ')'
+  19           | IN '(' ID ')'
+
+  20  parmlist : parm
+  21           | parmlist ',' parm
+
+  22  parm : ID
+  23       | NUM
+  24       | pred
+
+  25  guard : '[' guardbody ']'
+
+  26  guardbody : expra
+  27            | guardbody OR expra
+
+  28  expra : gdterm
+  29        | expra AND gdterm
+
+  30  gdterm : pred
+  31         | ID
+  32         | NOT ID
+  33         | '(' guardbody ')'
+
+  34  pred : numid COMPARE_OP numid
+  35       | function
+
+  36  numid : ID
+  37        | NUM
+
+  38  whenclause : WHEN '(' guardbody ')'
+
+state 0
+	$accept : . stmt $end  (0)
+
+	ID  shift 1
+	IN  shift 2
+	NUM  shift 3
+	WHEN  shift 4
+	'['  shift 5
+	.  error
+
+	stmt  goto 6
+	assignment  goto 7
+	guard  goto 8
+	parmlist  goto 9
+	whenclause  goto 10
+	function  goto 11
+	parm  goto 12
+	pred  goto 13
+	numid  goto 14
+
+
+state 1
+	assignment : ID . ASSGNOP stmtpm  (5)
+	function : ID . '(' parmlist ')'  (18)
+	parm : ID .  (22)
+	numid : ID .  (36)
+
+	ASSGNOP  shift 15
+	'('  shift 16
+	$end  reduce 22
+	COMPARE_OP  reduce 36
+	','  reduce 22
+
+
+state 2
+	function : IN . '(' ID ')'  (19)
+
+	'('  shift 17
+	.  error
+
+
+state 3
+	parm : NUM .  (23)
+	numid : NUM .  (37)
+
+	$end  reduce 23
+	COMPARE_OP  reduce 37
+	')'  reduce 23
+	','  reduce 23
+
+
+state 4
+	whenclause : WHEN . '(' guardbody ')'  (38)
+
+	'('  shift 18
+	.  error
+
+
+state 5
+	guard : '[' . guardbody ']'  (25)
+
+	ID  shift 19
+	NOT  shift 20
+	IN  shift 2
+	NUM  shift 21
+	'('  shift 22
+	.  error
+
+	function  goto 11
+	pred  goto 23
+	guardbody  goto 24
+	expra  goto 25
+	gdterm  goto 26
+	numid  goto 14
+
+
+state 6
+	$accept : stmt . $end  (0)
+
+	$end  accept
+
+
+state 7
+	stmt : assignment .  (1)
+
+	.  reduce 1
+
+
+state 8
+	stmt : guard .  (2)
+
+	.  reduce 2
+
+
+state 9
+	stmt : parmlist .  (3)
+	parmlist : parmlist . ',' parm  (21)
+
+	','  shift 27
+	$end  reduce 3
+
+
+state 10
+	stmt : whenclause .  (4)
+
+	.  reduce 4
+
+
+state 11
+	pred : function .  (35)
+
+	.  reduce 35
+
+
+state 12
+	parmlist : parm .  (20)
+
+	.  reduce 20
+
+
+state 13
+	parm : pred .  (24)
+
+	.  reduce 24
+
+
+state 14
+	pred : numid . COMPARE_OP numid  (34)
+
+	COMPARE_OP  shift 28
+	.  error
+
+
+state 15
+	assignment : ID ASSGNOP . stmtpm  (5)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	stmtpm  goto 33
+	stmtdm  goto 34
+	actterm  goto 35
+	function  goto 36
+
+
+state 16
+	function : ID '(' . parmlist ')'  (18)
+
+	ID  shift 37
+	IN  shift 2
+	NUM  shift 3
+	.  error
+
+	parmlist  goto 38
+	function  goto 11
+	parm  goto 12
+	pred  goto 13
+	numid  goto 14
+
+
+state 17
+	function : IN '(' . ID ')'  (19)
+
+	ID  shift 39
+	.  error
+
+
+state 18
+	whenclause : WHEN '(' . guardbody ')'  (38)
+
+	ID  shift 19
+	NOT  shift 20
+	IN  shift 2
+	NUM  shift 21
+	'('  shift 22
+	.  error
+
+	function  goto 11
+	pred  goto 23
+	guardbody  goto 40
+	expra  goto 25
+	gdterm  goto 26
+	numid  goto 14
+
+
+state 19
+	function : ID . '(' parmlist ')'  (18)
+	gdterm : ID .  (31)
+	numid : ID .  (36)
+
+	'('  shift 16
+	AND  reduce 31
+	OR  reduce 31
+	COMPARE_OP  reduce 36
+	')'  reduce 31
+	']'  reduce 31
+
+
+state 20
+	gdterm : NOT . ID  (32)
+
+	ID  shift 41
+	.  error
+
+
+state 21
+	numid : NUM .  (37)
+
+	.  reduce 37
+
+
+state 22
+	gdterm : '(' . guardbody ')'  (33)
+
+	ID  shift 19
+	NOT  shift 20
+	IN  shift 2
+	NUM  shift 21
+	'('  shift 22
+	.  error
+
+	function  goto 11
+	pred  goto 23
+	guardbody  goto 42
+	expra  goto 25
+	gdterm  goto 26
+	numid  goto 14
+
+
+state 23
+	gdterm : pred .  (30)
+
+	.  reduce 30
+
+
+state 24
+	guard : '[' guardbody . ']'  (25)
+	guardbody : guardbody . OR expra  (27)
+
+	OR  shift 43
+	']'  shift 44
+	.  error
+
+
+state 25
+	guardbody : expra .  (26)
+	expra : expra . AND gdterm  (29)
+
+	AND  shift 45
+	OR  reduce 26
+	')'  reduce 26
+	']'  reduce 26
+
+
+state 26
+	expra : gdterm .  (28)
+
+	.  reduce 28
+
+
+state 27
+	parmlist : parmlist ',' . parm  (21)
+
+	ID  shift 37
+	IN  shift 2
+	NUM  shift 3
+	.  error
+
+	function  goto 11
+	parm  goto 46
+	pred  goto 13
+	numid  goto 14
+
+
+state 28
+	pred : numid COMPARE_OP . numid  (34)
+
+	ID  shift 47
+	NUM  shift 21
+	.  error
+
+	numid  goto 48
+
+
+state 29
+	actterm : ID .  (12)
+	function : ID . '(' parmlist ')'  (18)
+
+	'('  shift 16
+	$end  reduce 12
+	'+'  reduce 12
+	'-'  reduce 12
+	'*'  reduce 12
+	'/'  reduce 12
+	')'  reduce 12
+
+
+state 30
+	actterm : NUM .  (13)
+
+	.  reduce 13
+
+
+state 31
+	actterm : '-' . NUM  (14)
+	actterm : '-' . ID  (15)
+
+	ID  shift 49
+	NUM  shift 50
+	.  error
+
+
+state 32
+	actterm : '(' . stmtpm ')'  (16)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	stmtpm  goto 51
+	stmtdm  goto 34
+	actterm  goto 35
+	function  goto 36
+
+
+state 33
+	assignment : ID ASSGNOP stmtpm .  (5)
+	stmtpm : stmtpm . '+' stmtdm  (7)
+	stmtpm : stmtpm . '-' stmtdm  (8)
+
+	'+'  shift 52
+	'-'  shift 53
+	$end  reduce 5
+
+
+state 34
+	stmtpm : stmtdm .  (6)
+	stmtdm : stmtdm . '*' actterm  (10)
+	stmtdm : stmtdm . '/' actterm  (11)
+
+	'*'  shift 54
+	'/'  shift 55
+	$end  reduce 6
+	'+'  reduce 6
+	'-'  reduce 6
+	')'  reduce 6
+
+
+state 35
+	stmtdm : actterm .  (9)
+
+	.  reduce 9
+
+
+state 36
+	actterm : function .  (17)
+
+	.  reduce 17
+
+
+state 37
+	function : ID . '(' parmlist ')'  (18)
+	parm : ID .  (22)
+	numid : ID .  (36)
+
+	'('  shift 16
+	$end  reduce 22
+	COMPARE_OP  reduce 36
+	')'  reduce 22
+	','  reduce 22
+
+
+state 38
+	function : ID '(' parmlist . ')'  (18)
+	parmlist : parmlist . ',' parm  (21)
+
+	')'  shift 56
+	','  shift 27
+	.  error
+
+
+state 39
+	function : IN '(' ID . ')'  (19)
+
+	')'  shift 57
+	.  error
+
+
+state 40
+	guardbody : guardbody . OR expra  (27)
+	whenclause : WHEN '(' guardbody . ')'  (38)
+
+	OR  shift 43
+	')'  shift 58
+	.  error
+
+
+state 41
+	gdterm : NOT ID .  (32)
+
+	.  reduce 32
+
+
+state 42
+	guardbody : guardbody . OR expra  (27)
+	gdterm : '(' guardbody . ')'  (33)
+
+	OR  shift 43
+	')'  shift 59
+	.  error
+
+
+state 43
+	guardbody : guardbody OR . expra  (27)
+
+	ID  shift 19
+	NOT  shift 20
+	IN  shift 2
+	NUM  shift 21
+	'('  shift 22
+	.  error
+
+	function  goto 11
+	pred  goto 23
+	expra  goto 60
+	gdterm  goto 26
+	numid  goto 14
+
+
+state 44
+	guard : '[' guardbody ']' .  (25)
+
+	.  reduce 25
+
+
+state 45
+	expra : expra AND . gdterm  (29)
+
+	ID  shift 19
+	NOT  shift 20
+	IN  shift 2
+	NUM  shift 21
+	'('  shift 22
+	.  error
+
+	function  goto 11
+	pred  goto 23
+	gdterm  goto 61
+	numid  goto 14
+
+
+state 46
+	parmlist : parmlist ',' parm .  (21)
+
+	.  reduce 21
+
+
+state 47
+	numid : ID .  (36)
+
+	.  reduce 36
+
+
+state 48
+	pred : numid COMPARE_OP numid .  (34)
+
+	.  reduce 34
+
+
+state 49
+	actterm : '-' ID .  (15)
+
+	.  reduce 15
+
+
+state 50
+	actterm : '-' NUM .  (14)
+
+	.  reduce 14
+
+
+state 51
+	stmtpm : stmtpm . '+' stmtdm  (7)
+	stmtpm : stmtpm . '-' stmtdm  (8)
+	actterm : '(' stmtpm . ')'  (16)
+
+	'+'  shift 52
+	'-'  shift 53
+	')'  shift 62
+	.  error
+
+
+state 52
+	stmtpm : stmtpm '+' . stmtdm  (7)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	stmtdm  goto 63
+	actterm  goto 35
+	function  goto 36
+
+
+state 53
+	stmtpm : stmtpm '-' . stmtdm  (8)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	stmtdm  goto 64
+	actterm  goto 35
+	function  goto 36
+
+
+state 54
+	stmtdm : stmtdm '*' . actterm  (10)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	actterm  goto 65
+	function  goto 36
+
+
+state 55
+	stmtdm : stmtdm '/' . actterm  (11)
+
+	ID  shift 29
+	IN  shift 2
+	NUM  shift 30
+	'-'  shift 31
+	'('  shift 32
+	.  error
+
+	actterm  goto 66
+	function  goto 36
+
+
+state 56
+	function : ID '(' parmlist ')' .  (18)
+
+	.  reduce 18
+
+
+state 57
+	function : IN '(' ID ')' .  (19)
+
+	.  reduce 19
+
+
+state 58
+	whenclause : WHEN '(' guardbody ')' .  (38)
+
+	.  reduce 38
+
+
+state 59
+	gdterm : '(' guardbody ')' .  (33)
+
+	.  reduce 33
+
+
+state 60
+	guardbody : guardbody OR expra .  (27)
+	expra : expra . AND gdterm  (29)
+
+	AND  shift 45
+	OR  reduce 27
+	')'  reduce 27
+	']'  reduce 27
+
+
+state 61
+	expra : expra AND gdterm .  (29)
+
+	.  reduce 29
+
+
+state 62
+	actterm : '(' stmtpm ')' .  (16)
+
+	.  reduce 16
+
+
+state 63
+	stmtpm : stmtpm '+' stmtdm .  (7)
+	stmtdm : stmtdm . '*' actterm  (10)
+	stmtdm : stmtdm . '/' actterm  (11)
+
+	'*'  shift 54
+	'/'  shift 55
+	$end  reduce 7
+	'+'  reduce 7
+	'-'  reduce 7
+	')'  reduce 7
+
+
+state 64
+	stmtpm : stmtpm '-' stmtdm .  (8)
+	stmtdm : stmtdm . '*' actterm  (10)
+	stmtdm : stmtdm . '/' actterm  (11)
+
+	'*'  shift 54
+	'/'  shift 55
+	$end  reduce 8
+	'+'  reduce 8
+	'-'  reduce 8
+	')'  reduce 8
+
+
+state 65
+	stmtdm : stmtdm '*' actterm .  (10)
+
+	.  reduce 10
+
+
+state 66
+	stmtdm : stmtdm '/' actterm .  (11)
+
+	.  reduce 11
+
+
+20 terminals, 16 nonterminals
+39 grammar rules, 67 states

@@ -1,0 +1,703 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan evq=[10] of {mtype,int};
+chan evt=[10] of {mtype,int};
+chan wait=[10] of {int,mtype};
+mtype={
+        ready, Start2S1, 
+        StartS2S2, Start1S1, 
+        Start1S2, Sart1S3, 
+        Start1S4, GetIntervalAdjust, 
+        SetActiveLight, SetWarningLight, 
+        SetWarningSound, SetWarningLevel, 
+        GetOperationState, OK, 
+        CountDown, TimeOut1, 
+        TimeOut2, ResetCount, 
+        SetUpdateRate, ShutdownES, 
+        Reset, WarningLightOn, 
+        WarningLightOff, StoreError, 
+        SetUseBrakeSensor2, Start2S2, 
+        Start1S3, SetBrake1OperationState, 
+        SetBrake2OperationState, PowerOn, 
+        SetCurrentSpeed, FAIL, 
+        none, st_s1_PowerOff, 
+        st_Initialize1, st_wait_for_fh, 
+        st_ABSIdle, GetBrake1OperationState, 
+        GetBrake2OperationState
+};
+chan _SYSTEMCLASS__q=[5] of {mtype};
+typedef UserInterface_T {
+        short IntervalAdjust;
+        short WarningLevel;
+        bool OperationState;
+        }
+UserInterface_T UserInterface_V;
+chan UserInterface_q=[5] of {mtype};
+chan UserInterface_GetIntervalAdjust_p1=[5] of {int};
+chan UserInterface_SetActiveLight_p1=[5] of {int};
+chan UserInterface_SetWarningLight_p1=[5] of {int};
+chan UserInterface_SetWarningSound_p1=[5] of {int};
+chan UserInterface_SetWarningLevel_p1=[5] of {int};
+chan UserInterface_GetOperationState_p1=[5] of {int};
+typedef Watchdog_T {
+        short UpdateRate;
+        short Count;
+        }
+Watchdog_T Watchdog_V;
+chan Watchdog_q=[5] of {mtype};
+chan Watchdog_SetUpdateRate_p1=[5] of {int};
+typedef WarningLight_T {
+        bool WarningLightValue;
+        bool WarningLightOperationState;
+        }
+WarningLight_T WarningLight_V;
+chan WarningLight_q=[5] of {mtype};
+typedef FaultHandler_T {
+        int Error;
+        }
+FaultHandler_T FaultHandler_V;
+chan FaultHandler_q=[5] of {mtype};
+chan FaultHandler_StoreError_p1=[5] of {int};
+chan Environment_q=[5] of {mtype};
+typedef ComputingComponent_T {
+        short CurrentCarSpeed;
+        short BrakeValue;
+        bool SetS2;
+        bool SetS1;
+        bool UseBrakeSensor2;
+        }
+ComputingComponent_T ComputingComponent_V;
+chan ComputingComponent_q=[5] of {mtype};
+chan ComputingComponent_SetCurrentSpeed_p1=[5] of {int};
+chan ComputingComponent_SetUseBrakeSensor2_p1=[5] of {int};
+typedef BrakeSensor1_T {
+        short Brake1Value;
+        short Brake1OperationState;
+        }
+BrakeSensor1_T BrakeSensor1_V;
+chan BrakeSensor1_q=[5] of {mtype};
+chan BrakeSensor1_SetBrake1OperationState_p1=[5] of {int};
+typedef BrakeSensor2_T {
+        short Brake2Value;
+        short Brake2OperationState;
+        }
+BrakeSensor2_T BrakeSensor2_V;
+chan BrakeSensor2_q=[5] of {mtype};
+chan BrakeSensor2_SetBrake2OperationState_p1=[5] of {int};
+chan t=[1] of {mtype};
+mtype={free};
+active proctype _SYSTEMCLASS_()
+{
+mtype m;
+int dummy;
+/*Init state*/
+        goto s0;
+/* State s0 */
+s0:     printf("in state _SYSTEMCLASS_.s0\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           run ComputingComponent();
+           goto s1
+        fi;
+/* State s2 */
+s2:     printf("in state _SYSTEMCLASS_.s2\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run UserInterface();
+           goto s3
+        fi;
+/* State s9 */
+s9:     printf("in state _SYSTEMCLASS_.s9\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           Environment_q!Start2S1;
+           goto s10
+           Environment_q!StartS2S2;
+           goto s10
+        fi;
+/* State s3 */
+s3:     printf("in state _SYSTEMCLASS_.s3\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run FaultHandler();
+           goto s4
+        fi;
+/* State s4 */
+s4:     printf("in state _SYSTEMCLASS_.s4\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run Watchdog();
+           goto s5
+        fi;
+/* State s7 */
+s7:     printf("in state _SYSTEMCLASS_.s7\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run WarningLight();
+           goto s8
+        fi;
+/* State s1 */
+s1:     printf("in state _SYSTEMCLASS_.s1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run Environment();
+           goto s2
+        fi;
+/* State s8 */
+s8:     printf("in state _SYSTEMCLASS_.s8\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           Environment_q!Start1S1;
+           goto s9
+           Environment_q!Start1S2;
+           goto s9
+           Environment_q!Sart1S3;
+           goto s9
+           Environment_q!Start1S4;
+           goto s9
+        fi;
+/* State s5 */
+s5:     printf("in state _SYSTEMCLASS_.s5\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run BrakeSensor1();
+           goto s6
+        fi;
+/* State s6 */
+s6:     printf("in state _SYSTEMCLASS_.s6\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: _SYSTEMCLASS__q?ready -> t?free;
+           run BrakeSensor2();
+           goto s7
+        fi;
+/* State s10 */
+s10:     printf("in state _SYSTEMCLASS_.s10\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: skip -> false
+        fi;
+exit:   skip
+}
+proctype UserInterface()
+{
+mtype m;
+int dummy;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1;
+/* State s1 */
+s1:     printf("in state UserInterface.s1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: UserInterface_q?GetOperationState -> t?free;
+           ComputingComponent_q!OK;
+           goto s1
+        fi;
+exit:   skip
+}
+proctype Watchdog()
+{
+mtype m;
+int dummy;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1;
+/* State s1 */
+s1:     printf("in state Watchdog.s1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: Watchdog_q?TimeOut2 -> t?free;
+           ComputingComponent_q!ShutdownES;
+           goto s1
+        :: Watchdog_q?TimeOut1 -> t?free;
+           ComputingComponent_q!Reset;
+           goto s1
+        fi;
+exit:   skip
+}
+proctype WarningLight()
+{
+mtype m;
+int dummy;
+        WarningLight_V.WarningLightOperationState = 1;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto WLightOff;
+/* State WLightOff */
+WLightOff:     printf("in state WarningLight.WLightOff\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: WarningLight_q?WarningLightOn -> t?free;
+           WarningLight_V.WarningLightValue=1;
+           goto WLightOn
+        :: WarningLight_q?WarningLightOff -> t?free;
+           goto WLightOff
+        fi;
+/* State WLightOn */
+WLightOn:     printf("in state WarningLight.WLightOn\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: WarningLight_q?WarningLightOff -> t?free;
+           WarningLight_V.WarningLightValue=0;
+           goto WLightOff
+        :: WarningLight_q?WarningLightOn -> t?free;
+           goto WLightOn
+        fi;
+exit:   skip
+}
+proctype FaultHandler()
+{
+mtype m;
+int dummy;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto idle;
+/* State idle */
+idle:     printf("in state FaultHandler.idle\n");
+idle_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: atomic {FaultHandler_q?StoreError ->
+                   FaultHandler_StoreError_p1?FaultHandler_V.Error}
+                   -> t?free;
+           if
+           :: FaultHandler_V.Error==120 ->
+              ComputingComponent_q!ShutdownES;
+              goto idle
+           :: FaultHandler_V.Error==110 ->
+atomic{ComputingComponent_SetUseBrakeSensor2_p1!1;
+ComputingComponent_q!SetUseBrakeSensor2};
+              ComputingComponent_q!OK;
+              goto idle
+           :: else -> goto idle_G
+           fi
+        fi;
+exit:   skip
+}
+proctype Environment()
+{
+mtype m;
+int dummy;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1;
+/* State s1 */
+s1:     printf("in state Environment.s1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: Environment_q?Start1S2 -> t?free;
+atomic{BrakeSensor1_SetBrake1OperationState_p1!2;
+BrakeSensor1_q!SetBrake1OperationState};
+           goto t1
+        :: Environment_q?Start1S3 -> t?free;
+atomic{BrakeSensor2_SetBrake2OperationState_p1!2;
+BrakeSensor2_q!SetBrake2OperationState};
+           goto t1
+        :: Environment_q?Start1S4 -> t?free;
+atomic{BrakeSensor2_SetBrake2OperationState_p1!2;
+BrakeSensor2_q!SetBrake2OperationState};
+           goto s41
+        :: Environment_q?Start1S1 -> t?free;
+           goto t1
+        fi;
+/* State t21 */
+t21:     printf("in state Environment.t21\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           ComputingComponent_q!PowerOn;
+           goto t22
+        fi;
+/* State t22 */
+t22:     printf("in state Environment.t22\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: skip -> false
+        fi;
+/* State s41 */
+s41:     printf("in state Environment.s41\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+atomic{BrakeSensor1_SetBrake1OperationState_p1!2;
+BrakeSensor1_q!SetBrake1OperationState};
+           goto t1
+        fi;
+/* State t1 */
+t1:     printf("in state Environment.t1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           _SYSTEMCLASS__q!ready;
+           goto t12
+        fi;
+/* State t12 */
+t12:     printf("in state Environment.t12\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: Environment_q?Start2S1 -> t?free;
+atomic{ComputingComponent_SetCurrentSpeed_p1!3500;
+ComputingComponent_q!SetCurrentSpeed};
+           goto t21
+        :: Environment_q?Start2S2 -> t?free;
+atomic{ComputingComponent_SetCurrentSpeed_p1!2000;
+ComputingComponent_q!SetCurrentSpeed};
+           goto t21
+        fi;
+exit:   skip
+}
+proctype ComputingComponent()
+{
+mtype m;
+int dummy;
+int Concurrent1_pid, ConcurrentPartition2_pid;
+mtype Concurrent1_code, ConcurrentPartition2_code;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto to_Composite;
+to_Composite: 
+to_Concurrent1: 
+to_ConcurrentPartition2: 
+        atomic {
+        Concurrent1_pid = run Concurrent1(none);
+        ConcurrentPartition2_pid = run ConcurrentPartition2(none);
+        }
+        wait??eval(Concurrent1_pid),Concurrent1_code;
+        wait??eval(ConcurrentPartition2_pid),ConcurrentPartition2_code;
+        assert(0);
+exit:   skip
+}
+proctype Concurrent1(mtype state)
+{
+mtype m;
+int dummy;
+int BrakeActivated_pid;
+/*Init state*/
+        goto s1_PowerOff;
+/* State ABSIdle */
+ABSIdle:     printf("in state ComputingComponent.ABSIdle\n");
+ABSIdle_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           goto s1_PowerOff
+        :: 1 -> t?free;
+           if
+           :: ComputingComponent_V.CurrentCarSpeed>=2410 ->
+              goto to_BrakeActivated
+           :: ComputingComponent_V.CurrentCarSpeed<2410 ->
+              goto ABSIdle
+           :: else -> goto ABSIdle_G
+           fi
+        :: ComputingComponent_q?Reset -> t?free;
+           goto ABSIdle
+        fi;
+/* State Initialize1 */
+Initialize1:     printf("in state ComputingComponent.Initialize1\n");
+/* entry actions */
+        atomic {
+        ComputingComponent_V.SetS2=1;
+        }
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           ComputingComponent_V.SetS2=0;
+           UserInterface_q!GetOperationState;
+           goto Initialize2
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           goto s1_PowerOff
+        :: ComputingComponent_q?Reset -> t?free;
+           goto Initialize1
+        fi;
+/* State Initialize2 */
+Initialize2:     printf("in state ComputingComponent.Initialize2\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?FAIL -> t?free;
+           goto s1_PowerOff
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           goto s1_PowerOff
+        :: ComputingComponent_q?OK -> t?free;
+           goto ABSIdle
+        :: ComputingComponent_q?Reset -> t?free;
+           goto Initialize2
+        fi;
+/* State s1_PowerOff */
+s1_PowerOff:     printf("in state ComputingComponent.s1_PowerOff\n");
+/* entry actions */
+        atomic {
+        ComputingComponent_V.SetS1=1;
+        ComputingComponent_V.SetS2=0;
+        }
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?PowerOn -> t?free;
+           ComputingComponent_V.SetS1=0;
+           goto Initialize1
+        :: ComputingComponent_q?Reset -> t?free;
+           goto s1_PowerOff
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           goto s1_PowerOff
+        :: atomic {ComputingComponent_q?SetCurrentSpeed ->
+ComputingComponent_SetCurrentSpeed_p1?ComputingComponent_V.CurrentCarSpeed}
+                   -> t?free;
+           goto s1_PowerOff
+        fi;
+/* State wait_for_fh */
+wait_for_fh:     printf("in state ComputingComponent.wait_for_fh\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?OK -> t?free;
+           goto ABSIdle
+        fi;
+/* Link to composite state BrakeActivated */
+to_BrakeActivated:  BrakeActivated_pid = run BrakeActivated(m);
+        wait??eval(BrakeActivated_pid),m;
+        if
+        :: m == st_s1_PowerOff -> goto s1_PowerOff;
+        :: m == st_Initialize1 -> goto Initialize1;
+        :: m == st_wait_for_fh -> goto wait_for_fh;
+        :: m == st_ABSIdle -> goto ABSIdle;
+        fi;
+exit:         skip
+}
+proctype BrakeActivated(mtype state)
+{
+mtype m;
+int dummy;
+int BrakeActivated_pid;
+/*Init state*/
+        goto StartUp;
+/* State CheckBrakeSensor1 */
+CheckBrakeSensor1:    
+printf("in state ComputingComponent.CheckBrakeSensor1\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?FAIL -> t?free;
+atomic{FaultHandler_StoreError_p1!110; FaultHandler_q!StoreError};
+           wait!_pid,st_wait_for_fh; goto exit
+        :: ComputingComponent_q?OK -> t?free;
+           goto ComputingUseSensor1
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           wait!_pid,st_s1_PowerOff; goto exit
+        :: ComputingComponent_q?Reset -> t?free;
+           wait!_pid,st_Initialize1; goto exit
+        fi;
+/* State CheckBrakeSensor2 */
+CheckBrakeSensor2:    
+printf("in state ComputingComponent.CheckBrakeSensor2\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: ComputingComponent_q?OK -> t?free;
+           goto ComputingUseSensor2
+        :: ComputingComponent_q?FAIL -> t?free;
+atomic{FaultHandler_StoreError_p1!120; FaultHandler_q!StoreError};
+           goto CheckBrakeSensor2
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           wait!_pid,st_s1_PowerOff; goto exit
+        :: ComputingComponent_q?Reset -> t?free;
+           wait!_pid,st_Initialize1; goto exit
+        fi;
+/* State ComputingUseSensor1 */
+ComputingUseSensor1:    
+printf("in state ComputingComponent.ComputingUseSensor1\n");
+/* entry actions */
+        atomic {
+ComputingComponent_V.CurrentCarSpeed=ComputingComponent_V.CurrentCarSpeed-300;
+        }
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           wait!_pid,st_ABSIdle; goto exit
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           wait!_pid,st_s1_PowerOff; goto exit
+        :: ComputingComponent_q?Reset -> t?free;
+           wait!_pid,st_Initialize1; goto exit
+        fi;
+/* State ComputingUseSensor2 */
+ComputingUseSensor2:    
+printf("in state ComputingComponent.ComputingUseSensor2\n");
+/* entry actions */
+        atomic {
+ComputingComponent_V.CurrentCarSpeed=ComputingComponent_V.CurrentCarSpeed-300;
+        }
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           wait!_pid,st_ABSIdle; goto exit
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           wait!_pid,st_s1_PowerOff; goto exit
+        :: ComputingComponent_q?Reset -> t?free;
+           wait!_pid,st_Initialize1; goto exit
+        fi;
+/* State StartUp */
+StartUp:     printf("in state ComputingComponent.StartUp\n");
+StartUp_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           if
+           :: ComputingComponent_V.UseBrakeSensor2==0 ->
+              BrakeSensor1_q!GetBrake1OperationState;
+              goto CheckBrakeSensor1
+           :: ComputingComponent_V.UseBrakeSensor2==1 ->
+              BrakeSensor2_q!GetBrake2OperationState;
+              goto CheckBrakeSensor2
+           :: else -> goto StartUp_G
+           fi
+        :: ComputingComponent_q?ShutdownES -> t?free;
+           wait!_pid,st_s1_PowerOff; goto exit
+        :: ComputingComponent_q?Reset -> t?free;
+           wait!_pid,st_Initialize1; goto exit
+        fi;
+exit:         skip
+}
+proctype ConcurrentPartition2(mtype state)
+{
+mtype m;
+int dummy;
+/*Init state*/
+        goto CheckSetUseBrake2;
+/* State CheckSetUseBrake2 */
+CheckSetUseBrake2:    
+printf("in state ComputingComponent.CheckSetUseBrake2\n");
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: atomic {ComputingComponent_q?SetUseBrakeSensor2 ->
+ComputingComponent_SetUseBrakeSensor2_p1?ComputingComponent_V.UseBrakeSensor2}
+                   -> t?free;
+           goto CheckSetUseBrake2
+        fi;
+exit:         skip
+}
+proctype BrakeSensor1()
+{
+mtype m;
+int dummy;
+        BrakeSensor1_V.Brake1Value = 400;
+        BrakeSensor1_V.Brake1OperationState = 1;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1;
+/* State s1 */
+s1:     printf("in state BrakeSensor1.s1\n");
+s1_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: BrakeSensor1_q?GetBrake1OperationState -> t?free;
+           if
+           :: BrakeSensor1_V.Brake1OperationState==1 ->
+              ComputingComponent_q!OK;
+              goto s1
+           :: BrakeSensor1_V.Brake1OperationState==0 ->
+              ComputingComponent_q!FAIL;
+              goto s1
+           :: else -> goto s1_G
+           fi
+        :: atomic {BrakeSensor1_q?SetBrake1OperationState ->
+BrakeSensor1_SetBrake1OperationState_p1?BrakeSensor1_V.Brake1OperationState}
+                   -> t?free;
+           goto RenameValue
+        fi;
+/* State RenameValue */
+RenameValue:     printf("in state BrakeSensor1.RenameValue\n");
+RenameValue_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           if
+           :: BrakeSensor1_V.Brake1OperationState==1 ->
+              goto s1
+           :: BrakeSensor1_V.Brake1OperationState==2 ->
+              BrakeSensor1_V.Brake1OperationState=0;
+              goto s1
+           :: else -> goto RenameValue_G
+           fi
+        fi;
+exit:   skip
+}
+proctype BrakeSensor2()
+{
+mtype m;
+int dummy;
+        BrakeSensor2_V.Brake2Value = 400;
+        BrakeSensor2_V.Brake2OperationState = 1;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1;
+/* State s1 */
+s1:     printf("in state BrakeSensor2.s1\n");
+s1_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: BrakeSensor2_q?GetBrake2OperationState -> t?free;
+           if
+           :: BrakeSensor2_V.Brake2OperationState==1 ->
+              ComputingComponent_q!OK;
+              goto s1
+           :: BrakeSensor2_V.Brake2OperationState==0 ->
+              ComputingComponent_q!FAIL;
+              goto s1
+           :: else -> goto s1_G
+           fi
+        :: atomic {BrakeSensor2_q?SetBrake2OperationState ->
+BrakeSensor2_SetBrake2OperationState_p1?BrakeSensor2_V.Brake2OperationState}
+                   -> t?free;
+           goto RenameValue
+        fi;
+/* State RenameValue */
+RenameValue:     printf("in state BrakeSensor2.RenameValue\n");
+RenameValue_G: 
+        atomic {if :: !t?[free] -> t!free :: else skip fi;}
+        if
+        :: 1 -> t?free;
+           if
+           :: BrakeSensor2_V.Brake2OperationState==1 ->
+              goto s1
+           :: BrakeSensor2_V.Brake2OperationState==2 ->
+              BrakeSensor2_V.Brake2OperationState=0;
+              goto s1
+           :: else -> goto RenameValue_G
+           fi
+        fi;
+exit:   skip
+}
+/* This is the universal event dispatcher routine */
+proctype event(mtype msg)
+{
+	mtype type;
+	int pid;
+
+	atomic {
+	do
+	:: evq??[eval(msg),pid] ->
+	   evq??eval(msg),pid; 
+	   evt!msg,pid;
+	   do
+	   :: if
+	      :: evq??[type,eval(pid)] -> evq??type,eval(pid)
+	      :: else break;
+	      fi
+	   od
+	:: else -> break
+	od}
+exit: skip
+}

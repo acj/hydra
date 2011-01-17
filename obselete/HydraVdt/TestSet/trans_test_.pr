@@ -1,0 +1,97 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan evq=[10] of {mtype,int};
+chan evt=[10] of {mtype,int};
+chan wait=[10] of {int,mtype};
+mtype={
+        test
+};
+typedef Timer_T {
+     bool timerwait;
+       short testtimer;
+        }
+Timer_T Timer_V;
+typedef TestClass_T {
+     bool timerwait;
+        short x;
+        }
+TestClass_T TestClass_V;
+chan TestClass_q=[5] of {mtype};
+chan TestClass_C=[0] of {bit};
+
+
+proctype TestClass()
+{atomic{
+mtype m;
+/*Init state*/
+        goto s1; skip;};
+/* State s1 */
+atomic{skip;
+s1:     printf("in state TestClass.s1\n");
+        }
+s1_G: 
+        if
+        :: atomic{TestClass_q?test -> 
+           if
+           :: atomic{TestClass_V.x==1 ->
+              goto s2; skip;}
+           :: else -> goto s1_G; skip;
+           fi}
+           :: atomic{TestClass_V.x==0 ->
+              goto s3; skip;}
+        :: atomic{Timer_V.testtimer<=5 -> TestClass_V.timerwait = 1;
+           TestClass_V.timerwait == 0 -> goto s1_G;}
+        fi;
+/* State s2 */
+atomic{skip;
+s2:     printf("in state TestClass.s2\n");
+        }
+        if
+        :: skip -> false
+        fi;
+/* State s3 */
+atomic{skip;
+s3:     printf("in state TestClass.s3\n");
+        }
+        if
+        :: skip -> false
+        fi;
+exit:   skip
+}
+
+
+/* This is the universal event dispatcher routine */
+proctype event(mtype msg)
+{
+   mtype type;
+   int process_id;
+
+   atomic {
+   do
+   :: evq??[eval(msg),process_id] ->
+      evq??eval(msg),process_id; 
+      evt!msg,process_id;
+      do
+      :: if
+         :: evq??[type,eval(process_id)] -> evq??type,eval(process_id)
+         :: else break;
+         fi
+      od
+   :: else -> break
+   od}
+exit: skip
+}
+
+/* This is the timer process */
+
+active proctype Timer()
+{
+        do
+        :: timeout ->
+            atomic{
+                             Timer_V.testtimer++;
+                             TestClass_V.timerwait=0;
+                      }
+         od
+}
+

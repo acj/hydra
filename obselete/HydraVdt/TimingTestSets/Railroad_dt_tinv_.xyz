@@ -1,0 +1,121 @@
+Formalize as promela ;
+Model  Railroad_dt_tinv_{
+Class _SYSTEMCLASS_ {
+	Signal ready ();
+	State s1  {
+		Transition "/new(Train)" to s2 ;
+	}
+	State s2  {
+		Transition "ready/new(Controller)" to s3 ;
+	}
+	Initial  "" s1 ;
+	State s3  {
+		Transition "ready/new(Gate)" to s5 ;
+	}
+	State s5  {
+		Transition "ready/new(Watchdog)" to s6 ;
+	}
+	State s6  {
+		Transition "ready^Train.StartTrain" to s7 ;
+	}
+	State s7  {
+	}
+}
+Class Train {
+	InstanceVar bool TrainIn  := 0;
+	InstanceVar timer TrainTimer ;
+	Signal StartTrain ();
+	Signal TrainOK ();
+	State Approaching  {
+		Invariant "timeinvar / {TrainTimer<=4} " ;
+		Transition "[TrainTimer>=3]" to InGate ;
+	}
+	State InGate  {
+		Action "entry/TrainIn:=1" ;
+		Invariant "timeinvar / {TrainTimer<=5} " ;
+		Transition "[TrainTimer>=3]" to Leaving ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" WaitForStart ;
+	State Idle  {
+		Action "entry/TrainTimer:=0" ;
+		Invariant "timeinvar / {TrainTimer<=10} " ;
+		Transition "[TrainTimer>=3]/TrainTimer:=0^Controller.Approach" to Approaching ;
+	}
+	State Leaving  {
+		Action "entry/TrainIn:=0" ;
+		Transition "^Controller.Exit" to Idle ;
+	}
+	State WaitForStart  {
+		Transition "StartTrain" to Idle ;
+	}
+}
+Class Gate {
+	InstanceVar bool GateDown  := 0;
+	InstanceVar timer GateTimer ;
+	InstanceVar byte EmergencyStop  := 0;
+	Signal Lower ();
+	Signal Raise ();
+	Signal GateOK ();
+	Signal RaiseES ();
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State s1  {
+		Action "entry/GateDown:=0;send(Watchdog.WDStop)" ;
+		Transition "Lower/GateTimer:=0" to s2 ;
+	}
+	State s2  {
+		Invariant "timeinvar / {GateTimer<=1} " ;
+		Transition "[GateTimer>0]" to s3 ;
+	}
+	State s3  {
+		Action "entry/GateDown:=1;send(Watchdog.WDStart)" ;
+		Transition "Raise" to s5 ;
+	}
+	State s5  {
+		Invariant "timeinvar / {GateTimer<=2} " ;
+		Transition "[GateTimer>=1]" to s1 ;
+	}
+}
+Class Controller {
+	InstanceVar timer ControllerTimer ;
+	Signal Approach ();
+	Signal Exit ();
+	Signal ControllerOK ();
+	Signal ShutdownES ();
+	Initial  "^_SYSTEMCLASS_.ready" Idle_GateUp ;
+	State Idle_GateUp  {
+		Transition "Approach/ControllerTimer:=0" to ApproachDetected ;
+	}
+	State ApproachDetected  {
+		Transition "[ControllerTimer=1]^Gate.Lower" to GateDown ;
+	}
+	State GateDown  {
+		Transition "Exit/ControllerTimer:=0" to ExitDetected ;
+	}
+	State ExitDetected  {
+		Invariant "timeinvar / {ControllerTimer<=1} " ;
+		Transition "[ControllerTimer>=0]^Gate.Raise" to Idle_GateUp ;
+	}
+}
+Class Watchdog {
+	InstanceVar timer WatchdogTimer ;
+	InstanceVar bool WDViolation  := 0;
+	Signal WDStart ();
+	Signal WDStop ();
+	Signal WDReset ();
+	State Idle  {
+		Transition "WDStart/WatchdogTimer:=0" to Counting ;
+		Transition "WDStop" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Counting  {
+		Transition "WDStop[WatchdogTimer>=5]" to Violation ;
+		Transition "WDStop[WatchdogTimer<5]" to Idle ;
+	}
+	State Violation  {
+		Action "entry/WDViolation:=1" ;
+		Transition "WDStop" to Idle ;
+		Transition "WDStart/WatchdogTimer:=0" to Counting ;
+	}
+}
+
+}

@@ -1,0 +1,238 @@
+Formalize as promela ;
+Model  ABS_token_test_{
+Class _SYSTEMCLASS_ {
+	Signal ready ();
+	State s0  {
+		Transition "/new(ComputingComponent)" to s1 ;
+	}
+	Initial  "" s0 ;
+	State s2  {
+		Transition "ready/new(UserInterface)" to s3 ;
+	}
+	State s9  {
+		Transition "ready^Environment.Start2S1" to s10 ;
+		Transition "ready^Environment.StartS2S2" to s10 ;
+	}
+	State s3  {
+		Transition "ready/new(FaultHandler)" to s4 ;
+	}
+	State s4  {
+		Transition "ready/new(Watchdog)" to s5 ;
+	}
+	State s7  {
+		Transition "ready/new(WarningLight)" to s8 ;
+	}
+	State s1  {
+		Transition "ready/new(Environment)" to s2 ;
+	}
+	State s8  {
+		Transition "ready^Environment.Start1S1" to s9 ;
+		Transition "ready^Environment.Start1S2" to s9 ;
+		Transition "ready^Environment.Sart1S3" to s9 ;
+		Transition "ready^Environment.Start1S4" to s9 ;
+	}
+	State s5  {
+		Transition "ready/new(BrakeSensor1)" to s6 ;
+	}
+	State s6  {
+		Transition "ready/new(BrakeSensor2)" to s7 ;
+	}
+	State s10  {
+	}
+}
+Class UserInterface {
+	InstanceVar short IntervalAdjust ;
+	InstanceVar short WarningLevel ;
+	InstanceVar bool OperationState ;
+	Signal GetIntervalAdjust (int );
+	Signal SetActiveLight (int );
+	Signal SetWarningLight (int );
+	Signal SetWarningSound (int );
+	Signal SetWarningLevel (int );
+	Signal GetOperationState (int );
+	State s1  {
+		Transition "GetOperationState^ComputingComponent.OK" to s1 ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+}
+Class Watchdog {
+	InstanceVar short UpdateRate ;
+	InstanceVar short Count ;
+	Signal CountDown ();
+	Signal TimeOut1 ();
+	Signal TimeOut2 ();
+	Signal ResetCount ();
+	Signal SetUpdateRate (int );
+	State s1  {
+		Transition "TimeOut2^ComputingComponent.ShutdownES" to s1 ;
+		Transition "TimeOut1^ComputingComponent.Reset" to s1 ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+}
+Class WarningLight {
+	InstanceVar bool WarningLightValue  := 0;
+	InstanceVar bool WarningLightOperationState  := 1;
+	Signal WarningLightOn ();
+	Signal WarningLightOff ();
+	State WLightOff  {
+		Transition "WarningLightOn/WarningLightValue:=1" to WLightOn ;
+		Transition "WarningLightOff" to WLightOff ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" WLightOff ;
+	State WLightOn  {
+		Transition "WarningLightOff/WarningLightValue:=0" to WLightOff ;
+		Transition "WarningLightOn" to WLightOn ;
+	}
+}
+Class FaultHandler {
+	InstanceVar int Error ;
+	Signal StoreError (int );
+	State idle  {
+		Transition "StoreError(Error)[Error=120]^ComputingComponent.ShutdownES" to idle ;
+		Transition "StoreError(Error)[Error=110]^ComputingComponent.SetUseBrakeSensor2(1)^ComputingComponent.OK" to idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" idle ;
+}
+Class Environment {
+	Signal Start1S1 ();
+	Signal Start1S2 ();
+	Signal Start1S4 ();
+	Signal Start2S1 ();
+	Signal Start2S2 ();
+	Signal Start1S3 ();
+	State s1  {
+		Transition "Start1S2^BrakeSensor1.SetBrake1OperationState(2)" to t1 ;
+		Transition "Start1S3^BrakeSensor2.SetBrake2OperationState(2)" to t1 ;
+		Transition "Start1S4^BrakeSensor2.SetBrake2OperationState(2)" to s41 ;
+		Transition "Start1S1" to t1 ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State t21  {
+		Transition "^ComputingComponent.PowerOn" to t22 ;
+	}
+	State t22  {
+	}
+	State s41  {
+		Transition "^BrakeSensor1.SetBrake1OperationState(2)" to t1 ;
+	}
+	State t1  {
+		Transition "^_SYSTEMCLASS_.ready" to t12 ;
+	}
+	State t12  {
+		Transition "Start2S1^ComputingComponent.SetCurrentSpeed(3500)" to t21 ;
+		Transition "Start2S2^ComputingComponent.SetCurrentSpeed(2000)" to t21 ;
+	}
+}
+Class ComputingComponent {
+	InstanceVar short CurrentCarSpeed  := 0;
+	InstanceVar short BrakeValue  := 0;
+	InstanceVar bool SetS2  := 0;
+	InstanceVar bool SetS1  := 0;
+	InstanceVar bool UseBrakeSensor2  := 0;
+	Signal Reset ();
+	Signal PowerOn ();
+	Signal ShutdownES ();
+	Signal OK ();
+	Signal FAIL ();
+	Signal SetCurrentSpeed (int );
+	Signal SetUseBrakeSensor2 (int );
+	ConcurrentState Composite {
+		CompositeState Concurrent1 {
+	State ABSIdle  {
+		Transition "ShutdownES" to s1_PowerOff ;
+		Transition "[CurrentCarSpeed>=2410]" to BrakeActivated ;
+		Transition "[CurrentCarSpeed<2410]" to ABSIdle ;
+		Transition "Reset" to ABSIdle ;
+	}
+	State Initialize1  {
+		Action "entry/SetS2:=1" ;
+		Transition "/SetS2:=0^UserInterface.GetOperationState" to Initialize2 ;
+		Transition "ShutdownES" to s1_PowerOff ;
+		Transition "Reset" to Initialize1 ;
+	}
+	State Initialize2  {
+		Transition "FAIL" to s1_PowerOff ;
+		Transition "ShutdownES" to s1_PowerOff ;
+		Transition "OK" to ABSIdle ;
+		Transition "Reset" to Initialize2 ;
+	}
+	State s1_PowerOff  {
+		Action "entry/SetS1:=1;SetS2:=0" ;
+		Transition "PowerOn/SetS1:=0" to Initialize1 ;
+		Transition "Reset" to s1_PowerOff ;
+		Transition "ShutdownES" to s1_PowerOff ;
+		Transition "SetCurrentSpeed(CurrentCarSpeed)" to s1_PowerOff ;
+	}
+	State wait_for_fh  {
+		Transition "OK" to ABSIdle ;
+	}
+	CompositeState BrakeActivated {
+		Transition "ShutdownES" to s1_PowerOff ;
+		Transition "Reset" to Initialize1 ;
+	State CheckBrakeSensor1  {
+		Transition "FAIL^FaultHandler.StoreError(110)" to wait_for_fh ;
+		Transition "OK" to ComputingUseSensor1 ;
+	}
+	State CheckBrakeSensor2  {
+		Transition "OK" to ComputingUseSensor2 ;
+		Transition "FAIL^FaultHandler.StoreError(120)" to CheckBrakeSensor2 ;
+	}
+	State ComputingUseSensor1  {
+		Action "entry/CurrentCarSpeed:=CurrentCarSpeed-300" ;
+		Transition "" to ABSIdle ;
+	}
+	State ComputingUseSensor2  {
+		Action "entry/CurrentCarSpeed:=CurrentCarSpeed-300" ;
+		Transition "" to ABSIdle ;
+	}
+	State StartUp  {
+		Transition "[UseBrakeSensor2=0]^BrakeSensor1.GetBrake1OperationState" to CheckBrakeSensor1 ;
+		Transition "[UseBrakeSensor2=1]^BrakeSensor2.GetBrake2OperationState" to CheckBrakeSensor2 ;
+	}
+	Initial  "" StartUp ;
+	}
+	Initial  "" s1_PowerOff ;
+		}
+		CompositeState ConcurrentPartition2 {
+	State CheckSetUseBrake2  {
+		Transition "SetUseBrakeSensor2(UseBrakeSensor2)" to CheckSetUseBrake2 ;
+	}
+	Initial  "" CheckSetUseBrake2 ;
+		}
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Composite ;
+}
+Class BrakeSensor1 {
+	InstanceVar short Brake1Value  := 400;
+	InstanceVar short Brake1OperationState  := 1;
+	Signal GetBrake1OperationState ();
+	Signal SetBrake1OperationState (int );
+	State s1  {
+		Transition "GetBrake1OperationState[Brake1OperationState=1]^ComputingComponent.OK" to s1 ;
+		Transition "GetBrake1OperationState[Brake1OperationState=0]^ComputingComponent.FAIL" to s1 ;
+		Transition "SetBrake1OperationState(Brake1OperationState)" to RenameValue ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State RenameValue  {
+		Transition "[Brake1OperationState=1]" to s1 ;
+		Transition "[Brake1OperationState=2]/Brake1OperationState:=0" to s1 ;
+	}
+}
+Class BrakeSensor2 {
+	InstanceVar short Brake2Value  := 400;
+	InstanceVar short Brake2OperationState  := 1;
+	Signal GetBrake2OperationState ();
+	Signal SetBrake2OperationState (int );
+	State s1  {
+		Transition "GetBrake2OperationState[Brake2OperationState=1]^ComputingComponent.OK" to s1 ;
+		Transition "GetBrake2OperationState[Brake2OperationState=0]^ComputingComponent.FAIL" to s1 ;
+		Transition "SetBrake2OperationState(Brake2OperationState)" to RenameValue ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State RenameValue  {
+		Transition "[Brake2OperationState=1]" to s1 ;
+		Transition "[Brake2OperationState=2]/Brake2OperationState:=0" to s1 ;
+	}
+}
+
+}

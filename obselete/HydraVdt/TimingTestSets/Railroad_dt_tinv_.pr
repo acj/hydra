@@ -1,0 +1,407 @@
+#define min(x,y) (x<y->x:y)
+#define max(x,y) (x>y->x:y)
+chan evq=[10] of {mtype,int};
+chan evt=[10] of {mtype,int};
+chan wait=[10] of {int,mtype};
+
+mtype={
+        ready, StartTrain, 
+        TrainOK, Approach, 
+        Exit, Lower, 
+        Raise, GateOK, 
+        RaiseES, WDStop, 
+        WDStart, ControllerOK, 
+        ShutdownES, WDReset
+        
+};
+typedef Timer_T {
+        bool timerwait;
+       short TrainTimer;
+       short GateTimer;
+       short ControllerTimer;
+       short WatchdogTimer;
+        }
+Timer_T Timer_V;
+
+typedef _SYSTEMCLASS__T {
+        bool timerwait;
+        }
+_SYSTEMCLASS__T _SYSTEMCLASS__V;
+
+chan _SYSTEMCLASS__q=[5] of {mtype};
+chan _SYSTEMCLASS__C=[0] of {bit};
+typedef Train_T {
+        bool timerwait;
+        bool TrainIn;
+        }
+Train_T Train_V;
+
+chan Train_q=[5] of {mtype};
+chan Train_C=[0] of {bit};
+typedef Gate_T {
+        bool timerwait;
+        bool GateDown;
+        byte EmergencyStop;
+        }
+Gate_T Gate_V;
+
+chan Gate_q=[5] of {mtype};
+chan Gate_C=[0] of {bit};
+typedef Controller_T {
+        bool timerwait;
+        }
+Controller_T Controller_V;
+
+chan Controller_q=[5] of {mtype};
+chan Controller_C=[0] of {bit};
+typedef Watchdog_T {
+        bool timerwait;
+        bool WDViolation;
+        }
+Watchdog_T Watchdog_V;
+
+chan Watchdog_q=[5] of {mtype};
+chan Watchdog_C=[0] of {bit};
+
+
+active proctype _SYSTEMCLASS_()
+{atomic{
+mtype m;
+/*Init state*/
+        goto s1; skip;};
+/* State s1 */
+atomic{skip;
+s1:     printf("in state _SYSTEMCLASS_.s1\n");
+        }
+        s1_G:
+        if
+        :: atomic{1 -> 
+           run Train();
+           goto s2; skip;}
+        fi;
+/* State s2 */
+atomic{skip;
+s2:     printf("in state _SYSTEMCLASS_.s2\n");
+        }
+        s2_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Controller();
+           goto s3; skip;}
+        fi;
+/* State s3 */
+atomic{skip;
+s3:     printf("in state _SYSTEMCLASS_.s3\n");
+        }
+        s3_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Gate();
+           goto s5; skip;}
+        fi;
+/* State s5 */
+atomic{skip;
+s5:     printf("in state _SYSTEMCLASS_.s5\n");
+        }
+        s5_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           run Watchdog();
+           goto s6; skip;}
+        fi;
+/* State s6 */
+atomic{skip;
+s6:     printf("in state _SYSTEMCLASS_.s6\n");
+        }
+        s6_G:
+        if
+        :: atomic{_SYSTEMCLASS__q?ready -> 
+           Train_q!StartTrain;
+           goto s7; skip;}
+        fi;
+/* State s7 */
+atomic{skip;
+s7:     printf("in state _SYSTEMCLASS_.s7\n");
+        }
+        if
+        :: skip -> false
+        fi;
+exit:   skip
+}
+
+
+proctype Train()
+{atomic{
+mtype m;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto WaitForStart; skip;};
+/* State Approaching */
+atomic{skip;
+Approaching:     printf("in state Train.Approaching\n");
+        }
+        Approaching_G:
+        if
+           :: atomic{Timer_V.TrainTimer>=3 ->
+              goto InGate; skip;}
+           :: atomic{Timer_V.TrainTimer<=3 -> Train_V.timerwait = 1;
+              Train_V.timerwait == 0 -> goto Approaching_G;}
+        fi;
+/* State InGate */
+atomic{skip;
+InGate:     printf("in state Train.InGate\n");
+/* entry actions */
+        Train_V.TrainIn=1;
+        }
+        InGate_G:
+        if
+           :: atomic{Timer_V.TrainTimer>=3 ->
+              goto Leaving; skip;}
+           :: atomic{Timer_V.TrainTimer<=4 -> Train_V.timerwait = 1;
+              Train_V.timerwait == 0 -> goto InGate_G;}
+        fi;
+/* State Idle */
+atomic{skip;
+Idle:     printf("in state Train.Idle\n");
+/* entry actions */
+        Timer_V.TrainTimer=0;
+        }
+        Idle_G:
+        if
+           :: atomic{Timer_V.TrainTimer>=3 ->
+              Timer_V.TrainTimer=0;
+              Controller_q!Approach;
+              goto Approaching; skip;}
+           :: atomic{Timer_V.TrainTimer<=9 -> Train_V.timerwait = 1;
+              Train_V.timerwait == 0 -> goto Idle_G;}
+        fi;
+/* State Leaving */
+atomic{skip;
+Leaving:     printf("in state Train.Leaving\n");
+/* entry actions */
+        Train_V.TrainIn=0;
+        }
+        Leaving_G:
+        if
+        :: atomic{1 -> 
+           Controller_q!Exit;
+           goto Idle; skip;}
+        fi;
+/* State WaitForStart */
+atomic{skip;
+WaitForStart:     printf("in state Train.WaitForStart\n");
+        }
+        WaitForStart_G:
+        if
+        :: atomic{Train_q?StartTrain -> 
+           goto Idle; skip;}
+        fi;
+exit:   skip
+}
+
+
+proctype Gate()
+{atomic{
+mtype m;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto s1; skip;};
+/* State s1 */
+atomic{skip;
+s1:     printf("in state Gate.s1\n");
+/* entry actions */
+        Gate_V.GateDown=0;
+        Watchdog_q!WDStop;
+        }
+        s1_G:
+        if
+        :: atomic{Gate_q?Lower -> 
+           Timer_V.GateTimer=0;
+           goto s2; skip;}
+        fi;
+/* State s2 */
+atomic{skip;
+s2:     printf("in state Gate.s2\n");
+        }
+        s2_G:
+        if
+           :: atomic{Timer_V.GateTimer>0 ->
+              goto s3; skip;}
+           :: atomic{Timer_V.GateTimer<=0 -> Gate_V.timerwait = 1;
+              Gate_V.timerwait == 0 -> goto s2_G;}
+        fi;
+/* State s3 */
+atomic{skip;
+s3:     printf("in state Gate.s3\n");
+/* entry actions */
+        Gate_V.GateDown=1;
+        Watchdog_q!WDStart;
+        }
+        s3_G:
+        if
+        :: atomic{Gate_q?Raise -> 
+           goto s5; skip;}
+        fi;
+/* State s5 */
+atomic{skip;
+s5:     printf("in state Gate.s5\n");
+        }
+        s5_G:
+        if
+           :: atomic{Timer_V.GateTimer>=1 ->
+              goto s1; skip;}
+           :: atomic{Timer_V.GateTimer<=1 -> Gate_V.timerwait = 1;
+              Gate_V.timerwait == 0 -> goto s5_G;}
+        fi;
+exit:   skip
+}
+
+
+proctype Controller()
+{atomic{
+mtype m;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto Idle_GateUp; skip;};
+/* State Idle_GateUp */
+atomic{skip;
+Idle_GateUp:     printf("in state Controller.Idle_GateUp\n");
+        }
+        Idle_GateUp_G:
+        if
+        :: atomic{Controller_q?Approach -> 
+           Timer_V.ControllerTimer=0;
+           goto ApproachDetected; skip;}
+        fi;
+/* State ApproachDetected */
+atomic{skip;
+ApproachDetected:     printf("in state Controller.ApproachDetected\n");
+        }
+        ApproachDetected_G:
+        if
+           :: atomic{Timer_V.ControllerTimer==1 ->
+              Gate_q!Lower;
+              goto GateDown; skip;}
+        fi;
+/* State GateDown */
+atomic{skip;
+GateDown:     printf("in state Controller.GateDown\n");
+        }
+        GateDown_G:
+        if
+        :: atomic{Controller_q?Exit -> 
+           Timer_V.ControllerTimer=0;
+           goto ExitDetected; skip;}
+        fi;
+/* State ExitDetected */
+atomic{skip;
+ExitDetected:     printf("in state Controller.ExitDetected\n");
+        }
+        ExitDetected_G:
+        if
+           :: atomic{Timer_V.ControllerTimer>=0 ->
+              Gate_q!Raise;
+              goto Idle_GateUp; skip;}
+:: atomic{Timer_V.ControllerTimer<=0 -> Controller_V.timerwait = 1;
+              Controller_V.timerwait == 0 -> goto ExitDetected_G;}
+        fi;
+exit:   skip
+}
+
+
+proctype Watchdog()
+{atomic{
+mtype m;
+/*Init state*/
+/*Initial actions / messages */
+        _SYSTEMCLASS__q!ready;
+        goto Idle; skip;};
+/* State Idle */
+atomic{skip;
+Idle:     printf("in state Watchdog.Idle\n");
+        }
+        Idle_G:
+        if
+        :: atomic{Watchdog_q?WDStart -> 
+           Timer_V.WatchdogTimer=0;
+           goto Counting; skip;}
+        :: atomic{Watchdog_q?WDStop -> 
+           goto Idle; skip;}
+        fi;
+/* State Counting */
+atomic{skip;
+Counting:     printf("in state Watchdog.Counting\n");
+        }
+        Counting_G:
+        if
+        :: atomic{Watchdog_q?WDStop -> 
+           if
+           :: atomic{Timer_V.WatchdogTimer>=5 ->
+              goto Violation; skip;}
+           :: atomic{Timer_V.WatchdogTimer<5 ->
+              goto Idle; skip;}
+           :: else -> goto Counting_G; skip;
+           fi}
+        fi;
+/* State Violation */
+atomic{skip;
+Violation:     printf("in state Watchdog.Violation\n");
+/* entry actions */
+        Watchdog_V.WDViolation=1;
+        }
+        Violation_G:
+        if
+        :: atomic{Watchdog_q?WDStop -> 
+           goto Idle; skip;}
+        :: atomic{Watchdog_q?WDStart -> 
+           Timer_V.WatchdogTimer=0;
+           goto Counting; skip;}
+        fi;
+exit:   skip
+}
+
+
+/* This is the universal event dispatcher routine */
+proctype event(mtype msg)
+{
+   mtype type;
+   int process_id;
+
+   atomic {
+   do
+   :: evq??[eval(msg),process_id] ->
+      evq??eval(msg),process_id; 
+      evt!msg,process_id;
+      do
+      :: if
+         :: evq??[type,eval(process_id)] -> evq??type,eval(process_id)
+         :: else break;
+         fi
+      od
+   :: else -> break
+   od}
+exit: skip
+}
+
+/* This is the timer process */
+/* It increments timers and unlocks waiting processes */
+active proctype Timer()
+{
+        do
+        :: atomic{timeout ->
+                             Timer_V.TrainTimer++;
+                             Timer_V.GateTimer++;
+                             Timer_V.ControllerTimer++;
+                             Timer_V.WatchdogTimer++;
+                             _SYSTEMCLASS__V.timerwait=0;
+                             Train_V.timerwait=0;
+                             Gate_V.timerwait=0;
+                             Controller_V.timerwait=0;
+                             Watchdog_V.timerwait=0;
+                      }
+         od
+}
+

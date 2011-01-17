@@ -1,0 +1,19 @@
+Formalize as promela ;
+Model  trans_test_{
+Class TestClass {
+	InstanceVar short x ;
+	InstanceVar timer testtimer ;
+	Signal test ();
+	State s1  {
+		Invariant "timeinvar / {testtimer<=5} " ;
+		Transition "test[x=1]" to s2 ;
+		Transition "[x=0]" to s3 ;
+	}
+	State s2  {
+	}
+	Initial  "" s1 ;
+	State s3  {
+	}
+}
+
+}

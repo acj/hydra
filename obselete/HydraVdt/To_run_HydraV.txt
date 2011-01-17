@@ -1,0 +1,16 @@
+
+Directory:
+
+/user/research/chengb/dengmin1/HydraV/
+
+
+How to run HydraV:
+
+cd /user/research/chengb/dengmin1/HydraV
+perl HydraV <testfile with full path name>
+
+
+To see result:
+
+go to the directory where the testfile is located. 
+.pr is the generated file.

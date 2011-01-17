@@ -1,0 +1,309 @@
+Formalize as promela ;
+Model  Light_Controller_{
+Class _SYSTEMCLASS_ {
+	Signal ready ();
+	Initial  "" s1 ;
+	State s1  {
+		Transition "/new(ComputingComponent)" to s2 ;
+	}
+	State s2  {
+		Transition "ready/new(UserInterface)" to s3 ;
+	}
+	State s3  {
+		Transition "ready/new(Switch)" to s4 ;
+	}
+	State s4  {
+		Transition "ready/new(Display)" to s5 ;
+	}
+	State s5  {
+		Transition "ready/new(MotionSensor)" to s6 ;
+	}
+	State s11  {
+		Transition "ready/new(Environment)" to s12 ;
+	}
+	State s6  {
+		Transition "ready/new(BrightnessSensor)" to s7 ;
+	}
+	State s7  {
+		Transition "ready/new(Dimmer1)" to s8 ;
+	}
+	State s8  {
+		Transition "ready/new(Dimmer2)" to s9 ;
+	}
+	State s9  {
+		Transition "ready/new(Corrector)" to s10 ;
+	}
+	State s10  {
+		Transition "ready/new(Detector)" to s11 ;
+	}
+	State s12  {
+		Transition "ready/new(LocalFaultHandler)" to s13 ;
+	}
+	State s13  {
+		Transition "ready/new(GlobalFaultHandler)" to s14 ;
+	}
+	State s14  {
+		Transition "ready^ComputingComponent.powerOn^Detector.detStart" to s15 ;
+	}
+	State s15  {
+	}
+}
+Class ComputingComponent {
+	InstanceVar bool initialization  := 0;
+	InstanceVar timer controlTimerLong ;
+	InstanceVar timer controlTimerShort ;
+	InstanceVar bool currentMotionValue ;
+	InstanceVar int currentBrightnessValue ;
+	InstanceVar int valueCC ;
+	InstanceVar bool lightStatus  := 0;
+	Signal resetTimerLong ();
+	Signal resetTimerShort ();
+	Signal powerOn ();
+	Signal powerOff ();
+	Signal ccok ();
+	Signal setCurrentMotionValue (bool );
+	Signal setCurrentBrightnessValue (int );
+	Signal globalFaultOccursCC ();
+	Signal initializationSucceeded ();
+	Signal initializationNotSucceeded ();
+	Signal userInputCC ();
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "powerOn" to Initialize ;
+	}
+	State intermediate  {
+		Action "entry/send(UserInterface.normalMode)" ;
+		Transition "^MotionSensor.tempGetMotValue" to NormalBehavior ;
+	}
+	State PartialShutdown  {
+		Transition "powerOff" to Idle ;
+	}
+	CompositeState Initialize {
+		Transition "initializationNotSucceeded" to Idle ;
+		Transition "initializationSucceeded" to intermediate ;
+	Initial  "" FirstSen ;
+	State CheckBrightness  {
+		Transition "ccok^BrightnessSensor.tempGetBriValue" to GetBrightness ;
+	}
+	State CheckMotion  {
+		Transition "ccok^MotionSensor.tempGetMotValue" to GetMotion ;
+	}
+	State Final  {
+	}
+	State FirstSen  {
+		Transition "^MotionSensor.getMotionSensorOperationalState" to CheckMotion ;
+	}
+	State GetBrightness  {
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)^ComputingComponent.initializationSucceeded" to Final ;
+	}
+	State GetMotion  {
+		Transition "setCurrentMotionValue(currentMotionValue)" to SecondSen ;
+	}
+	State SecondSen  {
+		Transition "^BrightnessSensor.getBrightnessSensorOperationalState" to CheckBrightness ;
+	}
+	}
+	CompositeState NormalBehavior {
+		Transition "powerOff" to Idle ;
+		Transition "globalFaultOccursCC" to PartialShutdown ;
+	Initial  "" Idle ;
+	CompositeState ControlLong {
+		Transition "userInputCC" to Idle ;
+	Initial  "" IdleLong ;
+	State IdleLong  {
+		Action "entry/lightStatus:=1;send(Detector.setLightStatusOn)" ;
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)" to SetDimmer1 ;
+	}
+	State SetDimmer1  {
+		Transition "^Dimmer1.setLightOn(valueCC)" to SetDimmer2 ;
+	}
+	State SetDimmer2  {
+		Transition "^Dimmer2.setLightOn(valueCC)" to Update ;
+	}
+	State Update  {
+		Transition "^Detector.update" to IdleLong ;
+	}
+	}
+	CompositeState ControlMot {
+		Transition "userInputCC" to Intermediate2 ;
+	Initial  "" IdleMot ;
+	State IdleMot  {
+		Action "entry/lightStatus:=1;send(Detector.setLightStatusOn)" ;
+		Transition "setCurrentBrightnessValue(currentBrightnessValue)" to SetDimmer1 ;
+	}
+	State SetDimmer1  {
+		Transition "^Dimmer1.setLightOn(valueCC)" to SetDimmer2 ;
+	}
+	State SetDimmer2  {
+		Transition "^Dimmer2.setLightOn(valueCC)" to Update ;
+	}
+	State Update  {
+		Transition "^Detector.update" to IdleMot ;
+	}
+	}
+	State Idle  {
+		Action "entry/send(Dimmer1.setLightOff);send(Dimmer2.setLightOff);lightStatus:=0;send(Detector.setLightStatusOff)" ;
+		Transition "userInputCC^BrightnessSensor.tempGetBriValue" to ControlLong ;
+		Transition "setCurrentMotionValue(currentMotionValue)^BrightnessSensor.tempGetBriValue" to ControlMot ;
+	}
+	State Intermediate2  {
+		Transition "" to ControlLong ;
+	}
+	}
+}
+Class Detector {
+	InstanceVar timer timerDet ;
+	InstanceVar int faultID ;
+	Signal resetTimerDet ();
+	Signal detStart ();
+	Signal detStop ();
+	Signal update ();
+	Signal setLightStatusOn ();
+	Signal setLightStatusOff ();
+	State Idle  {
+		Transition "detStart" to Inactive ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Inactive  {
+		Transition "setLightStatusOn" to Counting ;
+		Transition "detStop" to Idle ;
+	}
+	State Counting  {
+		Transition "setLightStatusOff" to Inactive ;
+		Transition "update" to Counting ;
+		Transition "" to Violation ;
+	}
+	State Violation  {
+		Action "entry/send(LocalFaultHandler.reportLocalFault(faultID))" ;
+	}
+}
+Class LocalFaultHandler {
+	InstanceVar int faultID ;
+	Signal reportLocalFault (int );
+	State s1  {
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+}
+Class GlobalFaultHandler {
+	InstanceVar timer timerFault ;
+	Signal resetTimerFault ();
+	Signal reportGlobalFault (int );
+	State s1  {
+	}
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+}
+Class Corrector {
+	InstanceVar int recoveryID ;
+	Signal setValue ();
+	Signal initiateRecoveryAction (int );
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State s1  {
+	}
+}
+Class Dimmer1 {
+	InstanceVar int value  := 0;
+	Signal setLightOff ();
+	Signal setLightOn (int );
+	Initial  "^_SYSTEMCLASS_.ready" Inactive ;
+	State Inactive  {
+		Transition "setLightOn(value)" to Active ;
+		Transition "setLightOff" to Inactive ;
+	}
+	State Active  {
+		Transition "setLightOff" to Inactive ;
+		Transition "setLightOn(value)" to Active ;
+	}
+}
+Class Dimmer2 {
+	InstanceVar int value  := 0;
+	Signal setLightOff ();
+	Signal setLightOn (int );
+	State Inactive  {
+		Transition "setLightOn(value)" to Active ;
+		Transition "setLightOff" to Inactive ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Inactive ;
+	State Active  {
+		Transition "setLightOn(value)" to Active ;
+		Transition "setLightOff" to Inactive ;
+	}
+}
+Class UserInterface {
+	InstanceVar int ID ;
+	Signal userInputUI ();
+	Signal normalMode ();
+	Signal globalFaultOccursUI ();
+	State Idle  {
+		Transition "userInputUI^ComputingComponent.userInputCC" to Idle ;
+		Transition "normalMode^Display.showMessage(ID)" to DisplayNormal ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State DisplayNormal  {
+		Transition "userInputUI^ComputingComponent.userInputCC" to DisplayNormal ;
+	}
+	State s3  {
+	}
+}
+Class Display {
+	InstanceVar int ID ;
+	Signal showMessage (int );
+	State Idle  {
+		Transition "showMessage(ID)" to Message ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Message  {
+		Transition "showMessage(ID)" to Message ;
+	}
+}
+Class Switch {
+	Signal switchPush ();
+	State Idle  {
+		Transition "switchPush^UserInterface.userInputUI" to Idle ;
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+}
+Class MotionSensor {
+	InstanceVar bool checkMotion  := 1;
+	InstanceVar bool currentMotion ;
+	Signal motionSensorProblem ();
+	Signal getMotionSensorOperationalState ();
+	Signal tempGetMotValue ();
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+	State Idle  {
+		Transition "getMotionSensorOperationalState" to Check ;
+	}
+	State Check  {
+		Transition "[checkMotion=0]" to Idle ;
+		Transition "[checkMotion]^ComputingComponent.ccok" to Active ;
+	}
+	State Active  {
+		Transition "motionSensorProblem" to Check ;
+		Transition "tempGetMotValue^ComputingComponent.setCurrentMotionValue(currentMotion)" to Active ;
+	}
+}
+Class BrightnessSensor {
+	InstanceVar bool checkBrightness  := 1;
+	InstanceVar int currentBrightness ;
+	Signal brightnessSensorProblem ();
+	Signal getBrightnessSensorOperationalState ();
+	Signal tempGetBriValue ();
+	Initial  "^_SYSTEMCLASS_.ready" s1 ;
+	State s1  {
+		Transition "getBrightnessSensorOperationalState" to s2 ;
+	}
+	State s2  {
+		Transition "[checkBrightness=0]" to s1 ;
+		Transition "[checkBrightness]^ComputingComponent.ccok" to Active ;
+	}
+	State Active  {
+		Transition "tempGetBriValue^ComputingComponent.setCurrentBrightnessValue(currentBrightness)" to Active ;
+		Transition "brightnessSensorProblem" to s2 ;
+	}
+}
+Class Environment {
+	State Idle  {
+	}
+	Initial  "^_SYSTEMCLASS_.ready" Idle ;
+}
+
+}
