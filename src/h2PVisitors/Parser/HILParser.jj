@@ -195,7 +195,7 @@ void language() throws ParseException:
   <PROMELA> |
   <SMV>     |
   <ALLOY>   |
-  <VHDL> 
+  <VHDL>
 }
 
 void model() throws ParseException:
@@ -633,17 +633,8 @@ aNode transitionbody() throws ParseException:
 	String theGuard = "";
 	aNode theTransitionActionsNode = null;
 	aNode theMessagesNode = null;
-//	boolean present = false;
 }
-{
-	// needs fixing! at least ONE of these has to happen
-/*
-	( theEventNode = event() { present = true; } )? 
-	( theGuard = guard() { present = true; } )?
-	( "/" theTransitionActionsNode = actions() { present = true; } )?
-	( "^" theMessagesNode = messages() { present = true; } )?
-*/
-	
+{	
 	(
 		(
 			theEventNode = event()
@@ -671,7 +662,6 @@ aNode transitionbody() throws ParseException:
 		)
 	)
 	{
-//		if (!present) { throw ParseException("Empty TransitionBody"); }
 		tNode = new TransitionBodyNode (theGuard);
 		rootNode.addChildToNode(tNode, theEventNode);
 		rootNode.addChildToNode(tNode, theTransitionActionsNode);

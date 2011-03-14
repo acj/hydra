@@ -40,7 +40,7 @@ public class InstanceVariableNode extends aNode {
         			newVar + "' and an existing class.");
         	throw new ParseException();
         }
-        SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, className);
+        SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, theVType, className);
     }
     
 

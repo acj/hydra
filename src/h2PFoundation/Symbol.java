@@ -6,13 +6,31 @@ package h2PFoundation;
 public class Symbol {
 	SymbolType type;
 	String name; // e.g., "MyClass"
+	String dataType;
 	String owningClass;
 
-	public static enum SymbolType { CLASS, INSTVAR, GLOBVAR, SIGNAL };
+	public static enum SymbolType { CLASS, ENUM, INSTVAR, GLOBVAR, SIGNAL };
 
-	public Symbol(String n, SymbolType t, String oc) {
+	public Symbol(String n, SymbolType t, String dt, String oc) {
 		name = n;
 		type = t;
+		dataType = dt;
 		owningClass = oc;
+	}
+
+	public SymbolType getType() {
+		return type;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public String getDataType() {
+		return dataType;
+	}
+
+	public String getOwningClass() {
+		return owningClass;
 	}
 }

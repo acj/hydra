@@ -41,8 +41,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * Visitor class to generate the Promela code for each node in the HIL
- * parse tree.
+ * Visitor class to generate the Promela code for each node in the HIL parse
+ * tree.
  */
 public class Hil2PromelaVisitor extends aVisitor {
 	protected String stateTimeInvariant = "";
@@ -99,6 +99,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return ((Integer) tabVec.get(level)).intValue();
 	}
 
+	protected void addToEnumList(EnumNode enumNode) {
+		globalOutputs.addGen("EnumList", enumNode);
+	}
+
 	protected void addToMTypeList(String newType) {
 		newType = newType.replace(".", "__");
 		if (!globalOutputs.ifInArray("mTypeList", newType)) {
@@ -129,7 +133,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType visitActionNode(ActionNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		if (tNode.hasTransitionBodyNode()) {
-			tmpART.merge(tNode.subnode.accept(this)); // go to transition body node's accept
+			tmpART.merge(tNode.subnode.accept(this)); // go to transition body
+														// node's accept
 			tmpART.moveStrKey("transitions", "Action");
 		}
 		return tmpART; // outputs to @outputAction
@@ -143,7 +148,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType visitClassNode(ClassNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		if (tNode.hasClassBodyNode()) {
-			tmpART.merge(tNode.subnode.accept(this)); // called by modelbody node.
+			tmpART.merge(tNode.subnode.accept(this)); // called by modelbody
+														// node.
 		}
 
 		return tmpART;
@@ -152,7 +158,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitCompositeStateNode(h2PNodes.CompositeStateNode)
+	 * @see
+	 * h2PVisitors.aVisitor#visitCompositeStateNode(h2PNodes.CompositeStateNode)
 	 */
 	public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
@@ -163,11 +170,15 @@ public class Hil2PromelaVisitor extends aVisitor {
 			aNode aChild = (aNode) tNode.children.get(i);
 			if (aChild.getType().equals("CompositeStateBodyNode")) {
 				CompositeStateBodyNode csbn = (CompositeStateBodyNode) aChild;
-				// from: @GlobaloutputSignal = visitcstatebodyNodePak->GlobalSignalHeadOutput( $ent, @GlobaloutputSignal
+				// from: @GlobaloutputSignal =
+				// visitcstatebodyNodePak->GlobalSignalHeadOutput( $ent,
+				// @GlobaloutputSignal
 				// );
 
-				tmpStr += strln("chan " + csbn.getParent().getID() + "_C=[0] of {bit};");
-				tmpStr += strln("chan " + csbn.getParent().getID() + "_start=[0] of {bit};");
+				tmpStr += strln("chan " + csbn.getParent().getID()
+						+ "_C=[0] of {bit};");
+				tmpStr += strln("chan " + csbn.getParent().getID()
+						+ "_start=[0] of {bit};");
 				tmpART.addStrln("Signal", tmpStr); // had wrong name!
 				tmpART.merge(csbn.accept(this));
 			}
@@ -179,9 +190,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeNode(h2PNodes.ConcurrentCompositeNode)
+	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeNode(h2PNodes.
+	 * ConcurrentCompositeNode)
 	 */
-	public AcceptReturnType visitConcurrentCompositeNode(ConcurrentCompositeNode tNode) {
+	public AcceptReturnType visitConcurrentCompositeNode(
+			ConcurrentCompositeNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		tmpART.merge(tNode.acceptChildren(this));
@@ -209,14 +222,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 */
 	public AcceptReturnType visitEnumNode(EnumNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
-		
-		for (Iterator<String> it = tNode.getEnums().iterator(); it.hasNext();) {
-			addToMTypeList(it.next());
-		}
-		
+		addToEnumList(tNode);
+
 		return tmpART;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -241,30 +251,38 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 				String tmpStateTimeInvariant = stateTimeInvariant;
 				/*
-				 * --> my $statetimeinvariant=ASTVisitorForPromela->GetstatetimeinvariantAndUndef();
+				 * --> my $statetimeinvariant=ASTVisitorForPromela->
+				 * GetstatetimeinvariantAndUndef();
 				 */
 				if (tmpStateTimeInvariant.length() > 0) {
 					// push(@outputState," :: atomic{Timer_V.$statetimeinvariant && $temp1?$eventname ->");
-					tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> Timer_V."
+					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
+							+ tNode.getName() + " -> Timer_V."
 							+ tmpStateTimeInvariant + " -> ");
 				} else {
 					// push(@outputState," :: atomic{$temp1?$eventname ->");
 					// one part has a trailing space, two part does not!
-					tmpStr += strln("        :: atomic{" + classRefID + "_q?" + tNode.getName() + " -> ");
+					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
+							+ tNode.getName() + " -> ");
 				}
 
-				// Determine whether an argument is being passed with this signal
+				// Determine whether an argument is being passed with this
+				// signal
 				if (tNode.getVariable().length() > 0) {
-					tmpStr += strln("                   " + classRefID + "_" + tNode.getName() + "_p1?" + classRefID
-							+ "_V." + tNode.getVariable());
+					tmpStr += strln("                   " + classRefID + "_"
+							+ tNode.getName() + "_p1?" + classRefID + "_V."
+							+ tNode.getVariable());
 					tmpStr += strln("                   -> ");
 					/*
-					 * perl @outputTrans = visiteventNodePak->TwoPartEventOutput( $thiseventnode, @outputTrans );
+					 * perl @outputTrans =
+					 * visiteventNodePak->TwoPartEventOutput( $thiseventnode,
+					 * @outputTrans );
 					 */
 				}
 			} // if (tNode.getEventType().equals("normal"))
 			if (tNode.getEventType().equals("when")) {
-				String retVal = pinpv.ExpressionParser.Parse_Me(tNode, "when(" + tNode.getWhenVariable() + ")");
+				String retVal = pinpv.ExpressionParser.Parse_Me(tNode, "when("
+						+ tNode.getWhenVariable() + ")");
 				tmpStr += strln("        :: atomic{" + retVal + " -> ");
 			} // if (tNode.getEventType().equals("when"))
 			tmpART.addStrln("Trans", tmpStr);
@@ -283,7 +301,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		if (tNode.hasTBNChild()) {
-			tmpART.addStrln("History", strln("/* History initial actions/messages * /"));
+			tmpART.addStrln("History",
+					strln("/* History initial actions/messages * /"));
 			tmpART.merge(tNode.tbnChild.accept(this));
 			tmpART.moveStrKey("transitions", "History");
 		}
@@ -296,12 +315,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 			if (tNode.getID().equals(entity.getID())) {
 				if (entity.getType().equals("StateNode")) {
 					// push(@GlobalHistoryMtype,"mtype H_$cstateID=st_$entID;");
-					tmpStr += strln("mtype H_" + tCBN.getParent().getID() + "=st_" + entity.getID() + ";");
+					tmpStr += strln("mtype H_" + tCBN.getParent().getID()
+							+ "=st_" + entity.getID() + ";");
 				}
 				if ((entity.getType().equals("CompositeStateNode"))
 						|| (entity.getType().equals("ConcurrentCompositeNode"))) {
 					// push(@GlobalHistoryMtype,"mtype H_$cstateID=to_$entID;");
-					tmpStr += strln("mtype H_" + tCBN.getParent().getID() + "=to_" + entity.getID() + ";");
+					tmpStr += strln("mtype H_" + tCBN.getParent().getID()
+							+ "=to_" + entity.getID() + ";");
 				}
 			}
 		}
@@ -330,11 +351,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.merge(tNode.subnode.accept(this));
 			tmpART.moveStrKey("transitions", "Init");
 			/*
-			 * Array join order is as follows:
-			 * 	outputInit += "/ Initial actions.../"
-			 * then UniversalClass->jointwoarrays effectively appends the
-			 * output from the TransitionBodyNode *after* the live
-			 * above.
+			 * Array join order is as follows: outputInit +=
+			 * "/ Initial actions.../" then UniversalClass->jointwoarrays
+			 * effectively appends the output from the TransitionBodyNode
+			 * *after* the live above.
 			 */
 		}
 
@@ -343,15 +363,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 			aNode entity = (aNode) aParent.children.get(i);
 			if (entity.getID().equals(tNode.getID())) {
 				if (entity.getType().equals("CompositeStateNode")) {
-					tmpART.addStr("Init", "        goto to_" + tNode.getID() + "; skip;};");
+					tmpART.addStr("Init", "        goto to_" + tNode.getID()
+							+ "; skip;};");
 					i = aParent.children.size(); // break out of for loop
 				}
 				if (entity.getType().equals("ConcurrentCompositeStateNode")) {
-					tmpART.addStr("Init", "        goto to_" + tNode.getID() + "; skip;};");
+					tmpART.addStr("Init", "        goto to_" + tNode.getID()
+							+ "; skip;};");
 					i = aParent.children.size(); // break out of for loop
 				}
 				if (entity.getType().equals("StateNode")) {
-					tmpART.addStr("Init", "        goto  " + tNode.getID() + "; skip;};");
+					tmpART.addStr("Init", "        goto  " + tNode.getID()
+							+ "; skip;};");
 					i = aParent.children.size(); // break out of for loop
 				}
 			}
@@ -362,24 +385,40 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitInstanceVariableNode(h2PNodes.InstanceVariableNode)
+	 * @see
+	 * h2PVisitors.aVisitor#visitInstanceVariableNode(h2PNodes.InstanceVariableNode
+	 * )
 	 */
 	public AcceptReturnType visitInstanceVariableNode(InstanceVariableNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		if (!(tNode.getVType().equals("timer"))) {
-			tmpART.addStrln("InstVarBody", strln("        " + tNode.getVType() + " " + tNode.getVar() + ";"));
+			String correctedType = "int";
+			if (tNode.getVType().equals("bool")) {
+				correctedType = "bool";
+			}
+			tmpART.addStrln("InstVarBody", strln("        " + correctedType
+					+ " " + tNode.getVar() + ";"));
 		} else {
-			tmpART.addStrln("InstVarOutput", strln("       short " + tNode.getVar() + "=-1;"));
+			tmpART.addStrln("InstVarOutput",
+					strln("       short " + tNode.getVar() + "=-1;"));
 			tmpART.addStrln("TimerList", strln(tNode.getVar()));
-			globalOutputs.addStrln("TimerList", strln(tNode.getVar())); // needed by the UML expression parser
+			globalOutputs.addStrln("TimerList", strln(tNode.getVar())); // needed
+																		// by
+																		// the
+																		// UML
+																		// expression
+																		// parser
 		}
 
 		if ((tNode.getInitValue().length() > 0)) {
-			aNode instanceVariableReference = FindLocalDestNode(tNode, "InstanceVariableNode", "var", tNode.getVar());
+			aNode instanceVariableReference = FindLocalDestNode(tNode,
+					"InstanceVariableNode", "var", tNode.getVar());
 
-			String className = instanceVariableReference.getParent().getParent().getID();
-			String tmpStr = strln("        " + className + "_V." + tNode.getVar() + " = " + tNode.getInitValue() + ";");
+			String className = instanceVariableReference.getParent()
+					.getParent().getID();
+			String tmpStr = strln("        " + className + "_V."
+					+ tNode.getVar() + " = " + tNode.getInitValue() + ";");
 			tmpART.addStrln("InstVar", tmpStr);
 		}
 		return tmpART;
@@ -407,7 +446,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (tNode.getSignalName().length() > 0) {
 			// Check semantics to see if the local class has this InstVar
 			aNode destCN = searchUpForDest(tNode, "ClassNode");
-			Boolean intVarIsLocal; // Whether the argument is an mtype or an instance variable
+			Boolean intVarIsLocal; // Whether the argument is an mtype or an
+									// instance variable
 			String className = tNode.getClassName();
 			if (className == "") {
 				className = destCN.getID();
@@ -415,19 +455,22 @@ public class Hil2PromelaVisitor extends aVisitor {
 			} else {
 				intVarIsLocal = false;
 			}
-			
+
 			if (className.length() > 0) {
 				addToMTypeList(tNode.getSignalName());
 
 				if (tNode.getIntVarName().length() > 0) {
 					// With signal argument
-					String intVarName = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getIntVarName());
+					String intVarName = pinpv.ExpressionParser.Parse_Me(tNode,
+							tNode.getIntVarName());
 					String temp1, temp2;
 
-					temp1 = " " + className + "_" + tNode.getSignalName() + "_p1!";
-					temp2 = intVarName + "; " + className + "_q!" + tNode.getSignalName() + ";";
+					temp1 = " " + className + "_" + tNode.getSignalName()
+							+ "_p1!";
+					temp2 = intVarName + "; " + className + "_q!"
+							+ tNode.getSignalName() + ";";
 
-					// Determine whether $msgintvarname is an ID (the first 
+					// Determine whether $msgintvarname is an ID (the first
 					// character is [A-Z][a-z]) or a NUM (all characters are
 					// [0-9]+).
 					char testAt = tNode.getIntVarName().toUpperCase().charAt(0);
@@ -439,15 +482,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 						if (intVarIsLocal) {
 							tmpStr += strln("atomic{" + temp1 + temp2 + "};");
 						} else {
-							tmpStr += strln("atomic{" + temp1 + destCN.getID() + "_V." + temp2 + "};");
+							tmpStr += strln("atomic{" + temp1 + destCN.getID()
+									+ "_V." + temp2 + "};");
 						}
 					}
 				} else {
 					// No signal argument
-					tmpStr += strln("        " + className + "_q!" + tNode.getSignalName() + ";");
+					tmpStr += strln("        " + className + "_q!"
+							+ tNode.getSignalName() + ";");
 				}
 			} else {
-				tmpStr += strln("        run event(" + tNode.getSignalName() + ");");
+				tmpStr += strln("        run event(" + tNode.getSignalName()
+						+ ");");
 
 			}
 		}
@@ -500,13 +546,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 */
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
-		
+
 		addToMTypeList(tNode.getName());
 
 		if (tNode.getSignalType().length() > 0) {
 			String className = tNode.getParent().getParent().getID();
-			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName() + "_p1=[5] of {"
-					+ tNode.getSignalType() + "};");
+			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName()
+					+ "_p1=[5] of {" + tNode.getSignalType() + "};");
 		}
 
 		return tmpART; // output to @GlobaloutputSignal
@@ -538,7 +584,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode)
+	 * @see
+	 * h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode
+	 * )
 	 */
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
@@ -557,21 +605,26 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		if (actType.equals("assignstmt")) {
 			// T ODO from visittranactionNodePak->outputAssignment
-			String retVal = pinpv.ExpressionParser.Parse_Me(tNode, tNode.getAssignment());
+			String retVal = pinpv.ExpressionParser.Parse_Me(tNode,
+					tNode.getAssignment());
 			tmpStr += strln("        " + retVal);
 		}
 		if (actType.equals("printstmt")) {
 			String dPrintContent = tNode.getPrintContent();
-			dPrintContent = "\"" + dPrintContent.substring(1, dPrintContent.length() - 1) + "\"";
+			dPrintContent = "\""
+					+ dPrintContent.substring(1, dPrintContent.length() - 1)
+					+ "\"";
 			String retVal = "";
 			if (tNode.getParamList().length() > 0) {
-				retVal = "," + pinpv.ExpressionParser.Parse_Me(tNode, tNode.getParamList());
+				retVal = ","
+						+ pinpv.ExpressionParser.Parse_Me(tNode,
+								tNode.getParamList());
 			}
 			tmpStr += strln("        printf(" + dPrintContent + retVal + ");");
 		}
 		if (actType.equals("function")) {
 			String retVal = "";
-			retVal = pinpv.ExpressionParser.Parse_Me(tNode, 
+			retVal = pinpv.ExpressionParser.Parse_Me(tNode,
 					tNode.getFunctionID() + "(" + tNode.getParamList() + ")");
 			tmpStr += strln("        " + retVal);
 		}
@@ -583,14 +636,17 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitTransitionActionsNode(h2PNodes.TransitionActionsNode)
+	 * @see h2PVisitors.aVisitor#visitTransitionActionsNode(h2PNodes.
+	 * TransitionActionsNode)
 	 */
-	public AcceptReturnType visitTransitionActionsNode(TransitionActionsNode tNode) {
+	public AcceptReturnType visitTransitionActionsNode(
+			TransitionActionsNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		tmpART.merge(tNode.acceptChildren(this));
 
-		return tmpART; // output to @outputtranactions from a concatenation of @outputtranaction
+		return tmpART; // output to @outputtranactions from a concatenation of
+						// @outputtranaction
 	}
 
 	/*
@@ -606,7 +662,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.moveStrKey("transitions", "Trans");
 		} else {
 			// empty transition body
-			tmpART.addStrln("Trans", strln("        :: atomic{1 -> goto " + tNode.getDestination() + "; skip;}"));
+			tmpART.addStrln("Trans", strln("        :: atomic{1 -> goto "
+					+ tNode.getDestination() + "; skip;}"));
 		}
 
 		return tmpART; // output to @outputTrans (merges @outputtransitionbody)
@@ -658,12 +715,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType cbnhCStateHeadOutput(aNode tNode, boolean isFromClassCall) {
+	public AcceptReturnType cbnhCStateHeadOutput(aNode tNode,
+			boolean isFromClassCall) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		String cstatename = tNode.getID();
 
-		tmpART.addStr("CState", "/* Link to composite state " + cstatename + " */");
+		tmpART.addStr("CState", "/* Link to composite state " + cstatename
+				+ " */");
 		String tmpStr = "atomic{skip;";
 
 		// Make it look like the original perl Hydra output
@@ -671,10 +730,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if ((!isFromClassCall) && pedantic) {
 			padding1 = "";
 		}
-		tmpART.addStr("CState", "to_" + cstatename + ": " + tmpStr + " " + cstatename + "_start!1;}");
-		tmpART.addStr("CState", "        atomic{" + cstatename + "_C?1;" + padding1 + "wait??" + cstatename
-				+ "_pid,m;}");
-		tmpART.addStr("CState", "        if"); // TODO why does this NOT appear in the perl promela?
+		tmpART.addStr("CState", "to_" + cstatename + ": " + tmpStr + " "
+				+ cstatename + "_start!1;}");
+		tmpART.addStr("CState", "        atomic{" + cstatename + "_C?1;"
+				+ padding1 + "wait??" + cstatename + "_pid,m;}");
+		tmpART.addStr("CState", "        if"); // TODO why does this NOT appear
+												// in the perl promela?
 
 		return tmpART;
 	}
@@ -688,10 +749,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 			aNode bodyChild = (aNode) tNode.children.get(i);
 			for (int j = 0; j < bodyChild.children.size(); j++) {
 				aNode childNode = (aNode) bodyChild.children.get(j);
-				if ((childNode.getType().equals("StateNode")) || (childNode.getType().equals("CompositeStateNode"))
-						|| (childNode.getType().equals("ConcurrentCompositeNode"))
+				if ((childNode.getType().equals("StateNode"))
+						|| (childNode.getType().equals("CompositeStateNode"))
+						|| (childNode.getType()
+								.equals("ConcurrentCompositeNode"))
 						|| (childNode.getType().equals("TransitionNode"))) {
-					childNode.accept(psv); // output is passed through the outputART
+					childNode.accept(psv); // output is passed through the
+											// outputART
 				}
 			}
 		}
@@ -705,7 +769,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	// (verify) there are only minor differences between the ClassBodyNode
 	// and CompositeStateBodyNode versions of this function so I'm coding
 	// it so it can handle both!
-	public AcceptReturnType cbnhAnalyzeCCStateNode(ConcurrentCompositeNode tNode, boolean isFromClassCall) {
+	public AcceptReturnType cbnhAnalyzeCCStateNode(
+			ConcurrentCompositeNode tNode, boolean isFromClassCall) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		tmpART.addStr("CCState", "to_" + tNode.getID() + ":");
@@ -718,8 +783,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 					CompositeStateNode csNode = (CompositeStateNode) childNode;
 					if (csNode.bodyNode != null) {
 						/*
-						 * TODO (source of CCSB bugs?) the CState version of the code calls
-						 * UniversalClass->jointwostrings which is NOT defined in universal Class!
+						 * TODO (source of CCSB bugs?) the CState version of the
+						 * code calls UniversalClass->jointwostrings which is
+						 * NOT defined in universal Class!
 						 */
 						tmpART.addStr("CCState", "to_" + csNode.getID() + ":");
 
@@ -727,26 +793,32 @@ public class Hil2PromelaVisitor extends aVisitor {
 						String temp30 = csNode.getID() + "_C!1";
 						String temp40 = csNode.getID() + "_C?1";
 						if (isFromClassCall) {
-							tmpART.addStr("CCStateTemp1","\t" + csNode.getID()+"_start!1;");
+							tmpART.addStr("CCStateTemp1", "\t" + csNode.getID()
+									+ "_start!1;");
 						} else {
-							tmpART.addStr("CCStateTemp1", "        " + temp20 + " = run " + csNode.getID() + "(none);");
+							tmpART.addStr("CCStateTemp1", "        " + temp20
+									+ " = run " + csNode.getID() + "(none);");
 						}
 						tmpART.addStr("CCStateID", temp20);
 
 						temp30 = csNode.getID() + "_code";
 						if (isFromClassCall) {
-							tmpART.addStr("CCStateTemp2", "        atomic{" + temp40 + ";wait??" + temp20 + ","
+							tmpART.addStr("CCStateTemp2", "        atomic{"
+									+ temp40 + ";wait??" + temp20 + ","
 									+ temp30 + ";}");
 						} else {
-							tmpART.addStr("CCStateTemp2", "        wait??" + temp20 + "," + temp30 + ";}");
+							tmpART.addStr("CCStateTemp2", "        wait??"
+									+ temp20 + "," + temp30 + ";}");
 						}
 						tmpART.addStr("CCStateIDmtype", temp30);
 
 					} else {
 						tmpART.addStr("CCState", "to_:");
-						tmpART.addStr("CCStateTemp1", "        _pid = run (none);");
+						tmpART.addStr("CCStateTemp1",
+								"        _pid = run (none);");
 						tmpART.addStr("CCStateID", "_pid");
-						tmpART.addStr("CCStateTemp2", "        wait??eval(_pid),_code;}");
+						tmpART.addStr("CCStateTemp2",
+								"        wait??eval(_pid),_code;}");
 						tmpART.addStr("CCStateIDmtype", "_code");
 					}
 				}
@@ -765,7 +837,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType cbnhAnalyzeJoinNode(ConcurrentCompositeNode tNode, String myParent) {
+	public AcceptReturnType cbnhAnalyzeJoinNode(ConcurrentCompositeNode tNode,
+			String myParent) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		aNode myParentRef = searchUpForDest(tNode, myParent);
@@ -781,21 +854,25 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 					if (tNode.bodyNode != null) {
 						for (int j = 0; j < tNode.bodyNode.children.size(); j++) {
-							aNode tempCNode = (aNode) tNode.bodyNode.children.get(j);
-							if (tempCNode.getType().equals("CompositeStateNode")) {
+							aNode tempCNode = (aNode) tNode.bodyNode.children
+									.get(j);
+							if (tempCNode.getType()
+									.equals("CompositeStateNode")) {
 								String temp100 = "";
 								CompositeStateNode tmpCSNode = (CompositeStateNode) tempCNode;
 								if (tmpCSNode.bodyNode != null) {
 									temp100 += tmpCSNode.getID();
 								}
 								temp100 += "_code";
-								tmpART.addStr("tempjoin1", temp100 + " == " + temp20);
+								tmpART.addStr("tempjoin1", temp100 + " == "
+										+ temp20);
 							}
 						}
 					}
 
 					String temp200 = "        ::";
-					String temp2000 = FormatOutputSeparateType(temp200, " && ", tmpART.getStr("tempjoin1"));
+					String temp2000 = FormatOutputSeparateType(temp200, " && ",
+							tmpART.getStr("tempjoin1"));
 					tmpART.removeStrKey("tempjoin1");
 					tmpART.addStr("tempjoin", temp2000);
 
@@ -824,12 +901,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 		aNode tParent = searchUpForDest(entNode, "ClassNode");
 
 		tmpART.addStr("WholeState", "/* State " + stateID + " */");
-		tmpART.addStr("WholeState", stateID + ":    " + "atomic{skip;" + " printf(\"in state " + tParent.getID() + "."
-				+ stateID + "\\n\");");
+		tmpART.addStr("WholeState", stateID + ":    " + "atomic{skip;"
+				+ " printf(\"in state " + tParent.getID() + "." + stateID
+				+ "\\n\");");
 		tmpART.moveStrKey("State", "WholeState");
 	}
 
-	public void cbnhRunCProctype(aNode tNode, aNode childNode, AcceptReturnType tmpART, boolean isFromClassCall) {
+	public void cbnhRunCProctype(aNode tNode, aNode childNode,
+			AcceptReturnType tmpART, boolean isFromClassCall) {
 		if (childNode.children.size() > 0) {
 			// Inline ADDPID
 			tmpART.addStr("CStateID", childNode.getID() + "_pid");
@@ -863,7 +942,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	}
 
-	public AcceptReturnType cbnhOutputCCState(ConcurrentCompositeNode ccNode, boolean isFromClassCall) {
+	public AcceptReturnType cbnhOutputCCState(ConcurrentCompositeNode ccNode,
+			boolean isFromClassCall) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (ccNode.bodyNode != null) {
@@ -872,7 +952,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 			if (!tmpART.getStr("found").equals("true")) {
 				aNode classRef = searchUpForDest(ccNode, "ClassNode");
-				println("Warning: In Class [" + classRef.getID() + "], $object [" + ccNode.getID()
+				println("Warning: In Class ["
+						+ classRef.getID()
+						+ "], $object ["
+						+ ccNode.getID()
 						+ "], join missing (these threads can never be joined.)");
 			}
 			tmpART.removeStrKey("found");
@@ -882,8 +965,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType cbnhGetClassINPredicatelist(ClassBodyNode tNode, AcceptReturnType INPredicateTarget) {
-		AcceptReturnType INPredicateHash, INPredicateList = new AcceptReturnType(); // default to empty list.
+	public AcceptReturnType cbnhGetClassINPredicatelist(ClassBodyNode tNode,
+			AcceptReturnType INPredicateTarget) {
+		AcceptReturnType INPredicateHash, INPredicateList = new AcceptReturnType(); // default
+																					// to
+																					// empty
+																					// list.
 		Vector<?> vec = INPredicateTarget.getGen("default");
 		ClassBodyNode cbRef;
 
@@ -891,8 +978,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 			INPredicateHash = (AcceptReturnType) vec.get(i);
 			cbRef = (ClassBodyNode) INPredicateHash.getSingle("cbreference");
 			if (tNode.getUniqueID().equals(cbRef.getUniqueID())) {
-				INPredicateList = (AcceptReturnType) INPredicateHash.getSingle("list");
-				i = vec.size(); // break! There should only be one predicate list per class ref.
+				INPredicateList = (AcceptReturnType) INPredicateHash
+						.getSingle("list");
+				i = vec.size(); // break! There should only be one predicate
+								// list per class ref.
 			}
 		}
 
@@ -903,14 +992,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String entities[] = INPredicateList.getStrSplit("default");
 		INPredicateList.moveStrKey("default", "original-InPredicate");
 		for (int i = 0; i < entities.length; i++) {
-			INPredicateList.addStr("default", "        bool st_" + entities[i] + ";");
+			INPredicateList.addStr("default", "        bool st_" + entities[i]
+					+ ";");
 		}
 	}
 
-	public void cbnhFormGlobalOutputInstVar(ClassBodyNode tNode, AcceptReturnType INPredicateTarget,
-			AcceptReturnType tmpART) {
+	public void cbnhFormGlobalOutputInstVar(ClassBodyNode tNode,
+			AcceptReturnType INPredicateTarget, AcceptReturnType tmpART) {
 
-		AcceptReturnType INPredicateList = cbnhGetClassINPredicatelist(tNode, INPredicateTarget);
+		AcceptReturnType INPredicateList = cbnhGetClassINPredicatelist(tNode,
+				INPredicateTarget);
 
 		// Modified GlobaloutputInstVarHead: (inline)
 		String className = tNode.getParent().getID();
@@ -926,7 +1017,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// Modified GlobaloutputInstVarEnd: (inline)
 		if (!className.equals("_SYSTEMCLASS_")) {
 			tmpART.addStr("InstVarGlobal", "        }");
-			tmpART.addStr("InstVarGlobal", className + "_T " + className + "_V;");
+			tmpART.addStr("InstVarGlobal", className + "_T " + className
+					+ "_V;");
 			tmpART.addStr("InstVarGlobal", "");
 		}
 	}
@@ -995,16 +1087,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 			// Also handles JoinNode
 			if (childNode.getType().equals("ConcurrentCompositeNode")) {
-				tmpART.merge(cbnhOutputCCState((ConcurrentCompositeNode) childNode, true));
+				tmpART.merge(cbnhOutputCCState(
+						(ConcurrentCompositeNode) childNode, true));
 			}
 			// Commented out in original
-			//if (childNode.getType().equals("HistoryNode")) {
-			//	tmpART.merge(childNode.accept(this));
-			//}
+			// if (childNode.getType().equals("HistoryNode")) {
+			// tmpART.merge(childNode.accept(this));
+			// }
 		}
 
 		AcceptReturnType INPredicateTarget;
-		INPredicateTarget = (AcceptReturnType) globalOutputs.getSingle("INPredicateTarget");
+		INPredicateTarget = (AcceptReturnType) globalOutputs
+				.getSingle("INPredicateTarget");
 		cbnhFormGlobalOutputInstVar(tNode, INPredicateTarget, tmpART);
 		cbnhProcType(tNode, tmpART);
 
@@ -1019,26 +1113,29 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public void csbhStateBlock(aNode entNode, boolean ifHistory, AcceptReturnType tmpART) {
+	public void csbhStateBlock(aNode entNode, boolean ifHistory,
+			AcceptReturnType tmpART) {
 		String stateID = entNode.getID();
 
 		aNode tParent = searchUpForDest(entNode, "ClassNode");
 
 		tmpART.addStr("WholeState", "/* State " + stateID + " */");
-		tmpART.addStr("WholeState", stateID + ":    atomic{skip; printf(\"in state " + tParent.getID() + "." + stateID
-				+ "\\n\");");
+		tmpART.addStr("WholeState", stateID
+				+ ":    atomic{skip; printf(\"in state " + tParent.getID()
+				+ "." + stateID + "\\n\");");
 
 		if (ifHistory) {
 			aNode cStateRef = searchUpForDest(entNode, "CompositeStateNode");
-			tmpART.addStr("WholeState", "        H_" + cStateRef.getID() + " = st_" + stateID
-					+ ";  /* Save state for history */");
+			tmpART.addStr("WholeState", "        H_" + cStateRef.getID()
+					+ " = st_" + stateID + ";  /* Save state for history */");
 		}
 
 		tmpART.moveStrKey("State", "WholeState");
 
 	}
 
-	public void csbhPushDownToStateNode(CompositeStateBodyNode tNode, StateNode SNode) {
+	public void csbhPushDownToStateNode(CompositeStateBodyNode tNode,
+			StateNode SNode) {
 		// Children are added anyway so just create body node if needed
 		if (SNode.bodyNode == null) {
 			StateBodyNode newbodyNode = new StateBodyNode();
@@ -1047,7 +1144,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 
 		for (int j = 0; j < tNode.transitionNodeChildren.size(); j++) {
-			TransitionNode transNode = (TransitionNode) tNode.transitionNodeChildren.get(j);
+			TransitionNode transNode = (TransitionNode) tNode.transitionNodeChildren
+					.get(j);
 			transNode.setDestinationType("Outgoing");
 			// Automatically moves parent to former parent
 			SNode.bodyNode.addChild(transNode);
@@ -1056,7 +1154,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 	}
 
-	public void csbhPushDownToCandCCStateNode(CompositeStateBodyNode tNode, aNode CSNode, boolean isCStateNode) {
+	public void csbhPushDownToCandCCStateNode(CompositeStateBodyNode tNode,
+			aNode CSNode, boolean isCStateNode) {
 		aNode bodyNode = null;
 		if (isCStateNode) {
 			bodyNode = ((CompositeStateNode) CSNode).bodyNode;
@@ -1073,7 +1172,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 				if (childNode.getType().equals("CompositeStateNode")) {
 					csbhPushDownToCandCCStateNode(tNode, childNode, true);
 				}
-				if ((isCStateNode) && (childNode.getType().equals("ConcurrentCompositeNode"))) {
+				if ((isCStateNode)
+						&& (childNode.getType()
+								.equals("ConcurrentCompositeNode"))) {
 					csbhPushDownToCandCCStateNode(tNode, childNode, false);
 				}
 			}
@@ -1082,7 +1183,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	public void csbhPushOutgoingTransitionlist(CompositeStateBodyNode tNode) {
 		if (tNode.transitionNodeChildren.size() > 0) {
-			csbhPushDownToCandCCStateNode(tNode, (CompositeStateNode) tNode.getParent(), true);
+			csbhPushDownToCandCCStateNode(tNode,
+					(CompositeStateNode) tNode.getParent(), true);
 		}
 	}
 
@@ -1091,9 +1193,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 			for (int i = 0; i < tNode.bodyNode.children.size(); i++) {
 				aNode childNode = (aNode) tNode.bodyNode.children.get(i);
 				if (childNode.getType().equals("TransitionNode")) {
-					if (((TransitionNode) childNode).getDestinationType().equals("Outgoing")) {
-						// Outputs not the real former parent's ID, but the composite state's former parent
-						String cStateID = ((TransitionNode) childNode).getFormerCStateParent().getParent().getID()
+					if (((TransitionNode) childNode).getDestinationType()
+							.equals("Outgoing")) {
+						// Outputs not the real former parent's ID, but the
+						// composite state's former parent
+						String cStateID = ((TransitionNode) childNode)
+								.getFormerCStateParent().getParent().getID()
 								+ "_pid";
 						if (!tmpART.ifInArray("CStateID", cStateID)) {
 							tmpART.addStr("CStateID", cStateID);
@@ -1112,9 +1217,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 				TransitionNode transNode = (TransitionNode) vec.get(i);
 				String temp = "st_" + transNode.getDestination();
 				String temp2 = "";
-				tempStr += strln("        :: atomic{m == " + temp + " -> wait!_pid," + temp + "; " + temp2
+				tempStr += strln("        :: atomic{m == " + temp
+						+ " -> wait!_pid," + temp + "; " + temp2
 						+ "; goto exit; skip;};");
-				temp = transNode.getFormerCStateParent().getParent().getID() + "_pid";
+				temp = transNode.getFormerCStateParent().getParent().getID()
+						+ "_pid";
 				if (!anART.ifInArray("CStateID", temp)) {
 					anART.addStr("CStateID", temp);
 				}
@@ -1135,14 +1242,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String classname = tNode.getParent().getID();
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "");
-		tmpART.addStr("CState", "active proctype " + classname + "(mtype state)");
+		tmpART.addStr("CState", "active proctype " + classname
+				+ "(mtype state)");
 		tmpART.addStr("CState", "{atomic{");
 		tmpART.addStr("CState", "mtype m;");
 
 		return tmpART;
 	}
 
-	public void csbhCProcType(CompositeStateBodyNode tNode, AcceptReturnType currART) {
+	public void csbhCProcType(CompositeStateBodyNode tNode,
+			AcceptReturnType currART) {
 		currART.merge(csbhOutputClassHead(tNode));
 		String tmpStr = "";
 
@@ -1168,7 +1277,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		currART.addStr("CState", "goto exit;" + "}");
 		currART.moveStrKey("entry", "CState");
 
-		String tempHistory = currART.getStr("History") + currART.getStr("HistorySelect");
+		String tempHistory = currART.getStr("History")
+				+ currART.getStr("HistorySelect");
 		currART.removeStrKey("History");
 		currART.removeStrKey("HistorySelect");
 
@@ -1181,7 +1291,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 		}
 		currART.moveStrKey("WholeState", "CState");
-		currART.addStr("CState", "exit:        " + tNode.getParent().getID() + "_start?1->goto startCState;");
+		currART.addStr("CState", "exit:        " + tNode.getParent().getID()
+				+ "_start?1->goto startCState;");
 
 		currART.moveStrKey("exit", "CState");
 		// outputClassEnd
@@ -1192,9 +1303,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitCompositeStateBodyNode(h2PNodes.CompositeStateBodyNode)
+	 * @see h2PVisitors.aVisitor#visitCompositeStateBodyNode(h2PNodes.
+	 * CompositeStateBodyNode)
 	 */
-	public AcceptReturnType visitCompositeStateBodyNode(CompositeStateBodyNode tNode) {
+	public AcceptReturnType visitCompositeStateBodyNode(
+			CompositeStateBodyNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		tmpART.merge(sbnhGetAllActions(tNode));
 
@@ -1206,33 +1319,42 @@ public class Hil2PromelaVisitor extends aVisitor {
 					addToMTypeList("st_Init");
 				}
 
-				if (childNode.getType().equals("StateNode") || childNode.getType().equals("CompositeStateNode")
-						|| childNode.getType().equals("ConcurrentCompositeNode")) {
+				if (childNode.getType().equals("StateNode")
+						|| childNode.getType().equals("CompositeStateNode")
+						|| childNode.getType()
+								.equals("ConcurrentCompositeNode")) {
 
 					addToMTypeList("st_" + childNode.getID());
-					String commonPart = "        :: H_" + tNode.getParent().getID() + " == " + "st_"
+					String commonPart = "        :: H_"
+							+ tNode.getParent().getID() + " == " + "st_"
 							+ childNode.getID();
 					if (childNode.getType().equals("StateNode")) {
-						tempHistory += strln(commonPart + "  ->  goto " + childNode.getID() + ";");
+						tempHistory += strln(commonPart + "  ->  goto "
+								+ childNode.getID() + ";");
 					} else {
-						tempHistory += strln(commonPart + "  ->  goto to_" + childNode.getID() + "; skip;");
+						tempHistory += strln(commonPart + "  ->  goto to_"
+								+ childNode.getID() + "; skip;");
 					}
 				}
 			}
 			if (tempHistory.length() != 0) {
-				tempHistory = strln("        ifyu") + tempHistory + strln("        fi;");
+				tempHistory = strln("        ifyu") + tempHistory
+						+ strln("        fi;");
 			}
 			tmpART.addStrln("HistorySelect", tempHistory);
 		}
 
 		// PreserveOutgoingTransitionlist:
 		for (int i = 0; i < tNode.transitionNodeChildren.size(); i++) {
-			TransitionNode currTransNode = (TransitionNode) tNode.transitionNodeChildren.get(i);
+			TransitionNode currTransNode = (TransitionNode) tNode.transitionNodeChildren
+					.get(i);
 			boolean found = false;
 			Vector<?> vec = tmpART.getGen("WholeOutgoingTransitionlist");
 			for (int j = 0; j < vec.size(); j++) {
-				TransitionNode comparisonTransNode = (TransitionNode) vec.get(j);
-				if (currTransNode.getDestination().equals(comparisonTransNode.getDestination())) {
+				TransitionNode comparisonTransNode = (TransitionNode) vec
+						.get(j);
+				if (currTransNode.getDestination().equals(
+						comparisonTransNode.getDestination())) {
 					found = true;
 					j = vec.size();
 				}
@@ -1257,7 +1379,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 			// Also handles JoinNode
 			if (childNode.getType().equals("ConcurrentCompositeNode")) {
-				tmpART.merge(cbnhOutputCCState((ConcurrentCompositeNode) childNode, false));
+				tmpART.merge(cbnhOutputCCState(
+						(ConcurrentCompositeNode) childNode, false));
 			}
 			if (childNode.getType().equals("StateNode")) {
 				csbhAddTleafPID((StateNode) childNode, tmpART);
@@ -1283,9 +1406,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeBodyNode(h2PNodes.ConcurrentCompositeBodyNode)
+	 * @see h2PVisitors.aVisitor#visitConcurrentCompositeBodyNode(h2PNodes.
+	 * ConcurrentCompositeBodyNode)
 	 */
-	public AcceptReturnType visitConcurrentCompositeBodyNode(ConcurrentCompositeBodyNode tNode) {
+	public AcceptReturnType visitConcurrentCompositeBodyNode(
+			ConcurrentCompositeBodyNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		// Children are of CompositeStateNode apparently
@@ -1380,7 +1505,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			out = out.substring(marker);
 
 			while (out.length() > (textMargin - tabFunc(level2))) {
-				AcceptReturnType tmpART = mbnhCut(out, textMargin - tabFunc(level2));
+				AcceptReturnType tmpART = mbnhCut(out, textMargin
+						- tabFunc(level2));
 				x = tmpART.getStr("ret");
 				out = tmpART.getStr("rest");
 				tmpStr += strln(repeatStr(" ", tabFunc(level2)) + x);
@@ -1428,10 +1554,25 @@ public class Hil2PromelaVisitor extends aVisitor {
 	protected String mbnhChanGlobalOutput() {
 		String tmpStr = "";
 
-		tmpStr += mbnhPut (0, "chan evq=[10] of {mtype,int};");
-		tmpStr += mbnhPut (0, "chan evt=[10] of {mtype,int};");
-		tmpStr += mbnhPut (0, "chan wait=[1] of {int,mtype};");
+		tmpStr += mbnhPut(0, "chan evq=[10] of {mtype,int};");
+		tmpStr += mbnhPut(0, "chan evt=[10] of {mtype,int};");
+		tmpStr += mbnhPut(0, "chan wait=[1] of {int,mtype};");
 
+		return tmpStr;
+	}
+	
+	protected String enumListOutput() {
+		String tmpStr = "";
+		Vector<Object> enums = (Vector<Object>)globalOutputs.getGen("EnumList");
+		for (Iterator<Object> it = enums.iterator(); it.hasNext(); ) {
+			EnumNode node = (EnumNode)it.next();
+			int enum_ndx = 1;
+			for (Iterator<String> it_enum = node.getEnums().iterator(); it_enum.hasNext(); ) { 
+				tmpStr += mbnhPut(0, "#define " + node.getEnumTypeName() +
+						"__" + it_enum.next() + "\t" + enum_ndx);
+				enum_ndx++;
+			}
+		}
 		return tmpStr;
 	}
 
@@ -1538,7 +1679,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		// else
 
-		// We add a property timer to the timer list, need to make a new array and copy it over
+		// We add a property timer to the timer list, need to make a new array
+		// and copy it over
 		String[] newEntries = new String[entries.length + 1];
 		System.arraycopy(entries, 0, newEntries, 0, entries.length);
 		newEntries[entries.length] = "propTimer";
@@ -1548,7 +1690,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 		tmpStr += mbnhPut(0, "#define UPPERBOUND 25");
 		tmpStr += mbnhPut(0, "/* This is the timer process */");
-		tmpStr += mbnhPut(0, "/* It increments timers and unlocks waiting processes */");
+		tmpStr += mbnhPut(0,
+				"/* It increments timers and unlocks waiting processes */");
 		tmpStr += mbnhPut(0, "active proctype Timer()");
 		tmpStr += mbnhPut(0, "{");
 		tmpStr += mbnhPut(0, "        do");
@@ -1557,10 +1700,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 		for (int i = 0; i < entries.length; i++) {
 			tmpStr += mbnhPut(0, "                             if");
 			// Added an upper bound here that will be written by DRAMA
-			tmpStr += mbnhPut(0, "                             :: Timer_V." + entries[i] + ">=0  && Timer_V."
-					+ entries[i] + "<UPPERBOUND");
-			tmpStr += mbnhPut(0, "                                -> Timer_V." + entries[i] + "++;");
-			tmpStr += mbnhPut(0, "                             :: else -> skip;");
+			tmpStr += mbnhPut(0, "                             :: Timer_V."
+					+ entries[i] + ">=0  && Timer_V." + entries[i]
+					+ "<UPPERBOUND");
+			tmpStr += mbnhPut(0, "                                -> Timer_V."
+					+ entries[i] + "++;");
+			tmpStr += mbnhPut(0,
+					"                             :: else -> skip;");
 			tmpStr += mbnhPut(0, "                             fi;");
 		}
 
@@ -1568,7 +1714,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		for (int i = 0; i < entries.length; i++) {
 			if (!entries[i].equals("_SYSTEMCLASS_")) {
-				tmpStr += mbnhPut(0, "                             " + entries[i] + "_V.timerwait=0;");
+				tmpStr += mbnhPut(0, "                             "
+						+ entries[i] + "_V.timerwait=0;");
 			}
 		}
 
@@ -1598,6 +1745,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpStr += mbnhMacroGlobalOutput();
 		tmpStr += mbnhNeverDefinitionOutput(anART);
 		tmpStr += mbnhChanGlobalOutput();
+		tmpStr += enumListOutput();
 		tmpStr += mtypeListOutput();
 		tmpStr += mbnhInstVarSignalOutput(anART);
 		tmpStr += mbnhDriverFile(anART);
@@ -1650,15 +1798,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpStr += strln();
 
 		tmpStr += tmpART.getStr("InstVarSignal");
-		tmpART.replaceSrtKey("InstVarSignal", tmpStr); // see variable references.
+		tmpART.replaceSrtKey("InstVarSignal", tmpStr); // see variable
+														// references.
 
 		String finalString = mbnhOutputModelBodyNode(tmpART);
 
 		return AcceptReturnType.retString(finalString);
 	}
 
-	public boolean sbnhIfINPredicateTarget(StateBodyNode tNode, AcceptReturnType INPredicateTarget) {
-		ClassBodyNode classBodyRef = (ClassBodyNode) searchUpForDest(tNode, "ClassBodyNode");
+	public boolean sbnhIfINPredicateTarget(StateBodyNode tNode,
+			AcceptReturnType INPredicateTarget) {
+		ClassBodyNode classBodyRef = (ClassBodyNode) searchUpForDest(tNode,
+				"ClassBodyNode");
 
 		Vector<?> vec = INPredicateTarget.getGen("default");
 		AcceptReturnType INPredicateHash, InPredicateList;
@@ -1668,8 +1819,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 			INPredicateHash = (AcceptReturnType) vec.get(i);
 			cbRef = (ClassBodyNode) INPredicateHash.getSingle("cbreference");
 			if (classBodyRef.getUniqueID().equals(cbRef.getUniqueID())) {
-				InPredicateList = (AcceptReturnType) INPredicateHash.getSingle("list");
-				if (!InPredicateList.ifInArray("default", tNode.getParent().getID())) {
+				InPredicateList = (AcceptReturnType) INPredicateHash
+						.getSingle("list");
+				if (!InPredicateList.ifInArray("default", tNode.getParent()
+						.getID())) {
 					return true;
 				}
 			}
@@ -1679,7 +1832,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	}
 
 	// State body node helper(s)
-	public AcceptReturnType sbnhResolveTransDest(StateBodyNode tNode, String dest) {
+	public AcceptReturnType sbnhResolveTransDest(StateBodyNode tNode,
+			String dest) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		aNode SorCSorCCS = null;
@@ -1715,7 +1869,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (tNode.getDestinationType().length() == 0) {
 			// This TransitionNode is guaranteed to have a StateBody Node parent
 			// simply because of the visitor code we're working on! (statebody)
-			tmpART.merge(sbnhResolveTransDest((StateBodyNode) tNode.getParent(), tNode.getDestination()));
+			tmpART.merge(sbnhResolveTransDest(
+					(StateBodyNode) tNode.getParent(), tNode.getDestination()));
 
 			if (tmpART.getStr("isOutgoing").equals("true")) {
 				tNode.setDestinationType("Outgoing");
@@ -1726,7 +1881,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 						tNode.setDestinationType("SS");
 					}
 					if ((SorCSorCCS.getType().equals("CompositeStateNode"))
-							|| (SorCSorCCS.getType().equals("ConcurrentCompositeNode"))) {
+							|| (SorCSorCCS.getType()
+									.equals("ConcurrentCompositeNode"))) {
 						tNode.setDestinationType("CS");
 					}
 				}
@@ -1734,7 +1890,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 	}
 
-	public void sbnhSearchForEventType(TransitionNode tNode, String eventType, AcceptReturnType transEventList) {
+	public void sbnhSearchForEventType(TransitionNode tNode, String eventType,
+			AcceptReturnType transEventList) {
 		AcceptReturnType TELentitity, transitionList;
 
 		sbnhFind_DestType(tNode);
@@ -1742,7 +1899,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		for (int i = 0; i < vec.size(); i++) {
 			TELentitity = (AcceptReturnType) vec.get(i);
 			if (TELentitity.getStr("event").equals(eventType)) {
-				transitionList = (AcceptReturnType) TELentitity.getSingle("transitionlist");
+				transitionList = (AcceptReturnType) TELentitity
+						.getSingle("transitionlist");
 				transitionList.addGen("default", tNode);
 				return;
 			}
@@ -1760,7 +1918,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		transEventList.addGen("default", TELentitity);
 	}
 
-	public void sbnhCompareEvent(TransitionNode tNode, EventNode event, AcceptReturnType transEventList) {
+	public void sbnhCompareEvent(TransitionNode tNode, EventNode event,
+			AcceptReturnType transEventList) {
 		AcceptReturnType TELentitity, transitionList;
 
 		sbnhFind_DestType(tNode);
@@ -1775,14 +1934,17 @@ public class Hil2PromelaVisitor extends aVisitor {
 					boolean same = false;
 					if (event.getEventType().equals("normal")) {
 						same = (event.getName().equals(evtNode.getName()))
-								&& (event.getVariable().equals(evtNode.getVariable()));
+								&& (event.getVariable().equals(evtNode
+										.getVariable()));
 					}
 					if (event.getEventType().equals("when")) {
-						same = (event.getWhenVariable().equals(evtNode.getWhenVariable()));
+						same = (event.getWhenVariable().equals(evtNode
+								.getWhenVariable()));
 					}
 					if (same) {
 						// They are the "same" event!
-						transitionList = (AcceptReturnType) TELentitity.getSingle("transitionlist");
+						transitionList = (AcceptReturnType) TELentitity
+								.getSingle("transitionlist");
 						transitionList.addGen("default", tNode);
 						return;
 					}
@@ -1814,15 +1976,19 @@ public class Hil2PromelaVisitor extends aVisitor {
 				TransitionNode tranNode = (TransitionNode) childNode;
 				if (tranNode.hasBody()) {
 					if (tranNode.bodyChild.hasEventNodeChild()) {
-						sbnhCompareEvent(tranNode, tranNode.bodyChild.eventNodeChild, transitionEventList);
+						sbnhCompareEvent(tranNode,
+								tranNode.bodyChild.eventNodeChild,
+								transitionEventList);
 					} else {
 						// Empty event list
-						sbnhSearchForEventType(tranNode, "NOEVENT", transitionEventList);
+						sbnhSearchForEventType(tranNode, "NOEVENT",
+								transitionEventList);
 					}
 					guardbool = tranNode.bodyChild.hasGuard();
 				} else {
 					// Empty transition body
-					sbnhSearchForEventType(tranNode, "EMPTYTRANS", transitionEventList);
+					sbnhSearchForEventType(tranNode, "EMPTYTRANS",
+							transitionEventList);
 				}
 			}
 		}
@@ -1864,8 +2030,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tempStr;
 	}
 
-	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, TransitionNode transNode, boolean hasGuard,
-			boolean checkMTypeList) {
+	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode,
+			TransitionNode transNode, boolean hasGuard, boolean checkMTypeList) {
 		String desc = "";
 		String dest = "";
 		String destType = "";
@@ -1878,35 +2044,44 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (!printTransitionEntry) {
 			desc = ""; // for comparison.
 		}
-		return sbnhOutput_Dest(tNode, desc, dest, destType, hasGuard, checkMTypeList);
+		return sbnhOutput_Dest(tNode, desc, dest, destType, hasGuard,
+				checkMTypeList);
 	}
 
-	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode, String transNodeDesc, String dest,
-			String destType, boolean hasGuard, boolean checkMTypeList) {
+	public AcceptReturnType sbnhOutput_Dest(StateBodyNode tNode,
+			String transNodeDesc, String dest, String destType,
+			boolean hasGuard, boolean checkMTypeList) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (destType.equals("SS")) {
 			if (!hasGuard) {
-				tmpART.addStr("State", "           " + transNodeDesc + "goto " + dest + "; skip;}");
+				tmpART.addStr("State", "           " + transNodeDesc + "goto "
+						+ dest + "; skip;}");
 			} else {
-				tmpART.addStr("State", "              " + transNodeDesc + "goto " + dest + "; skip;}");
+				tmpART.addStr("State", "              " + transNodeDesc
+						+ "goto " + dest + "; skip;}");
 			}
 			return tmpART;
 		}
 		if (destType.equals("CS")) {
 			if (!hasGuard) {
-				tmpART.addStr("State", "           " + transNodeDesc + "goto to_" + dest + "; skip;}");
+				tmpART.addStr("State", "           " + transNodeDesc
+						+ "goto to_" + dest + "; skip;}");
 			} else {
-				tmpART.addStr("State", "              " + transNodeDesc + "goto to_" + dest + "; skip;}");
+				tmpART.addStr("State", "              " + transNodeDesc
+						+ "goto to_" + dest + "; skip;}");
 			}
 			return tmpART;
 		}
-		boolean tempFound = (checkMTypeList) && globalOutputs.ifInArray("mTypeList", "st_" + dest);
+		boolean tempFound = (checkMTypeList)
+				&& globalOutputs.ifInArray("mTypeList", "st_" + dest);
 
 		aNode temp3 = tNode;
 
-		// TODO because of ID issues this should check for StateNode and CompositeStateNode ONLY!
-		while (temp3.getType().equals("StateBodyNode") || temp3.getType().equals("StateNode")
+		// TODO because of ID issues this should check for StateNode and
+		// CompositeStateNode ONLY!
+		while (temp3.getType().equals("StateBodyNode")
+				|| temp3.getType().equals("StateNode")
 				|| temp3.getType().equals("CompositeStateBodyNode")) {
 			temp3 = temp3.getParent();
 		}
@@ -1914,11 +2089,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 			globalOutputs.addStr("mTypeList", "st_" + dest);
 		}
 		if (!hasGuard) {
-			tmpART.addStr("State", "           wait!_pid,st_" + dest + "; " + temp3.getID() + "_C!1; " + transNodeDesc
+			tmpART.addStr("State", "           wait!_pid,st_" + dest + "; "
+					+ temp3.getID() + "_C!1; " + transNodeDesc
 					+ "goto exit; skip;}");
 		} else {
-			tmpART.addStr("State", "              wait!_pid,st_" + dest + "; " + temp3.getID() + "_C!1; "
-					+ transNodeDesc + "goto exit; skip;}");
+			tmpART.addStr("State", "              wait!_pid,st_" + dest + "; "
+					+ temp3.getID() + "_C!1; " + transNodeDesc
+					+ "goto exit; skip;}");
 		}
 
 		return tmpART;
@@ -1968,17 +2145,22 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 
 			if (!noOutput) {
-				String className = searchUpForDest(destNode, "ClassNode").getID();
+				String className = searchUpForDest(destNode, "ClassNode")
+						.getID();
 
-				tmpART.addStr("State", "           :: atomic{Timer_V." + timeArray[0] + filler1 + timeArray[1] + " -> "
+				tmpART.addStr("State", "           :: atomic{Timer_V."
+						+ timeArray[0] + filler1 + timeArray[1] + " -> "
 						+ className + "_V.timerwait = 1;");
-				tmpART.addStr("State", "              " + className + "_V.timerwait == 0 -> goto "
+				tmpART.addStr("State", "              " + className
+						+ "_V.timerwait == 0 -> goto "
 						+ destNode.getParent().getID() + "_G;}");
 
 				timeArrayVals[1] += 1;
 				timeArray[1] = Integer.toString(timeArrayVals[1]);
-				tmpART.addStr("State", "           :: atomic{Timer_V." + timeArray[0] + filler2 + timeArray[1] + " ->");
-				tmpART.addStr("State", "              Timer_V." + timeArray[0] + "=-2; assert(0); false;}");
+				tmpART.addStr("State", "           :: atomic{Timer_V."
+						+ timeArray[0] + filler2 + timeArray[1] + " ->");
+				tmpART.addStr("State", "              Timer_V." + timeArray[0]
+						+ "=-2; assert(0); false;}");
 
 			}
 		}
@@ -1987,20 +2169,23 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputINPredicateZero(StateBodyNode tNode, boolean ifTarget) {
+	public AcceptReturnType sbnhOutputINPredicateZero(StateBodyNode tNode,
+			boolean ifTarget) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (ifTarget) {
 			aNode classRef = searchUpForDest(tNode, "ClassNode");
-			tmpART.addStr("State", "           " + classRef.getID() + "outputINPreidcateZero_V.st_"
-					+ tNode.getParent().getID() + " = 0;");
+			tmpART.addStr("State", "           " + classRef.getID()
+					+ "outputINPreidcateZero_V.st_" + tNode.getParent().getID()
+					+ " = 0;");
 		}
 
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef, boolean hasEvent,
-			AcceptReturnType hasGuardParam, boolean isFirstGuard) {
+	public AcceptReturnType sbnhOutputGuard(TransitionBodyNode transRef,
+			boolean hasEvent, AcceptReturnType hasGuardParam,
+			boolean isFirstGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 		String guardString = transRef.getGuard();
 
@@ -2021,14 +2206,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		if (guardExpr.length() == 0) {
 			aNode classRef = searchUpForDest(transRef, "ClassNode");
-			println("In Class [" + classRef.getID() + "], bad expression [" + guardString + "].");
+			println("In Class [" + classRef.getID() + "], bad expression ["
+					+ guardString + "].");
 			exit();
 			return tmpART; // never called;
 		}
 		if (stateTimeInvariant.length() == 0) {
 			tmpART.addStr("State", "           :: atomic{" + guardExpr + " ->");
 		} else {
-			tmpART.addStr("State", "           :: atomic{Timer_V." + stateTimeInvariant + " && " + guardExpr + " ->");
+			tmpART.addStr("State", "           :: atomic{Timer_V."
+					+ stateTimeInvariant + " && " + guardExpr + " ->");
 		}
 
 		return tmpART;
@@ -2058,19 +2245,23 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType sbnhOutputGuardEnd(StateBodyNode tNode, boolean hasEvent, EventNode event, boolean hasGuard) {
+	public AcceptReturnType sbnhOutputGuardEnd(StateBodyNode tNode,
+			boolean hasEvent, EventNode event, boolean hasGuard) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
 		if (hasGuard) {
 			if (hasEvent) {
 				if (event.getEventType().equals("when")) {
 					String returnValue = "";
-					returnValue = pinpv.ExpressionParser.Parse_Me(event, "when(" + event.getWhenVariable() + ")");
-					tmpART.addStr("State", "           :: else -> !(" + returnValue + ") -> goto "
+					returnValue = pinpv.ExpressionParser.Parse_Me(event,
+							"when(" + event.getWhenVariable() + ")");
+					tmpART.addStr("State", "           :: else -> !("
+							+ returnValue + ") -> goto "
 							+ tNode.getParent().getID() + "_G; skip;");
 				} else {
 					// "normal" event
-					tmpART.addStr("State", "           :: else -> goto " + tNode.getParent().getID() + "_G; skip;");
+					tmpART.addStr("State", "           :: else -> goto "
+							+ tNode.getParent().getID() + "_G; skip;");
 				}
 				tmpART.addStr("State", "           fi}");
 			}
@@ -2079,8 +2270,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public void sbnhOutputTransitions(StateBodyNode tNode, AcceptReturnType anART,
-			AcceptReturnType transitionEventList, boolean ifTarget) {
+	public void sbnhOutputTransitions(StateBodyNode tNode,
+			AcceptReturnType anART, AcceptReturnType transitionEventList,
+			boolean ifTarget) {
 		AcceptReturnType TELentitity, transitionList;
 		anART.addStr("State", "        if");
 		boolean emptyTrans;
@@ -2092,7 +2284,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 			TELentitity = (AcceptReturnType) vec.get(i);
 			String evtNodeSrc = TELentitity.getStr("event");
 			EventNode evtNode = null;
-			transitionList = (AcceptReturnType) TELentitity.getSingle("transitionlist");
+			transitionList = (AcceptReturnType) TELentitity
+					.getSingle("transitionlist");
 
 			if (evtNodeSrc.substring(0, 2).equals("e_")) {
 				evtNode = (EventNode) TELentitity.getSingle("event");
@@ -2106,7 +2299,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 				Vector<?> tlvec = transitionList.getGen("default");
 				for (int j = 0; j < tlvec.size(); j++) {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
-					String stTimeInvariant = stateTimeInvariant.substring(0); // TODO undef!?
+					String stTimeInvariant = stateTimeInvariant.substring(0); // TODO
+																				// undef!?
 					tmpStr = "        :: atomic{" + transitionMarkerStr;
 					if (stTimeInvariant.length() == 0) {
 						tmpStr += "1 -> ";
@@ -2118,14 +2312,18 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			}
 			if (evtNode != null) {
-				// Will only happen if neither of the two options above are true.
+				// Will only happen if neither of the two options above are
+				// true.
 				anART.merge(evtNode.accept(this)); // (part of iffirst != 1)
 				if (evtNode.getEventType().equals("normal")) {
-					aNode localRet = FindLocalDestNode(tNode, "SignalNode", "name", evtNode.getName());
+					aNode localRet = FindLocalDestNode(tNode, "SignalNode",
+							"name", evtNode.getName());
 					if (localRet != null) {
 						anART.moveStrKey("Trans", "State");
 					} else {
-						anART.addStr("State", "        :: atomic{" + transitionMarkerStr + "evt??" + evtNode.getName().replace(".", "__")
+						anART.addStr("State", "        :: atomic{"
+								+ transitionMarkerStr + "evt??"
+								+ evtNode.getName().replace(".", "__")
 								+ ",eval(_pid) -> ");
 					}
 				} else {
@@ -2144,9 +2342,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 					TransitionNode transNode = (TransitionNode) tlvec.get(j);
 					hasGuardParam.addSingle("default", new Boolean(false));
 
-					anART.merge(sbnhOutputGuard(transNode.bodyChild, !evtNodeSrc.equals("NOEVENT"), hasGuardParam,
+					anART.merge(sbnhOutputGuard(transNode.bodyChild,
+							!evtNodeSrc.equals("NOEVENT"), hasGuardParam,
 							j == 0));
-					hasGuard = ((Boolean) hasGuardParam.getSingle("default")).booleanValue();
+					hasGuard = ((Boolean) hasGuardParam.getSingle("default"))
+							.booleanValue();
 					hasGuards = hasGuards || hasGuard;
 
 					if (!hasGuard) {
@@ -2168,12 +2368,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 						}
 					}
 
-					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.actionsChild, hasGuard));
-					anART.merge(sbnhOutputActionMsgs(transNode.bodyChild.messagesChild, hasGuard));
-					anART.merge(sbnhOutput_Dest(tNode, transNode, hasGuard, true));
+					anART.merge(sbnhOutputActionMsgs(
+							transNode.bodyChild.actionsChild, hasGuard));
+					anART.merge(sbnhOutputActionMsgs(
+							transNode.bodyChild.messagesChild, hasGuard));
+					anART.merge(sbnhOutput_Dest(tNode, transNode, hasGuard,
+							true));
 				}
 
-				anART.merge(sbnhOutputGuardEnd(tNode, !evtNodeSrc.equals("NOEVENT"), evtNode, hasGuards));
+				anART.merge(sbnhOutputGuardEnd(tNode,
+						!evtNodeSrc.equals("NOEVENT"), evtNode, hasGuards));
 
 			}
 		}
@@ -2201,31 +2405,35 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 				if (actNode.hasTransitionBodyNode()) {
 					if (actNode.subnode.hasEventNodeChild()) {
-						if (actNode.subnode.eventNodeChild.getName().equals("entry")) {
+						if (actNode.subnode.eventNodeChild.getName().equals(
+								"entry")) {
 							tmpEntryActions += tmpres;
 						}
-						if (actNode.subnode.eventNodeChild.getName().equals("exit")) {
+						if (actNode.subnode.eventNodeChild.getName().equals(
+								"exit")) {
 							tmpExitActions += tmpres;
 						}
 					}
 				}
 
 			}
-			if (childNode.getType().equals("TimeInvariantNode") && tNode.getType().equals("StateBodyNode")) {
+			if (childNode.getType().equals("TimeInvariantNode")
+					&& tNode.getType().equals("StateBodyNode")) {
 				tmpART.merge(childNode.accept(this));
 			}
 		}
 
 		if (tmpEntryActions.length() > 0) {
-			tmpEntryActions = strln("/* entry actions */")
-					+ tmpEntryActions + strln("        }");
+			tmpEntryActions = strln("/* entry actions */") + tmpEntryActions
+					+ strln("        }");
 		} else {
 			if (tNode.getType().equals("StateBodyNode")) {
 				tmpEntryActions += strln("        }");
 			}
 		}
 		if (tmpExitActions.length() > 0) {
-			tmpExitActions = strln("/* exit actions */") + strln("        atomic {") + tmpExitActions
+			tmpExitActions = strln("/* exit actions */")
+					+ strln("        atomic {") + tmpExitActions
 					+ strln("        }");
 		}
 		tmpART.addStrln("entry", tmpEntryActions);
@@ -2243,13 +2451,16 @@ public class Hil2PromelaVisitor extends aVisitor {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		String tmpStr = "";
 
-		int tNodeCount = tNode.transitionNodeChildren.size(); // number of Transition h2PNodes
+		int tNodeCount = tNode.transitionNodeChildren.size(); // number of
+																// Transition
+																// h2PNodes
 
-		boolean inPredicateTarget = sbnhIfINPredicateTarget(tNode, (AcceptReturnType) globalOutputs
-				.getSingle("INPredicateTarget"));
+		boolean inPredicateTarget = sbnhIfINPredicateTarget(tNode,
+				(AcceptReturnType) globalOutputs.getSingle("INPredicateTarget"));
 
 		AcceptReturnType tmpART2 = sbnhGetAllActions(tNode);
-		tmpStr += strln(tmpART2.getStr("entry")) + strln(tmpART2.getStr("exit"));
+		tmpStr += strln(tmpART2.getStr("entry"))
+				+ strln(tmpART2.getStr("exit"));
 
 		if (tNodeCount == 0) {
 			// Has no transitions, only actions
@@ -2262,8 +2473,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 			if (inPredicateTarget) {
 				aNode tCN = searchUpForDest(tNode, "ClassNode");
 
-				tmpStr += strln("        " + tCN.getID() + "outputPredicateStatement_V.st_" + tNode.getParent().getID()
-						+ " = 1;");
+				tmpStr += strln("        " + tCN.getID()
+						+ "outputPredicateStatement_V.st_"
+						+ tNode.getParent().getID() + " = 1;");
 			}
 			AcceptReturnType transitionEventList = sbnhFormeventlist(tNode);
 
@@ -2278,18 +2490,22 @@ public class Hil2PromelaVisitor extends aVisitor {
 			for (int i = 0; i < vec.size(); i++) {
 				AcceptReturnType TELentitity = (AcceptReturnType) vec.get(i);
 				if (TELentitity.getStr("event").substring(0, 2).equals("e_")) {
-					EventNode evtNode = (EventNode) TELentitity.getSingle("event");
+					EventNode evtNode = (EventNode) TELentitity
+							.getSingle("event");
 					if (evtNode.getType().equals("normal")) {
-						aNode retVal = FindLocalDestNode(tNode, "SignalNode", "name", evtNode.getName());
+						aNode retVal = FindLocalDestNode(tNode, "SignalNode",
+								"name", evtNode.getName());
 						if (retVal == null) {
-							tmpStr += strln("        evq!" + evtNode.getName() + ",_pid;");
+							tmpStr += strln("        evq!" + evtNode.getName()
+									+ ",_pid;");
 						}
 					}
 				}
 			}
 
 			tmpART.addStrln("State", tmpStr);
-			sbnhOutputTransitions(tNode, tmpART, transitionEventList, inPredicateTarget);
+			sbnhOutputTransitions(tNode, tmpART, transitionEventList,
+					inPredicateTarget);
 		}
 		stateTimeInvariant = "";
 
@@ -2299,7 +2515,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitTransitionBodyNode(h2PNodes.TransitionBodyNode)
+	 * @see
+	 * h2PVisitors.aVisitor#visitTransitionBodyNode(h2PNodes.TransitionBodyNode)
 	 */
 	public AcceptReturnType visitTransitionBodyNode(TransitionBodyNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
@@ -2322,14 +2539,17 @@ public class Hil2PromelaVisitor extends aVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see h2PVisitors.aVisitor#visitTimeInvariantNode(h2PNodes.TimeInvariantNode)
+	 * @see
+	 * h2PVisitors.aVisitor#visitTimeInvariantNode(h2PNodes.TimeInvariantNode)
 	 */
 	public AcceptReturnType visitTimeInvariantNode(TimeInvariantNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
-		// There is more to the time invariant in the original code. Investigate if needed.
+		// There is more to the time invariant in the original code. Investigate
+		// if needed.
 		stateTimeInvariant = tNode.getTimeInvariant();
-		stateTimeInvariant = stateTimeInvariant.substring(1, stateTimeInvariant.length() - 1);
+		stateTimeInvariant = stateTimeInvariant.substring(1,
+				stateTimeInvariant.length() - 1);
 
 		tmpART.addStr("stateTimeInvariant", stateTimeInvariant);
 		return tmpART;

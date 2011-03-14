@@ -34,7 +34,7 @@ public class SignalNode extends aNode {
     public SignalNode(String sigName, String signalType, String className) {
         this(sigName);
         sigType = signalType;
-        SymbolTable.addSymbol(sigName, SymbolType.SIGNAL, className);
+        SymbolTable.addSymbol(sigName, SymbolType.SIGNAL, signalType, className);
     }
     
 

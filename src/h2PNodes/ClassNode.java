@@ -28,7 +28,7 @@ public class ClassNode extends aNode {
     public ClassNode(String theID) {
         super(theID, "ClassNode");
         
-        SymbolTable.addSymbol(theID, SymbolType.CLASS, "");
+        SymbolTable.addSymbol(theID, SymbolType.CLASS, "", "");
     }
     
 

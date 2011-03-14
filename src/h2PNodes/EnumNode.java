@@ -24,7 +24,7 @@ public class EnumNode extends aNode {
         super(noID(), "EnumNode");
         enums = new Vector<String>();
         enumTypeName = name;
-        
+        SymbolTable.addSymbol(name, SymbolType.ENUM, "", "");
     }
 
 	public AcceptReturnType accept(aVisitor v) {
@@ -33,7 +33,7 @@ public class EnumNode extends aNode {
 	
 	public void addEnum(String enumName) {
 		enums.add(enumName);
-		SymbolTable.addSymbol(enumName, SymbolType.GLOBVAR, "");
+		SymbolTable.addSymbol(enumName, SymbolType.ENUM, enumTypeName, enumTypeName);
 	}
     
     public String getEnumTypeName(){
