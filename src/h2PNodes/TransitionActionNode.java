@@ -39,29 +39,31 @@ public class TransitionActionNode extends aNode {
     public TransitionActionNode(String firstParam, String secondParam, String thirdParam) {
         this (firstParam, secondParam, thirdParam, "");
     }
-
+    
     public TransitionActionNode(String theActionType, String firstParam, String secondParam, String thirdParam) {
         super(noID(), "TransitionActionNode");
         actionType = theActionType;
         if (actionType.equals("newaction")) {
-          content = firstParam;
+        	content = firstParam;
         }
         if (actionType.equals("sendmsg")) {
         	// do nothing! }
         }
         if (actionType.equals("assignstmt")) {
-          assignment = firstParam;
+        	assignment = firstParam;
         }
         if (actionType.equals("printstmt")) {
-          content = firstParam;
-          paramList = secondParam;
+	        content = firstParam;
+	        paramList = secondParam;
         }
         if (actionType.equals("function")) {
-          functionID = firstParam;
-          paramList = secondParam;
+			functionID = firstParam;
+			paramList = secondParam;
+			if (!thirdParam.equals("")) {
+				functionID = thirdParam + "__sig__" + firstParam;
+			}
         }
     }
-    
 
 	public String getActionType() {
 	  return actionType;	

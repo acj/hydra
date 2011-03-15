@@ -32,6 +32,7 @@ import h2PFoundation.*;
 
 public class HILParser extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
+    protected String currentClass;
 
     public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);    	
@@ -247,7 +248,7 @@ aNode modelstmt() throws ParseException:
   { return new DriverFileNode(tID);  }
 | (
     <CLASS>
-    t = <ID> { tID = t.image; }
+    t = <ID> { tID = t.image; currentClass = tID; }
     <LCURLY> 
     ( cbNode = classbody(t.image) )?
     <RCURLY>
@@ -291,7 +292,9 @@ ClassBodyNode classbody(String className) throws ParseException:
 }
 {
 	( childNode = classstmt(className)
-		{ rootNode.addChildToNode(tNode, childNode);  }  
+	  {
+	  	rootNode.addChildToNode(tNode, childNode);
+	  }  
 	)+
 	{ return tNode; }
 }
@@ -837,19 +840,29 @@ aNode functionInAction() throws ParseException:
 	Token t;
 	String funcID = "";
 	String parmlistStr = "";
+	Boolean isFullIdentifier = false;
 }
 {
 	(
 		(
-			t = <ID> { funcID = t.image; }
+			t = <ID> { funcID = t.image; isFullIdentifier = false; }
 		|
-			t = <FULLID> { funcID = t.image; }
+			t = <FULLID> { funcID = t.image; isFullIdentifier = true; }
 		)
 		<LPARENS>
 		( parmlistStr = parameterList() )?
 		<RPARENS>
 	) 
-	{ return new TransitionActionNode ("function", funcID, parmlistStr); }
+	{
+		if (isFullIdentifier) {
+			int dotPos = funcID.indexOf(".");
+			String idClassName = funcID.substring(0, dotPos);
+			String idIdentName = funcID.substring(dotPos + 1);
+			return new TransitionActionNode ("function", idIdentName, parmlistStr, idClassName);
+		} else {
+			return new TransitionActionNode ("function", funcID, parmlistStr, currentClass);
+		}
+	}
 }
 
 String function() throws ParseException:

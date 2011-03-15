@@ -245,7 +245,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		} // if (grandpaType.equals("ActionNode"))
 		if (grandpaType.equals("TransitionNode")) {
 			if (tNode.getEventType().equals("normal")) {
-				addToMTypeList(tNode.getName());
 
 				String classRefID = searchUpForDest(tNode, "ClassNode").getID();
 
@@ -263,7 +262,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					// push(@outputState," :: atomic{$temp1?$eventname ->");
 					// one part has a trailing space, two part does not!
 					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
-							+ tNode.getName() + " -> ");
+							+ classRefID + "__sig__" + tNode.getName() + " -> ");
 				}
 
 				// Determine whether an argument is being passed with this
@@ -547,7 +546,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType visitSignalNode(SignalNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
-		addToMTypeList(tNode.getName());
+		addToMTypeList(tNode.getClassName() + "__sig__" + tNode.getName());
 
 		if (tNode.getSignalType().length() > 0) {
 			String className = tNode.getParent().getParent().getID();
@@ -2323,7 +2322,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					} else {
 						anART.addStr("State", "        :: atomic{"
 								+ transitionMarkerStr + "evt??"
-								+ evtNode.getName().replace(".", "__")
+								+ evtNode.getName().replace(".", "__sig__")
 								+ ",eval(_pid) -> ");
 					}
 				} else {

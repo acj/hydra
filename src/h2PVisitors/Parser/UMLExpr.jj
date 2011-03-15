@@ -105,15 +105,20 @@ public class UMLExpr extends NodeUtilityClass {
   			temp = "Timer_V.";
   		}
   	}
-  	
+
+  	// Is the variable an enumerated type? 
+  	if (SymbolTable.symbolExistsInEnum(varname, className)) {
+  		return className + "__" + varname;
+  	}
+  	  	
   	// Does the variable exist within the class?
   	if (SymbolTable.symbolExistsInClass(varname, className)) {
   		return temp + varname;
   	}
-  	
+	
   	// Check whether the variable is an enumerated type
   	if (!lhsHint.equals("")) {
-  		// In case the LHS is also a (previously-mangled enumerated type
+  		// In case the LHS is also a (previously-mangled) enumerated type
   		lhsHint = lhsHint.replace("__", ".");
   		
   		String hintOwningClass = "";
@@ -146,6 +151,7 @@ public class UMLExpr extends NodeUtilityClass {
 	 		String hintType = s.getDataType();
 	 		if (!SymbolTable.symbolExistsInEnum(varname, hintType)) {
 	 			System.err.println("Error: no value `" + varname + "' exists in enumerated type `" + hintType + "'");
+	 			System.err.println("Hint: " + hintAttrib);
 	 			throw new ParseException();
   			} else {
   				return hintType + "__" + varname;
@@ -155,7 +161,7 @@ public class UMLExpr extends NodeUtilityClass {
   	
   	// Search for a class in which this variable is defined.
   	String hintClass = SymbolTable.searchForSymbol(varname);
-  	if (hintClass != "") {
+  	if (!hintClass.equals("")) {
   		// The symbol *is* defined, but not in this class. Give a hint.
   		System.err.println("Error: reference to undefined variable `" +
   			varname + "' in class `" + className + "'.  " +
@@ -259,8 +265,8 @@ String stmt() throws ParseException:
     |
     	finalStr = whenclause()
   )
-  { 
-    return finalStr;
+  {
+  	  return finalStr;
   }
 }
 
@@ -342,7 +348,10 @@ String guard() throws ParseException:
 	<LBRACKET>
 	retVal = expression()
 	<RBRACKET>
-	{ return retVal; }
+	{
+		lhsHint = "";
+		return retVal;
+	}
 }
 
 

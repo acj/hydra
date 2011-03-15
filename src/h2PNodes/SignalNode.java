@@ -21,22 +21,23 @@ public class SignalNode extends aNode {
     
     private String name = "";
     private String sigType = "";
+    private String className = "";
     
     /**
      * @param theID
      */
     public SignalNode(String signame) {
         super(noID(), "SignalNode");
-        // TODO Auto-generated constructor stub
         name = signame;
     }
     
     public SignalNode(String sigName, String signalType, String className) {
         this(sigName);
-        sigType = signalType;
+        this.name = sigName;
+        this.sigType = signalType;
+        this.className = className;
         SymbolTable.addSymbol(sigName, SymbolType.SIGNAL, signalType, className);
     }
-    
 
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitSignalNode(this);
@@ -48,6 +49,10 @@ public class SignalNode extends aNode {
     
     public String getSignalType(){
       return sigType;    
+    }
+    
+    public String getClassName(){
+        return className;
     }
 
 	public String getNodeVal(String valName) {
