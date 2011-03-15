@@ -86,12 +86,12 @@ public class UMLExpr extends NodeUtilityClass {
    * statement "InstanceVar FooType fooVar := OFF", the suggestion would be
    * "FooType".  This helps the parser to resolve "OFF" to "FooType.OFF".
    */
-  public String InstVar (String varname) throws ParseException {
+  public String InstVar (String varName) throws ParseException {
   	String className;
-  	if (varname.contains(".")) {
-  		int dotPos = varname.indexOf(".");
-  		className = varname.substring(0, dotPos);
-  		varname = varname.substring(dotPos+1);
+  	if (varName.contains(".")) {
+  		int dotPos = varName.indexOf(".");
+  		className = varName.substring(0, dotPos);
+  		varName = varName.substring(dotPos+1);
   	} else {
   		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
   		className = thisClassRef.getID();
@@ -101,19 +101,19 @@ public class UMLExpr extends NodeUtilityClass {
   	// Determine whether this is a timer variable
   	String entities [] = globalOutputs.getStrSplit("TimerList");
   	for (int i = 0; i < entities.length; i++) {
-  		if (entities[i].equals(varname)) {
+  		if (entities[i].equals(varName)) {
   			temp = "Timer_V.";
   		}
   	}
 
   	// Is the variable an enumerated type? 
-  	if (SymbolTable.symbolExistsInEnum(varname, className)) {
-  		return className + "__" + varname;
+  	if (SymbolTable.symbolExistsInEnum(varName, className)) {
+  		return className + "__" + varName;
   	}
   	  	
   	// Does the variable exist within the class?
-  	if (SymbolTable.symbolExistsInClass(varname, className)) {
-  		return temp + varname;
+  	if (SymbolTable.symbolExistsInClass(varName, className)) {
+  		return temp + varName;
   	}
 	
   	// Check whether the variable is an enumerated type
@@ -141,31 +141,31 @@ public class UMLExpr extends NodeUtilityClass {
 	  	// If this enumerated type is fully resolved, then just check it
 	  	// for validity and replace the '.' with our '__' separator
 	  	if (!className.equals("") &&
-	  		SymbolTable.symbolExistsInEnum(varname, className)) {
+	  		SymbolTable.symbolExistsInEnum(varName, className)) {
 	  		
-	  		return className + "__" + varname;
+	  		return className + "__" + varName;
 	  	}
 	  	// Try to determine the type of the variable being assigned to
 	 	if (SymbolTable.symbolExistsInClass(hintAttrib, hintOwningClass)) {
 	 	 	Symbol s = SymbolTable.getSymbol(hintAttrib, hintOwningClass, Symbol.SymbolType.INSTVAR);
 	 		String hintType = s.getDataType();
-	 		if (!SymbolTable.symbolExistsInEnum(varname, hintType)) {
-	 			System.err.println("Error: no value `" + varname + "' exists in enumerated type `" + hintType + "'");
+	 		if (!SymbolTable.symbolExistsInEnum(varName, hintType)) {
+	 			System.err.println("Error: no value `" + varName + "' exists in enumerated type `" + hintType + "'");
 	 			System.err.println("Hint: " + hintAttrib);
 	 			throw new ParseException();
   			} else {
-  				return hintType + "__" + varname;
+  				return hintType + "__" + varName;
   			}
   		}
   	}
   	
   	// Search for a class in which this variable is defined.
-  	String hintClass = SymbolTable.searchForSymbol(varname);
+  	String hintClass = SymbolTable.searchForSymbol(varName);
   	if (!hintClass.equals("")) {
   		// The symbol *is* defined, but not in this class. Give a hint.
   		System.err.println("Error: reference to undefined variable `" +
-  			varname + "' in class `" + className + "'.  " +
-  			"Did you mean " + hintClass + "." + varname + "?"); 
+  			varName + "' in class `" + className + "'.  " +
+  			"Did you mean " + hintClass + "." + varName + "?"); 
   		throw new ParseException();
   	}
   	
@@ -176,7 +176,7 @@ public class UMLExpr extends NodeUtilityClass {
   		throw new ParseException();
   	}
   	
-  	return varname;
+  	return varName;
   }
 
   public String INPredicate(String predtarg) {
