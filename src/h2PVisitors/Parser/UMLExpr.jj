@@ -54,19 +54,13 @@ public class UMLExpr extends NodeUtilityClass {
 
   public String Parse_Me (aNode theClassRef, String expression) {
   	 classRef = theClassRef;
-  	 String retStr;
+  	 String retStr = "";
   	 dataStream = new StringReader (expression);
   	 ReInit(dataStream);
   	 try {
   	 	retStr = stmt();
   	 }  catch (ParseException pe) {
-  	 	retStr = "*ERROR*";
-
-        System.err.println("------------------------------------------------");
-        System.err.println("Error parsing \"" + expression + "\"\n");
-        //System.err.println(pe.toString());
-        pe.printStackTrace();
-        
+        System.err.println("\nThe error occurred while parsing this: \n    " + expression + "\n");
         System.exit(-1);
   	 }
 
@@ -86,8 +80,9 @@ public class UMLExpr extends NodeUtilityClass {
    * statement "InstanceVar FooType fooVar := OFF", the suggestion would be
    * "FooType".  This helps the parser to resolve "OFF" to "FooType.OFF".
    */
-  public String InstVar (String varName) throws ParseException {
+  public String InstVar (String nameToCheck) throws ParseException {
   	String className;
+  	String varName = nameToCheck;
   	if (varName.contains(".")) {
   		int dotPos = varName.indexOf(".");
   		className = varName.substring(0, dotPos);
@@ -97,8 +92,11 @@ public class UMLExpr extends NodeUtilityClass {
   		className = thisClassRef.getID();
   	}
   	
-  	String temp = className + "_V.";
+  	// At this point, the class name and attribute/identifier name are broken
+  	// into two parts: className and varName
+  	
   	// Determine whether this is a timer variable
+  	String temp = className + "_V.";
   	String entities [] = globalOutputs.getStrSplit("TimerList");
   	for (int i = 0; i < entities.length; i++) {
   		if (entities[i].equals(varName)) {
@@ -106,14 +104,57 @@ public class UMLExpr extends NodeUtilityClass {
   		}
   	}
 
+	// First, check the class name.  There are three cases here:
+	//
+	// (1) The class name refers to a real class.
+	// (2) The class name refers to an *instance* of a class that is stored
+	//     as an attribute in another class.
+	// (3) The class name refers to an enumerated type.
+	if (!SymbolTable.symbolExists(className, Symbol.SymbolType.CLASS)) {
+  		// The class name does not refer to a valid class.  Is it an attribute?
+  		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
+  		String containingClassName = thisClassRef.getID();
+  		String instanceName = className;
+  		if (!SymbolTable.symbolExistsInClass(instanceName, containingClassName) &&
+  			!SymbolTable.symbolExistsInEnum(varName, className)) {
+	  		System.err.println("Error: class `" + className + "' " +
+	  			"does not exist and class `" + containingClassName +
+	  			"' has no member named `" + instanceName + "'."); 
+	  		throw new ParseException();
+	  	}
+  	}
+
+	// Next, work out how to format/mangle the name.
+  	
+  	// Is the variable name a valid attribute for the class?
+	//
+	// There are two cases here:
+	// (1) The class name refers to a real class.
+	// (2) The class name is an *instance* of a class.  In this case, we need
+	//     to dereference the instance to find its class type.
+	
+	// Case (1)
+	if (SymbolTable.symbolExistsInClass(varName, className)) {
+		return temp + varName;
+	} else { // Case (2)
+		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
+	  	String containingClassName = thisClassRef.getID();
+	  	if (SymbolTable.symbolExistsInClass(className, containingClassName)) {
+		  	Symbol instanceTypeSym = SymbolTable.getSymbol(className, containingClassName, Symbol.SymbolType.INSTVAR);
+		  	String instClass = instanceTypeSym.getDataType();
+		  	if (SymbolTable.symbolExistsInClass(varName, instClass)) {
+		  		// TODO: This is a very poor solution because it stuffs
+		  		// references to every instance of a given class into
+		  		// a singleton instance of that class.  We need to handle
+		  		// multiple class instances properly.
+		  		return instClass + "_V." + varName;
+		  	}
+		}
+	}
+	
   	// Is the variable an enumerated type? 
   	if (SymbolTable.symbolExistsInEnum(varName, className)) {
   		return className + "__" + varName;
-  	}
-  	  	
-  	// Does the variable exist within the class?
-  	if (SymbolTable.symbolExistsInClass(varName, className)) {
-  		return temp + varName;
   	}
 	
   	// Check whether the variable is an enumerated type
@@ -145,13 +186,17 @@ public class UMLExpr extends NodeUtilityClass {
 	  		
 	  		return className + "__" + varName;
 	  	}
-	  	// Try to determine the type of the variable being assigned to
+		
+	  	// Otherwise, try to determine the type of the variable on the left-hand side
+	  	//
+	  	// For example, in the assignment "doorStatus = AJAR", we need to
+	  	// determine the type of doorStatus in order to resolve the type of
+	  	// AJAR appropriately.
 	 	if (SymbolTable.symbolExistsInClass(hintAttrib, hintOwningClass)) {
 	 	 	Symbol s = SymbolTable.getSymbol(hintAttrib, hintOwningClass, Symbol.SymbolType.INSTVAR);
 	 		String hintType = s.getDataType();
 	 		if (!SymbolTable.symbolExistsInEnum(varName, hintType)) {
 	 			System.err.println("Error: no value `" + varName + "' exists in enumerated type `" + hintType + "'");
-	 			System.err.println("Hint: " + hintAttrib);
 	 			throw new ParseException();
   			} else {
   				return hintType + "__" + varName;
@@ -163,16 +208,9 @@ public class UMLExpr extends NodeUtilityClass {
   	String hintClass = SymbolTable.searchForSymbol(varName);
   	if (!hintClass.equals("")) {
   		// The symbol *is* defined, but not in this class. Give a hint.
-  		System.err.println("Error: reference to undefined variable `" +
-  			varName + "' in class `" + className + "'.  " +
+  		System.err.println("Error: class `" + className +
+  			"' has no member named `" + varName + "'.  " +
   			"Did you mean " + hintClass + "." + varName + "?"); 
-  		throw new ParseException();
-  	}
-  	
-  	// Finally, check the class name itself
-  	if (!SymbolTable.symbolExists(className, Symbol.SymbolType.CLASS)) {
-  		System.err.println("Error: reference to undefined class `" +
-  			className + "'."); 
   		throw new ParseException();
   	}
   	
