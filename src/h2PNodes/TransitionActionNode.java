@@ -59,8 +59,9 @@ public class TransitionActionNode extends aNode {
         if (actionType.equals("function")) {
 			functionID = firstParam;
 			paramList = secondParam;
+			// Prepend the class name, if we have one
 			if (!thirdParam.equals("")) {
-				functionID = thirdParam + "__sig__" + firstParam;
+				functionID = thirdParam + "." + firstParam;
 			}
         }
     }

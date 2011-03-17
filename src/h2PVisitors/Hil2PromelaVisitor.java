@@ -624,7 +624,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (actType.equals("function")) {
 			String retVal = "";
 			retVal = pinpv.ExpressionParser.Parse_Me(tNode,
-					tNode.getFunctionID() + "(" + tNode.getParamList() + ")");
+					tNode.getFunctionID() +
+						"(" + tNode.getParamList() + ")").replace(".", "__sig__");
 			tmpStr += strln("        " + retVal);
 		}
 

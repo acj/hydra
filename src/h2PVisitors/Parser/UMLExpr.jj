@@ -61,6 +61,9 @@ public class UMLExpr extends NodeUtilityClass {
   	 	retStr = stmt();
   	 }  catch (ParseException pe) {
         System.err.println("\nThe error occurred while parsing this: \n    " + expression + "\n");
+        if (pe.getMessage() != null) {
+        	System.err.println(pe.getMessage());
+        }
         System.exit(-1);
   	 }
 
@@ -341,7 +344,19 @@ String function() throws ParseException:
 		( parameterListStr = parameterList() )?
 		<RPARENS>
 	)
-	{ return (funcID + "(" + parameterListStr + ")"); }
+	{
+		String cleanFuncID = funcID.replace("_V.", ".");
+		int dotPos = cleanFuncID.indexOf(".");
+		String className = cleanFuncID.substring(0, dotPos);
+  		String attribName = cleanFuncID.substring(dotPos + 1);
+		if (!SymbolTable.checkSymbolType(attribName, className, Symbol.SymbolType.SIGNAL)) {
+			System.err.println("Error: " + attribName + " being called as an " +
+				"operation.  Should this be an attribute reference?");
+			throw new ParseException();
+		} else {
+			return (funcID + "(" + parameterListStr + ")");
+		}
+	}
 |	(
 		<IN>
 		<LPARENS>

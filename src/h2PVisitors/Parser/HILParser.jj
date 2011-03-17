@@ -37,10 +37,6 @@ public class HILParser extends NodeUtilityClass {
     public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);    	
     }
-
-	public void initialize() {
-		SymbolTable.initialize();		
-	}
 	
     public void setRootNode (WorldUtilNode theRootNode) {
     	rootNode = theRootNode;
