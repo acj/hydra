@@ -60,7 +60,9 @@ public class UMLExpr extends NodeUtilityClass {
   	 try {
   	 	retStr = stmt();
   	 }  catch (ParseException pe) {
-        System.err.println("\nThe error occurred while parsing this: \n    " + expression + "\n");
+  	 	ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
+  		String className = thisClassRef.getID();
+        System.err.println("\nThe error occurred in class `" + className + "' while parsing this: \n    " + expression + "\n");
         if (pe.getMessage() != null) {
         	System.err.println(pe.getMessage());
         }
@@ -142,8 +144,10 @@ public class UMLExpr extends NodeUtilityClass {
 	} else { // Case (2)
 		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
 	  	String containingClassName = thisClassRef.getID();
-	  	if (SymbolTable.symbolExistsInClass(className, containingClassName)) {
-		  	Symbol instanceTypeSym = SymbolTable.getSymbol(className, containingClassName, Symbol.SymbolType.INSTVAR);
+	  	String instName = className;
+	  	if (SymbolTable.symbolExistsInClass(instName, containingClassName)) {
+		  	Symbol instanceTypeSym = SymbolTable.getSymbol(
+		  		instName, containingClassName, Symbol.SymbolType.INSTVAR);
 		  	String instClass = instanceTypeSym.getDataType();
 		  	if (SymbolTable.symbolExistsInClass(varName, instClass)) {
 		  		// TODO: This is a very poor solution because it stuffs
@@ -151,6 +155,12 @@ public class UMLExpr extends NodeUtilityClass {
 		  		// a singleton instance of that class.  We need to handle
 		  		// multiple class instances properly.
 		  		return instClass + "_V." + varName;
+		  	} else {
+		  		System.err.println("Error: class `" + instClass +
+		  			"' (the class type of member `" + instName +
+		  			"' in class `" + containingClassName +
+		  			"') has no member named `" + varName + "'.");
+		  		throw new ParseException(); 
 		  	}
 		}
 	}
