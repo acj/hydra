@@ -456,8 +456,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 
 			if (className.length() > 0) {
-				addToMTypeList(tNode.getSignalName());
-
 				if (tNode.getIntVarName().length() > 0) {
 					// With signal argument
 					String intVarName = pinpv.ExpressionParser.Parse_Me(tNode,
@@ -467,7 +465,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 					temp1 = " " + className + "_" + tNode.getSignalName()
 							+ "_p1!";
 					temp2 = intVarName + "; " + className + "_q!"
-							+ tNode.getSignalName() + ";";
+							+ className + "__sig__" + tNode.getSignalName() +
+							";";
 
 					// Determine whether $msgintvarname is an ID (the first
 					// character is [A-Z][a-z]) or a NUM (all characters are
@@ -488,7 +487,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 				} else {
 					// No signal argument
 					tmpStr += strln("        " + className + "_q!"
-							+ tNode.getSignalName() + ";");
+							+ className + "__sig__" + tNode.getSignalName() +
+							";");
 				}
 			} else {
 				tmpStr += strln("        run event(" + tNode.getSignalName()
@@ -625,7 +625,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			String retVal = "";
 			retVal = pinpv.ExpressionParser.Parse_Me(tNode,
 					tNode.getFunctionID() +
-						"(" + tNode.getParamList() + ")").replace(".", "__sig__");
+						"(" + tNode.getParamList() + ")");
 			tmpStr += strln("        " + retVal);
 		}
 
