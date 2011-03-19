@@ -424,43 +424,20 @@ public class ASTErrorChecker extends aVisitor {
 	 */
 	public AcceptReturnType visitMessageNode(MessageNode tNode) {
 		AcceptReturnType tART = new AcceptReturnType();
-		// TransitionBodyNode tBody = (TransitionBodyNode) searchUpForDest(tNode, "TransitionBodyNode");
 		aNode modelBodyRef = searchUpForDest (tNode, "ModelBodyNode");
-		aNode classBodyRef = searchUpForDest (tNode, "ClassBodyNode");
-		aNode destClassBodyRef = classBodyRef;
 		String nodeName = tNode.getNodeName();
 
-		if (tNode.getClassName().length() > 0) { // found bug in original code! (related to line below)
+		if (tNode.getClassName().length() > 0) {
 			ClassNode targetClass = (ClassNode) ifInParentAsNode(modelBodyRef, "ClassNode", tNode.getClassName());
-			if (targetClass == null) {
-				  tART.addStr("errors", "Message: (" + nodeName + ") Class [" + tNode.getClassName() 
-						  + "] does not exist.");				
-			} else {
-				// (DONe - not a bug!) fixing more bugs! The original code checks for signals 
-				// in the class's children's children. and so never find the signals!
-				// Actually, such a bug: 1. would never execute because of above,
-				// and 2. this is actually the body node it "cycled" through.
-				if (targetClass.hasClassBodyNode()) {
-					destClassBodyRef = targetClass.subnode;
-				} else {
-					  tART.addStr("errors", "Message: (" + nodeName + ") Target Class [" + tNode.getClassName() 
+			if (targetClass != null) {
+				if (!targetClass.hasClassBodyNode()) {
+					  tART.addStr("warnings", "Message: (" + nodeName + ") Target Class [" + tNode.getClassName() 
 							  + "] has no body.");				
 				}
 			}
 			if (tNode.getSignalName().length() == 0) {
 				  tART.addStr("errors", "Message: (" + nodeName + ") Class [" + tNode.getClassName() 
 						  + "] Delimits No Signal.");
-			}
-		} 
-		
-		// there is a bug in the non-external-class version of this test
-		// that looks for an IntVar instead of the signal!
-		// Note: This part was moved here to remove redundancy, all that the first test does
-		// now is find the right class!
-		if (tNode.getSignalName().length() > 0) {
-			if (!ifInParent(destClassBodyRef, "SignalNode", "name", tNode.getSignalName())) {
-				  tART.addStr("errors", "Message: (" + nodeName + ") in Class [" + tNode.getClassName() 
-						  + "] signal \"" + tNode.getSignalName() + "\" does not exist.");				
 			}
 		}
 		
