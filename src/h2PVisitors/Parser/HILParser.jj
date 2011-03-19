@@ -850,14 +850,10 @@ aNode functionInAction() throws ParseException:
 		<RPARENS>
 	) 
 	{
-		if (isFullIdentifier) {
-			int dotPos = funcID.indexOf(".");
-			String idClassName = funcID.substring(0, dotPos);
-			String idIdentName = funcID.substring(dotPos + 1);
-			return new TransitionActionNode ("function", idIdentName, parmlistStr, idClassName);
-		} else {
-			return new TransitionActionNode ("function", funcID, parmlistStr, currentClass);
-		}
+		System.err.println("Error: function call in action list.  Function " +
+			"calls should appear after the action list and must be prefixed " +
+			"by a caret (^).
+		throw new ParseException();
 	}
 }
 
