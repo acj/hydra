@@ -42,6 +42,19 @@ public class HILParser extends NodeUtilityClass {
     	rootNode = theRootNode;
     }
     
+    public void parse () {
+    	try {
+    		spec();
+	    } catch (ParseException pe) {
+	        System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");
+	        if (pe.getMessage() != null) {
+	       		System.err.println("The misbehaving line is as follows:\n\n" +
+	       			pe.getMessage());
+	       	}
+	        System.exit(-1);
+	    }
+    }
+    
     // Dummy method to allow us to use the same expression rules from
     // UMLExpr.
     public String InstVar (String varname) {
@@ -850,9 +863,10 @@ aNode functionInAction() throws ParseException:
 		<RPARENS>
 	) 
 	{
-		System.err.println("Error: function call in action list.  Function " +
+		System.err.println("Error: `" + funcID + "(" + parmlistStr + ")'" +
+			" is a function call in an action list.  Function " +
 			"calls should appear after the action list and must be prefixed " +
-			"by a caret (^).
+			"by a caret (^).");
 		throw new ParseException();
 	}
 }
