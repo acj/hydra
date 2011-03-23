@@ -94,6 +94,17 @@ public class SymbolTable {
 		return symbols.containsKey(mangleSymbolName(symName, typeName, SymbolType.ENUM));
 	}
 	
+	public static String getDataTypeOfAttribute(String instanceName,
+												String containingClass) {
+		if (symbolExistsInClass(instanceName, containingClass)) {
+			Symbol sym = getSymbol(instanceName, containingClass, SymbolType.INSTVAR);
+			return sym.getDataType();
+		} else {
+			return null;
+		}
+		
+	}
+	
 	/**
 	 * Determine the owning class of a symbol
 	 * @param symName Name of symbol
