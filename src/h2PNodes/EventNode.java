@@ -16,6 +16,7 @@ import h2PVisitors.aVisitor;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class EventNode extends aNode {
+	private String className = "";
 	private String eventName = "";
     private String eventVariable = "";
     private String whenVariable = "";
@@ -24,9 +25,9 @@ public class EventNode extends aNode {
     /**
      * @param theID
      */
-    public EventNode(String theEventName, String theEventType, String theEventOrWhenVariable) {
+    public EventNode(String theClassName, String theEventName, String theEventType, String theEventOrWhenVariable) {
         super(noID(), "EventNode");
-        // TODO Auto-generated constructor stub
+        className = theClassName;
         eventName = theEventName;
         eventType = theEventType;
         eventVariable = theEventOrWhenVariable;
@@ -36,6 +37,10 @@ public class EventNode extends aNode {
    
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitEventNode(this);
+	}
+	
+	public String getClassName() {
+		return className;
 	}
 	
 	public String getName() {
@@ -61,6 +66,9 @@ public class EventNode extends aNode {
         // returns the transition's description.
         String tmpStr = "";
         if (eventType.equals("normal")) {
+        	if (!className.equals("")) {
+        		tmpStr += className + ".";
+        	}
         	tmpStr += eventName + "(" + eventVariable + ")";   
         }
         if (eventType.equals("when")) {

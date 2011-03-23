@@ -1,12 +1,9 @@
-/*
- * Created on Jul 22, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PVisitors;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.Symbol;
+import h2PFoundation.SymbolTable;
+import h2PFoundation.Symbol.SymbolType;
 import h2PNodes.ActionNode;
 import h2PNodes.ClassBodyNode;
 import h2PNodes.ClassNode;
@@ -37,7 +34,11 @@ import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
 import h2PVisitors.Parser.genericLex1;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -46,30 +47,18 @@ import java.util.Vector;
  */
 public class Hil2PromelaVisitor extends aVisitor {
 	protected String stateTimeInvariant = "";
-
 	protected int LEFTMARGIN = 10;
-
 	protected Vector<Integer> tabVec = new Vector<Integer>();
-
 	protected String mbnhSTR = "";
-
 	protected int mbnhLASTLVL = 0;
-
 	protected AcceptReturnType globalOutputs;
-
 	protected PromelaStateVisitor psv;
-
 	protected PromelaInPredicateVisitor pinpv;
-
 	protected genericLex1 genLex;
-
 	protected boolean pedantic;
-
 	protected boolean printTransitionEntry;
-
 	protected boolean simpleTransitionPrint;
 
-	// TODO don't forget to implement SetNever!
 	public Hil2PromelaVisitor() {
 		super();
 		callVisitNodeAlways = false; /* disable general node visitation function */
@@ -90,6 +79,40 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tabVec.addElement(new Integer(i));
 			i += increment;
 		}
+	}
+	
+	protected String mangleSymbolName(Symbol sym) {
+		String mangledName = "";
+		switch (sym.getType()) {
+			case CLASS:
+			{
+				mangledName = sym.getName() + "_V";
+			}
+			case INSTVAR:
+			{
+				String instDataType = sym.getDataType();
+				if (SymbolTable.symbolExists(instDataType, SymbolType.CLASS)) {
+					// This instance variable is an instance of another class.
+					// Find out which struct array index we need to use.
+					Symbol dataTypeSym = SymbolTable.getSymbol(instDataType);
+					Vector<String> instances = (Vector<String>)dataTypeSym.getData("instances");
+					assert(instances.contains(sym));
+					int structIndex = instances.indexOf(sym);
+					mangledName = sym.getOwningClass() + "_V[" + structIndex + "]";
+				} else {
+					mangledName = sym.getOwningClass() + "_V[0]." + sym.getName();
+				}
+			}
+			case SIGNAL:
+			{
+				mangledName = sym.getOwningClass() + "__sig__" + sym.getName();
+			}
+			case ENUM:
+			{
+				mangledName = sym.getOwningClass() + "__" + sym.getName();
+			}
+		}
+		return mangledName;
 	}
 
 	protected int tabFunc(int level) {
@@ -170,17 +193,30 @@ public class Hil2PromelaVisitor extends aVisitor {
 			aNode aChild = (aNode) tNode.children.get(i);
 			if (aChild.getType().equals("CompositeStateBodyNode")) {
 				CompositeStateBodyNode csbn = (CompositeStateBodyNode) aChild;
-				// from: @GlobaloutputSignal =
-				// visitcstatebodyNodePak->GlobalSignalHeadOutput( $ent,
-				// @GlobaloutputSignal
-				// );
-
-				tmpStr += strln("chan " + csbn.getParent().getID()
-						+ "_C=[0] of {bit};");
-				tmpStr += strln("chan " + csbn.getParent().getID()
-						+ "_start=[0] of {bit};");
+				String csID = csbn.getParent().getID();
+				// TODO: Need to declare an array of channels
+				tmpStr += strln("chan " + csID + "_C=[0] of {bit};");
+				tmpStr += strln("chan " + csID + "_start=[0] of {bit};");
 				tmpART.addStrln("Signal", tmpStr); // had wrong name!
 				tmpART.merge(csbn.accept(this));
+				
+				// Keep a list of the composite state identifiers so that we
+				// can start them up later in the "init { }" block.
+				Map<String, Set<String>> classCSMap =
+					(Map<String, Set<String>>)globalOutputs.getSingle("csIdents");
+				String className = searchUpForDest(aChild, "ClassNode").getID();
+				if (classCSMap == null) {
+					classCSMap = new HashMap<String, Set<String>>();
+					globalOutputs.addSingle("csIdents", classCSMap);
+				}
+				Set<String> csIdents;
+				if (!classCSMap.containsKey(className)) {
+					csIdents = new HashSet<String>(); 
+					classCSMap.put(className, csIdents);
+				} else {
+					csIdents = classCSMap.get(className);
+				}
+				csIdents.add(csID);
 			}
 		}
 
@@ -245,38 +281,25 @@ public class Hil2PromelaVisitor extends aVisitor {
 		} // if (grandpaType.equals("ActionNode"))
 		if (grandpaType.equals("TransitionNode")) {
 			if (tNode.getEventType().equals("normal")) {
-
 				String classRefID = searchUpForDest(tNode, "ClassNode").getID();
-
 				String tmpStateTimeInvariant = stateTimeInvariant;
-				/*
-				 * --> my $statetimeinvariant=ASTVisitorForPromela->
-				 * GetstatetimeinvariantAndUndef();
-				 */
 				if (tmpStateTimeInvariant.length() > 0) {
-					// push(@outputState," :: atomic{Timer_V.$statetimeinvariant && $temp1?$eventname ->");
-					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
+					tmpStr += strln("        :: atomic{" + classRefID + "_q[__this]?"
 							+ classRefID + "__sig__" + tNode.getName() + " -> Timer_V."
 							+ tmpStateTimeInvariant + " -> ");
 				} else {
-					// push(@outputState," :: atomic{$temp1?$eventname ->");
-					// one part has a trailing space, two part does not!
-					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
+					tmpStr += strln("        :: atomic{" + classRefID + "_q[__this]?"
 							+ classRefID + "__sig__" + tNode.getName() + " -> ");
 				}
 
 				// Determine whether an argument is being passed with this
 				// signal
 				if (tNode.getVariable().length() > 0) {
+					// TODO: Needs unit test
 					tmpStr += strln("                   " + classRefID + "_"
-							+ tNode.getName() + "_p1?" + classRefID + "_V."
+							+ tNode.getName() + "_p1[__this]?" + classRefID + "__sig__"
 							+ tNode.getVariable());
 					tmpStr += strln("                   -> ");
-					/*
-					 * perl @outputTrans =
-					 * visiteventNodePak->TwoPartEventOutput( $thiseventnode,
-					 * @outputTrans );
-					 */
 				}
 			} // if (tNode.getEventType().equals("normal"))
 			if (tNode.getEventType().equals("when")) {
@@ -287,7 +310,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.addStrln("Trans", tmpStr);
 		} // if (grandpaType.equals("TransitionNode"))
 
-		return tmpART; // output to @outputTrans
+		return tmpART;
 	}
 
 	/*
@@ -313,13 +336,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 			aNode entity = (aNode) tCBN.children.get(i);
 			if (tNode.getID().equals(entity.getID())) {
 				if (entity.getType().equals("StateNode")) {
-					// push(@GlobalHistoryMtype,"mtype H_$cstateID=st_$entID;");
 					tmpStr += strln("mtype H_" + tCBN.getParent().getID()
 							+ "=st_" + entity.getID() + ";");
 				}
 				if ((entity.getType().equals("CompositeStateNode"))
 						|| (entity.getType().equals("ConcurrentCompositeNode"))) {
-					// push(@GlobalHistoryMtype,"mtype H_$cstateID=to_$entID;");
 					tmpStr += strln("mtype H_" + tCBN.getParent().getID()
 							+ "=to_" + entity.getID() + ";");
 				}
@@ -328,8 +349,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpART.addStrln("globalHistory", tmpStr);
 
 		return tmpART;
-		// returns var outputHistory. (from tbn accept)
-		// also returns GlobalHistoryMtype (from ResolveDest)
 	}
 
 	/*
@@ -349,12 +368,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.addStrln("Init", strln("/*Initial actions / messages */"));
 			tmpART.merge(tNode.subnode.accept(this));
 			tmpART.moveStrKey("transitions", "Init");
-			/*
-			 * Array join order is as follows: outputInit +=
-			 * "/ Initial actions.../" then UniversalClass->jointwoarrays
-			 * effectively appends the output from the TransitionBodyNode
-			 * *after* the live above.
-			 */
 		}
 
 		aNode aParent = tNode.getParent();
@@ -390,33 +403,32 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 */
 	public AcceptReturnType visitInstanceVariableNode(InstanceVariableNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
-
+		boolean isClassInstance = SymbolTable.symbolExists(tNode.getVType(), SymbolType.CLASS);
 		if (!(tNode.getVType().equals("timer"))) {
 			String correctedType = "int";
 			if (tNode.getVType().equals("bool")) {
 				correctedType = "bool";
 			}
-			tmpART.addStrln("InstVarBody", strln("        " + correctedType
-					+ " " + tNode.getVar() + ";"));
+			
+			// If this is an instance of a class, then we do not want to
+			// generate a Promela declaration for it.
+			if (!isClassInstance) {
+				// All other (non-instance) attributes
+				tmpART.addStrln("InstVarBody", strln("        " + correctedType
+						+ " " + tNode.getVar() + ";"));
+			}
 		} else {
 			tmpART.addStrln("InstVarOutput",
 					strln("       short " + tNode.getVar() + "=-1;"));
 			tmpART.addStrln("TimerList", strln(tNode.getVar()));
-			globalOutputs.addStrln("TimerList", strln(tNode.getVar())); // needed
-																		// by
-																		// the
-																		// UML
-																		// expression
-																		// parser
+			// Needed by the UML expression parser
+			globalOutputs.addStrln("TimerList", strln(tNode.getVar()));
 		}
 
-		if ((tNode.getInitValue().length() > 0)) {
-			aNode instanceVariableReference = FindLocalDestNode(tNode,
-					"InstanceVariableNode", "var", tNode.getVar());
-
-			String className = instanceVariableReference.getParent()
-					.getParent().getID();
-			String tmpStr = strln("        " + className + "_V."
+		if (!isClassInstance && tNode.getInitValue().length() > 0) {
+			aNode varDataType = searchUpForDest(tNode, "ClassNode");
+			assert(varDataType != null);
+			String tmpStr = strln("        " + varDataType.getID() + "_V[__this]."
 					+ tNode.getVar() + " = " + tNode.getInitValue() + ";");
 			tmpART.addStrln("InstVar", tmpStr);
 		}
@@ -439,66 +451,82 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 * @see h2PVisitors.aVisitor#visitMessageNode(h2PNodes.MessageNode)
 	 */
 	public AcceptReturnType visitMessageNode(MessageNode tNode) {
+		assert(tNode.getSignalName().length() > 0);
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		String tmpStr = "";
+		// Check semantics to see if the local class has this InstVar
+		aNode destCN = searchUpForDest(tNode, "ClassNode");
+		Boolean intVarIsLocal; // Whether the argument is an mtype or an
+								// instance variable
+		String className = tNode.getClassName();
+		if (className == "") {
+			className = destCN.getID();
+			intVarIsLocal = true;
+		} else {
+			intVarIsLocal = false;
+		}
+		String mangledSignalName = className + "__sig__" + tNode.getSignalName(); 
+		final int instIndex;
+		// If the signal is being called on an attribute that is an instance
+		// of a class, then retrieve the class's type and mangle the signal
+		// name accordingly.
+		if (SymbolTable.symbolExistsInClass(className, destCN.getID())) {
+			String instanceClassType =
+				SymbolTable.getDataTypeOfAttribute(className, destCN.getID());
+			// Mangle class name
+			Symbol instTypeSym = SymbolTable.getSymbol(instanceClassType);
+			Symbol instSym = SymbolTable.getSymbol(destCN.getID() + "." + className);
+			instIndex = instTypeSym.getIndexOfInstance(instSym);
+			className = instanceClassType;
+			// Mangle signal name
+			mangledSignalName = instanceClassType + "__sig__" + tNode.getSignalName(); 
+		} else {
+			instIndex = 0;
+		}
 
-		if (tNode.getSignalName().length() > 0) {
-			// Check semantics to see if the local class has this InstVar
-			aNode destCN = searchUpForDest(tNode, "ClassNode");
-			Boolean intVarIsLocal; // Whether the argument is an mtype or an
-									// instance variable
-			String className = tNode.getClassName();
-			if (className == "") {
-				className = destCN.getID();
-				intVarIsLocal = true;
-			} else {
-				intVarIsLocal = false;
-			}
+		if (className.length() > 0) {
+			if (tNode.getIntVarName().length() > 0) {
+				// With signal argument
+				String intVarName = pinpv.ExpressionParser.Parse_Me(tNode,
+						tNode.getIntVarName());
+				String temp1, temp2;
 
-			if (className.length() > 0) {
-				if (tNode.getIntVarName().length() > 0) {
-					// With signal argument
-					String intVarName = pinpv.ExpressionParser.Parse_Me(tNode,
-							tNode.getIntVarName());
-					String temp1, temp2;
+				temp1 = " " + className + "_" + tNode.getSignalName()
+						+ "_p1[" + instIndex + "]!";
+				temp2 = intVarName + "; " + className + "_q[" + instIndex + "]!"
+						+ mangledSignalName + ";";
 
-					temp1 = " " + className + "_" + tNode.getSignalName()
-							+ "_p1!";
-					temp2 = intVarName + "; " + className + "_q!"
-							+ className + "__sig__" + tNode.getSignalName() +
-							";";
-
-					// Determine whether $msgintvarname is an ID (the first
-					// character is [A-Z][a-z]) or a NUM (all characters are
-					// [0-9]+).
-					char testAt = tNode.getIntVarName().toUpperCase().charAt(0);
-					if ((testAt >= '0') && (testAt <= '9') || (testAt == '-')) {
-						// IntVarName is a number
-						tmpStr += strln(temp1 + temp2);
-					} else {
-						// IntVarName is an ID
-						if (intVarIsLocal) {
-							tmpStr += strln("atomic{" + temp1 + temp2 + "};");
-						} else {
-							tmpStr += strln("atomic{" + temp1 + destCN.getID()
-									+ "_V." + temp2 + "};");
-						}
-					}
+				// Determine whether $msgintvarname is an ID (the first
+				// character is [A-Za-z]) or a NUM (all characters are
+				// [0-9]+).
+				char testAt = tNode.getIntVarName().toUpperCase().charAt(0);
+				if ((testAt >= '0') && (testAt <= '9') || (testAt == '-')) {
+					// IntVarName is a number
+					tmpStr += strln(temp1 + temp2);
 				} else {
-					// No signal argument
-					tmpStr += strln("        " + className + "_q!"
-							+ className + "__sig__" + tNode.getSignalName() +
-							";");
+					// IntVarName is an ID
+					if (intVarIsLocal) {
+						tmpStr += strln("atomic{" + temp1 + temp2 + "};");
+					} else {
+						tmpStr += strln("atomic{" + temp1 + destCN.getID()
+								+ "__sig__" + temp2 + "};");
+					}
 				}
 			} else {
-				tmpStr += strln("        run event(" + tNode.getSignalName()
-						+ ");");
-
+				// No signal argument
+				tmpStr += strln("        " +
+						className + "_q[" + instIndex + "]!" +
+						mangledSignalName + ";");
 			}
+		} else {
+			// TODO: Is this chunk for handling events from the driver file?  If
+			// not, then can it be removed?
+			tmpStr += strln("        run event(" + tNode.getSignalName() + ");");
+
 		}
 
 		tmpART.addStrln("default", tmpStr);
-		return tmpART; // outputs to @outputmessage
+		return tmpART;
 	}
 
 	/*
@@ -511,7 +539,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		tmpART.merge(tNode.acceptChildren(this));
 
-		return tmpART; // merges all @outputmessage into one @outputmessages
+		return tmpART;
 	}
 
 	/*
@@ -550,11 +578,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		if (tNode.getSignalType().length() > 0) {
 			String className = tNode.getParent().getParent().getID();
+			// TODO: Need to declare an array of channels?
 			tmpART.addStr("Signal", "chan " + className + "_" + tNode.getName()
 					+ "_p1=[5] of {" + tNode.getSignalType() + "};");
 		}
 
-		return tmpART; // output to @GlobaloutputSignal
+		return tmpART;
 	}
 
 	/*
@@ -584,8 +613,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode
-	 * )
+	 * h2PVisitors.aVisitor#visitTransitionActionNode(h2PNodes.TransitionActionNode)
 	 */
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
@@ -603,9 +631,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 		}
 		if (actType.equals("assignstmt")) {
-			// T ODO from visittranactionNodePak->outputAssignment
 			String retVal = pinpv.ExpressionParser.Parse_Me(tNode,
 					tNode.getAssignment());
+			aNode classNode = searchUpForDest(tNode, "ClassNode");
+			retVal = retVal.replace(classNode.getID() + "_V.",
+					classNode.getID() + "_V[__this].");
 			tmpStr += strln("        " + retVal);
 		}
 		if (actType.equals("printstmt")) {
@@ -625,12 +655,15 @@ public class Hil2PromelaVisitor extends aVisitor {
 			String retVal = "";
 			retVal = pinpv.ExpressionParser.Parse_Me(tNode,
 					tNode.getFunctionID() +
-						"(" + tNode.getParamList() + ")");
+					"(" + tNode.getParamList() + ")");
+			aNode classNode = searchUpForDest(tNode, "ClassNode");
+			// TODO: Needs to refer to the correct array index
+			retVal = retVal.replace(classNode.getID() + "_V.", "__this.");
 			tmpStr += strln("        " + retVal);
 		}
 
 		tmpART.addStrln("default", tmpStr);
-		return tmpART; // output to @outputtranaction
+		return tmpART;
 	}
 
 	/*
@@ -672,11 +705,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType cbnhOutputClassHead(ClassBodyNode tNode) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
-		String classname = tNode.getParent().getID();
+		String className = tNode.getParent().getID();
 		tmpART.addStr("Class", "");
 		tmpART.addStr("Class", "");
-
-		tmpART.addStr("Class", "active " + "proctype " + classname + "()");
+		tmpART.addStr("Class", "proctype " + className + "(int __this)");
 		tmpART.addStr("Class", "{");
 		if (tNode.hasStateMachine()) {
 			tmpART.addStr("Class", "atomic{");
@@ -695,13 +727,24 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpART;
 	}
 
+	/**
+	 * Builds an array of channels that the class will use to receive events
+	 * from other classes.
+	 * 
+	 * @param tNode Node representing the class body
+	 * @return ART that includes the channel array
+	 */
 	public AcceptReturnType cbnhGlobalSignalHeadOutput(ClassBodyNode tNode) {
 		AcceptReturnType tmpART = new AcceptReturnType();
-
 		String classID = tNode.getParent().getID();
-		tmpART.addStr("Signal", "chan " + classID + "_q=[5] of {mtype};");
-		tmpART.addStr("Signal", "chan " + classID + "_C=[0] of {bit};");
-
+		final int numInstances =
+			SymbolTable.getSymbol(classID).getNumberOfInstances();
+		// Channel for receiving events from other classes
+		tmpART.addStr("Signal",
+			"chan " + classID + "_q[" + numInstances + "]=[5] of {mtype};");
+		// TODO: Channel for...
+		tmpART.addStr("Signal",
+			"chan " + classID + "_C[" + numInstances + "]=[0] of {bit};");
 		return tmpART;
 	}
 
@@ -725,7 +768,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 				+ " */");
 		String tmpStr = "atomic{skip;";
 
-		// Make it look like the original perl Hydra output
 		String padding1 = " ";
 		if ((!isFromClassCall) && pedantic) {
 			padding1 = "";
@@ -734,8 +776,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				+ cstatename + "_start!1;}");
 		tmpART.addStr("CState", "        atomic{" + cstatename + "_C?1;"
 				+ padding1 + "wait??" + cstatename + "_pid,m;}");
-		tmpART.addStr("CState", "        if"); // TODO why does this NOT appear
-												// in the perl promela?
+		tmpART.addStr("CState", "        if");
 
 		return tmpART;
 	}
@@ -1012,13 +1053,21 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		tmpART.moveStrKey("InstVarBody", "InstVarGlobal");
 		cbnhAddFormatToINPredicate(INPredicateList);
-		tmpART.addStr("InstVarGlobal", INPredicateList.getStr("default"));
+		if (!INPredicateList.getStr("default").equals("")) {
+			tmpART.addStr("InstVarGlobal", INPredicateList.getStr("default"));
+		}
 
 		// Modified GlobaloutputInstVarEnd: (inline)
 		if (!className.equals("_SYSTEMCLASS_")) {
-			tmpART.addStr("InstVarGlobal", "        }");
+			tmpART.addStr("InstVarGlobal", "}");
+			
+			// Determine how many copies of this structure we need to create.
+			// We need one copy for the "static" version of the class and
+			// a copy for each instance of this class.
+			final int numInstances =
+				SymbolTable.getSymbol(className).getNumberOfInstances();
 			tmpART.addStr("InstVarGlobal", className + "_T " + className
-					+ "_V;");
+					+ "_V[" + numInstances + "]");
 			tmpART.addStr("InstVarGlobal", "");
 		}
 	}
@@ -1238,12 +1287,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 	public AcceptReturnType csbhOutputClassHead(CompositeStateBodyNode tNode) {
 		AcceptReturnType tmpART = new AcceptReturnType();
-
-		String classname = tNode.getParent().getID();
+		String csName = tNode.getParent().getID();
+		aNode classDest = searchUpForDest(tNode, "ClassNode");
+		String className = classDest.getID();
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "");
-		tmpART.addStr("CState", "active proctype " + classname
-				+ "(mtype state)");
+		tmpART.addStr("CState", "proctype " +
+				csName + "(" + className + "_T __this)");
 		tmpART.addStr("CState", "{atomic{");
 		tmpART.addStr("CState", "mtype m;");
 
@@ -1540,6 +1590,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpStr;
 	}
 
+	/**
+	 * TODO: Incomplete.  Check HydraV Perl code for original implementation.
+	 * 
+	 * @param tmpinfo
+	 * @return
+	 */
 	protected String mbnhNeverDefinitionOutput(AcceptReturnType tmpinfo) {
 		String tmpStr = "";
 
@@ -1551,6 +1607,29 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpStr;
 	}
 
+	protected String mbnhEventHandlerOutput() {
+		String tmpStr = "proctype event(mtype msg)\n" +
+						"{\n" +
+						"    mtype type;\n" +
+						"    int pid;\n" +
+						"    atomic {\n" +
+						"    do\n" +
+						"    :: evq??eval(msg),pid] ->\n" +
+						"       evq??eval(msg),pid;\n" +
+						"       evt!msg,pid;\n" +
+						"       do\n" +
+						"       :: if\n" +
+						"       :: evq??type,eval(pid)] -> evq??type,eval(pid)\n" +
+						"       :: else break;\n" +
+						"          fi\n" +
+						"       od\n" +
+						"    :: else -> break\n" +
+						"    od}\n" +
+						"exit: skip\n" +
+						"}\n";
+		return tmpStr;
+	}
+	
 	protected String mbnhChanGlobalOutput() {
 		String tmpStr = "";
 
@@ -1580,7 +1659,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 		int i;
 		String tempMTL[] = globalOutputs.getStrSplit("mTypeList");
-
 		for (i = 0; i < (tempMTL.length - 1); i++) {
 			tempMTL[i] = tempMTL[i] + ", ";
 		}
@@ -1609,11 +1687,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		tmpout1.addElement(temp1);
 
-		tmpStr += mbnhPut(0, "mtype={");
-		for (i = 0; i < tmpout1.size(); i++) {
-			tmpStr += mbnhPut(0, "        " + (String) tmpout1.get(i));
+		// Output our mtype declarations if needed
+		if (tmpout1.size() > 0 && !tmpout1.get(0).equals("")) {
+			tmpStr += mbnhPut(0, "mtype={");
+			for (i = 0; i < tmpout1.size(); i++) {
+				tmpStr += mbnhPut(0, "        " + (String) tmpout1.get(i));
+			}
+			tmpStr += mbnhPut(0, "};");
 		}
-		tmpStr += mbnhPut(0, "};");
 
 		return tmpStr;
 	}
@@ -1726,6 +1807,42 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		return tmpStr;
 	}
+	
+	protected String mbnhInitOutput(AcceptReturnType anART) {
+		Map<String, Set<String>> csMap =
+			(Map<String, Set<String>>)globalOutputs.getSingle("csIdents");
+		if (csMap == null) {
+			csMap = new HashMap<String, Set<String>>();
+		}
+		String tmpStr = "init {\n";
+		// Normal ("static") classes first
+		for (Symbol classSym : SymbolTable.getClasses()) {
+			String className = classSym.getName();
+			tmpStr += "    run " + className + "(0);\n";
+			if (csMap.containsKey(className)) {
+				for (String sName : csMap.get(className)) {
+					tmpStr += "    run " + sName + "(0);\n";
+				}
+			}
+			// Instantiate class attributes that are instances of this class
+			Symbol typeSym = SymbolTable.getSymbol(className);
+			Vector<Symbol> instances = (Vector<Symbol>)typeSym.getData("instances");
+			for (Symbol inst : instances) {
+				int instanceIndex = typeSym.getIndexOfInstance(inst);
+				tmpStr += "\trun " + typeSym.getName() +
+					"(" + instanceIndex + ");\n";
+				
+				// Instantiate any composite states for this class
+				if (!csMap.containsKey(className)) continue;
+				for (String sName : csMap.get(className)) {
+					tmpStr += "    run " + sName + "(" + instanceIndex + ");\n";
+				}				
+			}
+		}
+		
+		tmpStr += "}\n";
+		return tmpStr;
+	}
 
 	protected String mbnhNeverClaim(AcceptReturnType tmpinfo) {
 		String tmpStr = "";
@@ -1739,6 +1856,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 		return tmpStr;
 	}
 
+	/**
+	 * Top-level output function that determines the order in which Promela
+	 * constructs appear in the output.
+	 * 
+	 * @param anART AcceptReturnType instance to use for output
+	 * @return Promela output
+	 */
 	protected String mbnhOutputModelBodyNode(AcceptReturnType anART) {
 		String tmpStr = "";
 
@@ -1751,7 +1875,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpStr += mbnhDriverFile(anART);
 		tmpStr += mbnhWholeClassOutput(anART);
 		tmpStr += mbnhTimerProcessOutput(anART);
+		tmpStr += mbnhInitOutput(anART);
 		tmpStr += mbnhNeverClaim(anART);
+		tmpStr += mbnhEventHandlerOutput();
 
 		return tmpStr;
 	}
@@ -2203,6 +2329,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		String guardExpr = "";
 		guardExpr = pinpv.ExpressionParser.Parse_Me(transRef, guardString);
+		guardExpr = guardExpr.replace("_V.", "_V[__this].");
 
 		if (guardExpr.length() == 0) {
 			aNode classRef = searchUpForDest(transRef, "ClassNode");
@@ -2321,10 +2448,34 @@ public class Hil2PromelaVisitor extends aVisitor {
 					if (localRet != null) {
 						anART.moveStrKey("Trans", "State");
 					} else {
+						String signalName = "";
+						assert(evtNode.getClassName().equals("") == false);
+
+						// Two cases here:
+						// (1) The event refers to an operation being called
+						//     on an attribute that is an instance of
+						//	   another class.
+						// (2) The event refers to an operation being called
+						//     on a static class.
+						aNode owningClass = searchUpForDest(evtNode, "ClassNode");
+						String instanceType = SymbolTable.getDataTypeOfAttribute(
+								evtNode.getClassName(), owningClass.getID());
+						if (instanceType != null) {
+							// Case (1): Use the instance name
+							signalName = instanceType + "__sig__" +
+								evtNode.getName();
+						} else {
+							// Case (2): Use the static class name
+							signalName = evtNode.getClassName() + "__sig__" +
+								evtNode.getName();
+						}
+						assert(signalName.equals("") == false);
+						// TODO: Is "evt" the right channel to be checking here?
+						// Won't the signals be sent to individual classes
+						// instead of being broadcasted?
 						anART.addStr("State", "        :: atomic{"
 								+ transitionMarkerStr + "evt??"
-								+ evtNode.getName().replace(".", "__sig__")
-								+ ",eval(_pid) -> ");
+								+ signalName + ",eval(_pid) -> ");
 					}
 				} else {
 					anART.moveStrKey("Trans", "State");

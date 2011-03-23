@@ -684,6 +684,7 @@ aNode transitionbody() throws ParseException:
 aNode event() throws ParseException:
 {
 	Token t;
+	String className = "";
 	String eventName = "";
 	String eventWhenVar = "";
 }
@@ -700,7 +701,17 @@ aNode event() throws ParseException:
 			<RPARENS>
 		)?
 	)
-	{ return new EventNode (eventName, "normal", eventWhenVar); }
+	{
+		final int dotPos = eventName.indexOf(".");
+		if (dotPos != -1) {
+			className = eventName.substring(0, dotPos);
+			eventName = eventName.substring(dotPos + 1);
+		} else {
+			// Use the current (implicit) class name
+			className = currentClass;
+		}
+		return new EventNode (className, eventName, "normal", eventWhenVar);
+	}
 |
 	(
 		<WHEN> <LPARENS>
@@ -711,7 +722,7 @@ aNode event() throws ParseException:
 		)
 		<RPARENS>
 	)
-	{ return new EventNode (eventName, "when", eventWhenVar); }
+	{ return new EventNode ("", eventName, "when", eventWhenVar); }
 }
 
 String guard() throws ParseException:

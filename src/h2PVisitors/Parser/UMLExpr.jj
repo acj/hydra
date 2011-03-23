@@ -36,6 +36,10 @@ package h2PVisitors.Parser;
 import h2PNodes.*;
 import h2PVisitors.*;
 import java.io.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Vector;
+import java.util.Map;
 import h2PFoundation.*;
 
 public class UMLExpr extends NodeUtilityClass {
@@ -45,11 +49,24 @@ public class UMLExpr extends NodeUtilityClass {
   protected PromelaInPredicateVisitor pinpv;
   protected Reader dataStream;
   protected String lhsHint = "";
+  protected Set<String> reservedWords;
 
   public UMLExpr(AcceptReturnType theGlobalOutputs, PromelaInPredicateVisitor THEpinpv) {
-  	this(new StringReader("This is a test string"));
-  	globalOutputs = theGlobalOutputs;
-  	pinpv = THEpinpv;
+	this(new StringReader("This is a test string"));
+	globalOutputs = theGlobalOutputs;
+	pinpv = THEpinpv;
+	String[] reservedWordArray = new String[] {
+		"active", "assert", "atomic", "bit",
+		"bool", "break", "byte", "chan", "d_step", "D_proctype", "do", "else",
+		"empty", "enabled", "fi", "full", "goto", "hidden", "if", "init",
+		"int", "len", "mtype", "nempty", "never", "nfull", "od", "of",
+		"pc_value", "printf", "priority", "proctype", "provided", "run",
+		"short", "skip", "timeout", "typedef", "unless", "unsigned",
+		"xr", "xs" };
+	reservedWords = new HashSet<String>();
+	for (String word : reservedWordArray) {
+		reservedWords.add(word);
+	}
   }
 
   public String Parse_Me (aNode theClassRef, String expression) {
@@ -99,6 +116,15 @@ public class UMLExpr extends NodeUtilityClass {
   	
   	// At this point, the class name and attribute/identifier name are broken
   	// into two parts: className and varName
+  	//
+  	// Perform a boilerplate check against the list of reserved words in
+  	// Promela
+  	if (reservedWords.contains(varName.toLowerCase())) {
+  		System.err.println("Error: reserved word `" + varName + "' used as " +
+  			"a variable.");
+  		throw new ParseException();
+  	}
+  	
   	
   	// Determine whether this is a timer variable
   	String temp = className + "_V.";
@@ -146,15 +172,20 @@ public class UMLExpr extends NodeUtilityClass {
 	  	String containingClassName = thisClassRef.getID();
 	  	String instName = className;
 	  	if (SymbolTable.symbolExistsInClass(instName, containingClassName)) {
-		  	Symbol instanceTypeSym = SymbolTable.getSymbol(
+		  	Symbol instanceSym = SymbolTable.getSymbol(
 		  		instName, containingClassName, Symbol.SymbolType.INSTVAR);
-		  	String instClass = instanceTypeSym.getDataType();
+		  	String instClass = instanceSym.getDataType();
 		  	if (SymbolTable.symbolExistsInClass(varName, instClass)) {
-		  		// TODO: This is a very poor solution because it stuffs
-		  		// references to every instance of a given class into
-		  		// a singleton instance of that class.  We need to handle
-		  		// multiple class instances properly.
-		  		return instClass + "_V." + varName;
+		  		Symbol instanceTypeSym = SymbolTable.getSymbol(instClass);
+		  		// Tally this instance in the class's symbol
+	        	instanceTypeSym.addClassInstance(instanceSym);
+		  		
+		  		// Mangle the name to use the correct instance of this class
+		  		// TODO: It would be preferable to do this in the visitor class.
+		  		final int instanceIndex =
+		  			instanceTypeSym.getIndexOfInstance(instanceSym);
+		  		assert(instanceIndex != -1);
+		  		return instClass + "_V[" + instanceIndex + "]." + varName;
 		  	} else {
 		  		System.err.println("Error: class `" + instClass +
 		  			"' (the class type of member `" + instName +
@@ -172,16 +203,24 @@ public class UMLExpr extends NodeUtilityClass {
 	
   	// Check whether the variable is an enumerated type
   	if (!lhsHint.equals("")) {
-  		// In case the LHS is also a (previously-mangled) enumerated type
-  		lhsHint = lhsHint.replace("__", ".");
-  		
   		String hintOwningClass = "";
   		String hintAttrib = "";
   		if (lhsHint.contains(".")) {
 	  		int dotPos = lhsHint.indexOf(".");
 	  		hintOwningClass = lhsHint.substring(0, dotPos);
 	  		if (hintOwningClass.contains("_V")) {
-	  			hintOwningClass = hintOwningClass.substring(0, hintOwningClass.length() - 2);
+	  			hintOwningClass = hintOwningClass.replace("_V", "");
+	  		}
+	  		// If the LHS refers to an instance of a class that is an attribute
+	  		// in another class, then unmangle the name.  For our purposes
+	  		// here, we can refer directly to the "original" class and ignore
+	  		// the instance name.
+	  		if (hintOwningClass.contains("__")) {
+	  			int underPos = hintOwningClass.indexOf("__");
+	  			String instType = SymbolTable.getDataTypeOfAttribute(
+	  				hintOwningClass.substring(underPos + 2),
+	  				hintOwningClass.substring(0, underPos));
+	  			hintOwningClass = instType;
 	  		}
 	  		hintAttrib = lhsHint.substring(dotPos + 1);
 	  	} else {
@@ -358,9 +397,18 @@ String function() throws ParseException:
 		String cleanFuncID = funcID.replace("_V.", ".");
 		int dotPos = cleanFuncID.indexOf(".");
 		String className = cleanFuncID.substring(0, dotPos);
-  		String attribName = cleanFuncID.substring(dotPos + 1);
-		if (!SymbolTable.checkSymbolType(attribName, className, Symbol.SymbolType.SIGNAL)) {
-			System.err.println("Error: " + attribName + " being called as an " +
+  		String signalName = cleanFuncID.substring(dotPos + 1);
+  		// If the class name refers to an instance of another class, then we
+  		// need to unmangle the name and look up the name of the other class.
+  		if (className.contains("__")) {
+  			int underPos = className.indexOf("__");
+  			String classContainingAttribute = className.substring(0, underPos);
+  			String instName = className.substring(underPos + 2);
+  			className = SymbolTable.getDataTypeOfAttribute(instName,
+  				classContainingAttribute);
+  		}
+		if (!SymbolTable.checkSymbolType(signalName, className, Symbol.SymbolType.SIGNAL)) {
+			System.err.println("Error: " + signalName + " being called as an " +
 				"operation.  Should this be an attribute reference?");
 			throw new ParseException();
 		} else {

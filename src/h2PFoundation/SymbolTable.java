@@ -3,12 +3,17 @@ package h2PFoundation;
 import h2PFoundation.Symbol.SymbolType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Constructs a symbol table to support the HIL and UML parsers.
  */
 public class SymbolTable {
+	final static String INST_SEPARATOR = "!";
+	final static String ENUM_SEPARATOR = "#";
+	
 	private static HashMap<String, Symbol> symbols = new HashMap<String, Symbol>();
 	
 	/**
@@ -18,16 +23,16 @@ public class SymbolTable {
 	 * @param dataType Data type of symbol (e.g., int)
 	 * @param owningClass The class containing the symbol (if any)
 	 */
-	public static void addSymbol(String name, SymbolType type, String dataType, String owningClass) {
+	public static Symbol addSymbol(String name, SymbolType type, String dataType, String owningClass) {
 		if (owningClass != "") {
-			// Mangle the variable name to include the class name
-			name = mangleSymbolName(name, owningClass, type);
+			name = owningClass + "." + name;
 		}
 		if (symbols.containsKey(name)) {
 			System.err.println("Warning: redefining existing symbol " + name);
 		}
 		Symbol sym = new Symbol(name, type, dataType, owningClass);
 		symbols.put(name, sym);
+		return sym;
 	}
 	
 	/**
@@ -65,9 +70,9 @@ public class SymbolTable {
 	 * @return True if the specified symbol exists, false otherwise
 	 */
 	public static Boolean checkSymbolType(String symName, String className, SymbolType symType) {
-		String mangledName = mangleSymbolName(symName, className, symType);
-		return symbols.containsKey(mangledName) &&
-			symbols.get(mangledName).getType() == symType;
+		String fullName = className + "." + symName;
+		return symbols.containsKey(fullName) &&
+			symbols.get(fullName).getType() == symType;
 	}
 	
 	/**
@@ -80,7 +85,7 @@ public class SymbolTable {
 		if (className.equals("")) {
 			return symbolExists(symName);
 		} else {
-			return symbols.containsKey(mangleSymbolName(symName, className, SymbolType.CLASS));
+			return symbols.containsKey(className + "." + symName);
 		}
 	}
 	
@@ -91,7 +96,7 @@ public class SymbolTable {
 	 * @return True if the symbol exists within the enumerated type; false if it does not
 	 */
 	public static Boolean symbolExistsInEnum(String symName, String typeName) {
-		return symbols.containsKey(mangleSymbolName(symName, typeName, SymbolType.ENUM));
+		return symbols.containsKey(typeName + "." + symName);
 	}
 	
 	public static String getDataTypeOfAttribute(String instanceName,
@@ -123,7 +128,7 @@ public class SymbolTable {
 	 * @param symName Name of symbol
 	 * @return The symbol, if it exists; null otherwise
 	 */
-	private static Symbol getSymbol(String symName) {
+	public static Symbol getSymbol(String symName) {
 		if (symbols.containsKey(symName)) {
 			return symbols.get(symName);
 		} else {
@@ -139,27 +144,11 @@ public class SymbolTable {
 	 * @return The symbol, if it exists; null otherwise
 	 */
 	public static Symbol getSymbol(String symName, String className, SymbolType type) {
-		String mangledName = mangleSymbolName(symName, className, type);
-		if (symbols.containsKey(mangledName)) {
-			return symbols.get(mangledName);
+		String fullName = className + "." + symName;
+		if (symbols.containsKey(fullName)) {
+			return symbols.get(fullName);
 		} else {
 			return null;
-		}
-	}
-	
-	/**
-	 * Mangles the symbol name as a function of the symbol's class, name, and type
-	 * @param symName Name of the symbol
-	 * @param className Class containing the symbol
-	 * @param type Type of the symbol
-	 * @return Mangled symbol name
-	 */
-	private static String mangleSymbolName(String symName, String className, SymbolType type) {
-		if (type.equals(SymbolType.ENUM)) {
-			// For enumerated types
-			return className + "#" + symName;
-		} else {
-			return className + "!" + symName;
 		}
 	}
 	
@@ -180,5 +169,36 @@ public class SymbolTable {
 			}
 		}
 		return "";
+	}
+	
+	/**
+	 * Get a list of classes defined in the symbol table.
+	 * 
+	 * @return Set containing all classes
+	 */
+	public static Set<Symbol> getClasses() {
+		Set<Symbol> classes = new HashSet<Symbol>();
+		for (String key : symbols.keySet()) {
+			if (key.contains(INST_SEPARATOR) || key.contains(ENUM_SEPARATOR)) {
+				continue;
+			}
+			if (symbolExists(key, SymbolType.CLASS)) {
+				classes.add(symbols.get(key));
+			}
+		}
+		return classes;
+	}
+	
+	public static Set<Symbol> getClassInstanceAttributes() {
+		Set<Symbol> instanceAttribs = new HashSet<Symbol>();
+		for (String key : symbols.keySet()) {
+			if (key.contains(INST_SEPARATOR)) {
+				Symbol sym = getSymbol(key);
+				if (symbolExists(sym.getDataType(), SymbolType.CLASS)) {
+					instanceAttribs.add(sym);
+				}
+			}
+		}
+		return instanceAttribs;
 	}
 }
