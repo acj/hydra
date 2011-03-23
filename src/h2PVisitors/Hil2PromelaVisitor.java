@@ -256,7 +256,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				if (tmpStateTimeInvariant.length() > 0) {
 					// push(@outputState," :: atomic{Timer_V.$statetimeinvariant && $temp1?$eventname ->");
 					tmpStr += strln("        :: atomic{" + classRefID + "_q?"
-							+ tNode.getName() + " -> Timer_V."
+							+ classRefID + "__sig__" + tNode.getName() + " -> Timer_V."
 							+ tmpStateTimeInvariant + " -> ");
 				} else {
 					// push(@outputState," :: atomic{$temp1?$eventname ->");
