@@ -1,6 +1,3 @@
-/*
- * Created on Nov 16, 2005
- */
 package xmi2hil;
 
 import h2PFoundation.AcceptReturnType;
@@ -11,7 +8,11 @@ import h2PVisitors.ASTErrorChecker;
 import h2PVisitors.Parser.ParseException;
 import h2PVisitors.Parser.HILParser;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
@@ -30,13 +31,10 @@ public class ConversionDriver extends NodeUtilityClass {
     Hil2PromelaVisitor funkyVisitor;
     HILParser tHILParser;
     StringBuffer hilIntermediate;
-    AcceptReturnType errors;
-    String promelaOutput = "";
     protected String hilIntermediateFilename = "";
     String inputFilename = "";
     File sourceFile = null;
     boolean isSilent = false;
-    boolean ignoreErrors = false;
     boolean makeHilIntermediate = false;
     
 	/**
@@ -44,7 +42,6 @@ public class ConversionDriver extends NodeUtilityClass {
 	 */
 	public ConversionDriver() {
 		super();
-		errors = new AcceptReturnType();
 	}
     
     public ConversionDriver(String theInputFilename) {
@@ -57,24 +54,22 @@ public class ConversionDriver extends NodeUtilityClass {
         setSourceFile(theInputFile);
     }
     
-   // Multi-stage xmi-hil converter
-    public void convert() throws ParseException  {
-        if (inputFilename.length() == 0) {
-          return;   
-        }
+    // Multi-stage xmi-hil converter
+    public String convert() throws ParseException  {
+        assert(inputFilename != "");
         
-        XmiParserComponent parser=new XmiParserComponent();
+        XmiParserComponent parser = new XmiParserComponent();
         parser.isVerbose = !isSilent;
 
         if(!sourceFile.exists() && !isSilent)
         {
-            System.out.println("xmi file '" + inputFilename + "' not found.");
-            System.exit(0);
+            System.out.println("File does not exist: `" + inputFilename + "'.");
+            System.exit(1);
         }
         // Parse the XMI file
         parser.parse(sourceFile);
         
-        Model model=parser.getUMLModel();
+        Model model = parser.getUMLModel();
 
         // convert the UML model to a hil source
         Visitor v = new ToHilVisitor();
@@ -82,60 +77,21 @@ public class ConversionDriver extends NodeUtilityClass {
         List<String> data = ((ToHilVisitor) v).getData();
         Iterator<String> it = data.iterator();
 
-        // write the hil source to a string
+        // Write the HILsource to a string
         hilIntermediate = new StringBuffer();
         while (it.hasNext()) {
             hilIntermediate.append(((String) it.next()) + "\n");
         }
-        // write the hil to an intermediate file if requested
+        // Write the HIL to an intermediate file if requested
         if (this.isMakeHilIntermediate()) {
         	save (this.getHilIntermediateFilename(), hilIntermediate.toString());
         }
-
-        // Finally convert the hil to a promela file
-        Reader dataStream = new StringReader (hilIntermediate.toString());
         
-        rootNode = new WorldUtilNode();
-        tHILParser = new HILParser(dataStream);
-        tHILParser.setRootNode(rootNode);
-        ASTErrorChecker errorChecker = new ASTErrorChecker();       
-        funkyVisitor = new Hil2PromelaVisitor();
-
-        tHILParser.spec(); // parse the HIL file
-        // check for errors.
-        errors = rootNode.accept(errorChecker); // visit!
-        String tErrors = errors.getStr("errors");
-        String tWarnings = errors.getStr("warnings");
-        promelaOutput = "";
-        if (tErrors.length() > 0) {
-        	promelaOutput = "";
-        	if (!isSilent) {
-        		println("There are Errors in the model:");
-        		println(tErrors);
-        	}
-        	if (ignoreErrors) {
-        		// ignore errors, visit anyway.
-                promelaOutput = rootNode.accept(funkyVisitor).defV(); // visit!        		
-        	}
-        } else {
-          // visit only on no errors.
-          promelaOutput = rootNode.accept(funkyVisitor).defV(); // visit!
-        }
-        if (tWarnings.length() > 0) {
-        	if (!isSilent) {
-        		println("");
-        		println("There are Warnings in the model:");
-        		println(tWarnings);
-        	}
-        }
-    }
-
-    public boolean hasErrors() {
-    	return (errors.getStr("errors").length() > 0);
+        return hilIntermediate.toString();
     }
     
     public boolean save(String filename) {
-    	return save(filename, promelaOutput);
+    	return save(filename, hilIntermediate.toString());
     }
     
     public boolean save(String filename, String dataOutputStr) {       
@@ -151,7 +107,7 @@ public class ConversionDriver extends NodeUtilityClass {
     }
     
     public boolean save (File f) {
-    	return save(f, promelaOutput);
+    	return save(f, hilIntermediate.toString());
     }
     
     public boolean save (File f, String dataOutputStr) {
@@ -186,13 +142,6 @@ public class ConversionDriver extends NodeUtilityClass {
 		this.isSilent = isSilent;
 	}
 
-	public String getPromelaOutput() {
-		return promelaOutput;
-	}
-
-	public void setPromelaOutput(String promelaOutput) {
-		this.promelaOutput = promelaOutput;
-	}
 	/**
 	 * @return Returns the sourceFile.
 	 */
@@ -205,20 +154,6 @@ public class ConversionDriver extends NodeUtilityClass {
 	public void setSourceFile(File sourceFile) {
 		this.sourceFile = sourceFile;
         this.inputFilename = sourceFile.toString();
-	}
-
-	/**
-	 * @return Returns the ignoreErrors.
-	 */
-	public boolean isIgnoreErrors() {
-		return ignoreErrors;
-	}
-
-	/**
-	 * @param ignoreErrors The ignoreErrors to set.
-	 */
-	public void setIgnoreErrors(boolean ignoreErrors) {
-		this.ignoreErrors = ignoreErrors;
 	}
 
 	public boolean isMakeHilIntermediate() {
