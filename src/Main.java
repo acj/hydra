@@ -73,7 +73,7 @@ public class Main {
 		try {
 			x2hDriver.convert();
 			x2hDriver.save(sinkFile);
-			System.err.println("\nOutput written to " + sinkFile);
+			System.out.println("\nOutput written to " + sinkFile);
 		} catch (ParseException e) {
 			System.err.println("Error parsing `" + sourceFile + "'");
 			e.printStackTrace();
@@ -104,7 +104,7 @@ public class Main {
         try {
 			h2pDriver.convert();
 			if (h2pDriver.save(sinkFile)) {
-				System.err.println("Output written to " + sinkFile);
+				System.out.println("Output written to " + sinkFile);
 			} else {
 				System.err.println("Error writing output to `" + sinkFile + "'");
 				System.exit(1);
@@ -121,7 +121,7 @@ public class Main {
         try {
 			h2pDriver.convert();
 			if (h2pDriver.save(sinkFile)) {
-				System.err.println("Output written to " + sinkFile);
+				System.out.println("Output written to " + sinkFile);
 			} else {
 				System.err.println("Error writing output to `" + sinkFile + "'");
 				System.exit(1);
@@ -134,8 +134,15 @@ public class Main {
 	}
 
 	private static void printUsage() {
+		// TODO: Extract the current git revision's SHA and present it here
+		//		 along with the normal version number.
 		System.err.println("Hydra v4.0\n\n" +
-				"Usage: java -jar hydra.jar <model XMI input> <Promela output> [intermediate HIL output]\n\n" +
+				"Usage: java -jar hydra.jar <mode flag> <input file> <output file>\n\n" +
+				"Flags:\n" +
+				"\t-c\tCheck XMI model for errors\n" +
+				"\t-h\tConvert XMI file to Hydra Intermediate Language (advanced)\n" +
+				"\t-p\tConvert Hydra Intermediate Language to Promela (advanced)\n" +
+				"\t-x\tConvert XMI file to Promela\n\n" +
 				"Hydra was developed by the Software Engineering and Network Systems Group\n" +
 				"at Michigan State University.");
 	}
