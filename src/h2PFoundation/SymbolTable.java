@@ -11,8 +11,7 @@ import java.util.Set;
  * Constructs a symbol table to support the HIL and UML parsers.
  */
 public class SymbolTable {
-	final static String INST_SEPARATOR = "!";
-	final static String ENUM_SEPARATOR = "#";
+	final static String INST_SEPARATOR = ".";
 	
 	private static HashMap<String, Symbol> symbols = new HashMap<String, Symbol>();
 	
@@ -179,7 +178,7 @@ public class SymbolTable {
 	public static Set<Symbol> getClasses() {
 		Set<Symbol> classes = new HashSet<Symbol>();
 		for (String key : symbols.keySet()) {
-			if (key.contains(INST_SEPARATOR) || key.contains(ENUM_SEPARATOR)) {
+			if (key.contains(INST_SEPARATOR)) {
 				continue;
 			}
 			if (symbolExists(key, SymbolType.CLASS)) {
