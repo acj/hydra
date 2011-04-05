@@ -141,7 +141,7 @@ public class PromelaInPredicateVisitor extends aVisitor {
         my $result=ExprYaccForPromela->Parse("$thetransitionbodynode->{guard}");
 			 *  
 			 */
-			result = ExpressionParser.Parse_Me(tNode, tNode.getGuard());
+			result = ExpressionParser.parse(tNode, tNode.getGuard());
 			if (result.length() == 0) {
 				aNode classRef = searchUpForDest(tNode,"ClassNode");
 				println("In Class [" + classRef.getID() + "], bad expression [" + tNode.getGuard() + ")]!");
@@ -163,7 +163,7 @@ public class PromelaInPredicateVisitor extends aVisitor {
         my $result=ExprYaccForPromela->Parse("when($theeventnode->{whenvar})");
 			 *  
 			 */
-			result = ExpressionParser.Parse_Me(tNode, "when(" + tNode.getWhenVariable() + ")");
+			result = ExpressionParser.parse(tNode, "when(" + tNode.getWhenVariable() + ")");
 			if (result.length() == 0) {
 				aNode classRef = searchUpForDest(tNode,"ClassNode");
 				print("In Class [" + classRef.getID() + "], bad expression [when(" + tNode.getWhenVariable() + ")]!");

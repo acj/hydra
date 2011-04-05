@@ -1,23 +1,12 @@
-/*
- * Created on Jul 22, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.Symbol;
+import h2PFoundation.SymbolTable;
 import h2PVisitors.aVisitor;
 
-/**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class CompositeStateNode extends aNode {
-
-    
+	private Symbol symbol;
 	public CompositeStateBodyNode bodyNode = null;
 	
     /**
@@ -25,24 +14,23 @@ public class CompositeStateNode extends aNode {
      */
     public CompositeStateNode(String theID) {
         super(theID, "CompositeStateNode");
-        // TODO Auto-generated constructor stub
+        symbol = SymbolTable.addSymbol(theID, Symbol.SymbolType.CSTATE, "", "");
     }
-    
-/*	public void add(CompositeStateBodyNode tChild) {
-		children.addElement(tChild);
-	}*/
 	
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitCompositeStateNode(this);
 	}
 
 	public void addChild(aNode newChild) {
-		// TODO Auto-generated method stub
 		super.addChild(newChild);
 		
 		if (newChild.getType().equals("CompositeStateBodyNode")) {
 			bodyNode = (CompositeStateBodyNode)newChild;
 		}
+	}
+	
+	public Symbol getSymbol() {
+		return symbol;
 	}
 
 	public boolean hasBodyNode() {

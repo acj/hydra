@@ -10,22 +10,26 @@ public class Symbol {
 	SymbolType type;
 	String name; // e.g., "MyClass"
 	String dataType;
-	String owningClass;
+	String owningContainer;
 	HashMap<String, Object> data;
 
-	public static enum SymbolType { CLASS, ENUM, INSTVAR, GLOBVAR, SIGNAL };
+	public static enum SymbolType {
+		CLASS, ENUM, GLOBVAR, INSTVAR, SIGNAL, CSTATE, CCSTATE, STATE
+	};
 
 	public Symbol(String n, SymbolType t, String dt, String oc) {
 		name = n;
 		type = t;
 		dataType = dt;
-		owningClass = oc;
+		owningContainer = oc;
 		data = new HashMap<String, Object>();
 		
 		if (t == SymbolType.CLASS) {
-			// This is a vector of (instance variable) symbols that are
-			// instances of this class. 
+			// Track symbols that are instances of this class 
 			data.put("instances", new Vector<Symbol>());
+		} else if (t == SymbolType.CSTATE || t == SymbolType.CCSTATE) {
+			// Track substates within this composite state
+			data.put("substates", new Vector<Symbol>());
 		}
 	}
 
@@ -41,8 +45,8 @@ public class Symbol {
 		return dataType;
 	}
 
-	public String getOwningClass() {
-		return owningClass;
+	public String getOwningContainer() {
+		return owningContainer;
 	}
 	
 	public Object getData(String key) {

@@ -1,37 +1,21 @@
-/*
- * Created on Jul 22, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
+import h2PFoundation.Symbol;
 import h2PFoundation.SymbolTable;
 import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
 
-/**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class ClassNode extends aNode {
- 
 	public ClassBodyNode subnode;
+	private Symbol symbol;
 	protected boolean hasClassBodyNodeBoolean = false;
 	
-    /**
-     * @param theID
-     */
     public ClassNode(String theID) {
         super(theID, "ClassNode");
-        
-        SymbolTable.addSymbol(theID, SymbolType.CLASS, "", "");
+        symbol = SymbolTable.addSymbol(theID, SymbolType.CLASS, "", "");
     }
     
-
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitClassNode(this);
 	}
@@ -47,15 +31,12 @@ public class ClassNode extends aNode {
 			hasClassBodyNodeBoolean = true;
 		}
 	}
-
-
-	/* (non-Javadoc)
-	 * @see h2PNodes.aNode#getNodeName()
-	 */
+	
 	public String getNodeName() {
-		// TODO Auto-generated method stub
 		return super.getNodeName(false, true);
 	}
-
-
+	
+	public Symbol getSymbol() {
+		return symbol;
+	}
 }

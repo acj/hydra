@@ -27,15 +27,18 @@ options {
 PARSER_BEGIN(HILParser)
 
 package h2PVisitors.Parser;
+import java.util.Stack;
+import java.util.Vector;
 import h2PNodes.*;
 import h2PFoundation.*;
 
 public class HILParser extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
     protected String currentClass;
+    protected Stack<aNode> compositeStates; // Track nested CS nodes
 
     public HILParser (WorldUtilNode theRootNode) {
-    	setRootNode (theRootNode);    	
+    	setRootNode (theRootNode);
     }
 	
     public void setRootNode (WorldUtilNode theRootNode) {
@@ -44,6 +47,7 @@ public class HILParser extends NodeUtilityClass {
     
     public void parse () {
     	try {
+    		compositeStates = new Stack<aNode>();
     		spec();
 	    } catch (ParseException pe) {
 	        System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");
@@ -361,12 +365,12 @@ aNode cstate() throws ParseException:
 }
 {
 	<CSTATE>
-	t = <ID> { tID = t.image; }
+	t = <ID> { tID = t.image; tNode = new CompositeStateNode(tID); compositeStates.push(tNode); }
 	<LCURLY>
 	( csBody = cstatebody() )?
 	<RCURLY>
 	{
-		tNode = new CompositeStateNode(tID);
+		compositeStates.pop();
 		return rootNode.addChildToNode (tNode, csBody);
 	}
 }
@@ -413,6 +417,23 @@ aNode state() throws ParseException:
 	<RCURLY>
 	{ 
 		tNode = new StateNode(tID);
+		if (!compositeStates.empty()) {
+			aNode parentCS = compositeStates.peek();
+			assert(parentCS.getType().equals("CompositeStateNode") ||
+				parentCS.getType().equals("ConcurrentCompositeNode"));
+			Symbol parentSym;
+			if (parentCS.getType() == "CompositeStateNode") {
+				parentSym = ((CompositeStateNode)parentCS).getSymbol();
+			} else {
+				parentSym = ((ConcurrentCompositeNode)parentCS).getSymbol();
+			}
+			// Record the parent CS in this state's symbol
+			Symbol stateSym = tNode.getSymbol();
+			stateSym.putData("parentCS", parentSym);
+			// Record this state in parent CS's symbol
+			Vector<Symbol> subStates = (Vector<Symbol>)parentSym.getData("substates");
+			subStates.add(stateSym);
+		}
 		return rootNode.addChildToNode(tNode, childNode);
 	}
 }
@@ -502,24 +523,27 @@ aNode ccstate() throws ParseException:
 }
 {
 	<CCSTATE>
-	t = <ID> { tID = t.image; }
+	t = <ID> { tID = t.image; tNode = new ConcurrentCompositeNode(tID); compositeStates.push(tNode); }
 	<LCURLY>	childNode = ccstatebody() <RCURLY>
-	{ 
-		tNode = new ConcurrentCompositeNode(tID);
+	{
+		compositeStates.pop();
 		return rootNode.addChildToNode(tNode, childNode);
 	}
 }
 
 aNode ccstatebody() throws ParseException:
 {
-	ConcurrentCompositeBodyNode tNode = new ConcurrentCompositeBodyNode();
+	ConcurrentCompositeBodyNode tNode;
 	aNode childNode;
 }
 {
-	( childNode = ccstatestmt() 
-		{ rootNode.addChildToNode(tNode, childNode);  }  
+	(
+		childNode = ccstatestmt()
 	)+
-	{ return tNode; }
+	{
+		tNode = new ConcurrentCompositeBodyNode();
+		return rootNode.addChildToNode(tNode, childNode);
+	}
 }
 
 aNode ccstatestmt() throws ParseException:
@@ -702,15 +726,14 @@ aNode event() throws ParseException:
 		)?
 	)
 	{
-		final int dotPos = eventName.indexOf(".");
-		if (dotPos != -1) {
-			className = eventName.substring(0, dotPos);
-			eventName = eventName.substring(dotPos + 1);
-		} else {
-			// Use the current (implicit) class name
-			className = currentClass;
+		if (eventName.contains(".")) {
+			System.err.println("Error: transition waits for an event `" +
+				eventName + "', which is declared in another class.  Please" +
+				" revise the transition to watch a" +
+				" variable in the transition guard instead.");
+			throw new ParseException();
 		}
-		return new EventNode (className, eventName, "normal", eventWhenVar);
+		return new EventNode (currentClass, eventName, "normal", eventWhenVar);
 	}
 |
 	(

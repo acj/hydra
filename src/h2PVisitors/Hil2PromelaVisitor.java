@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Visitor class to generate the Promela code for each node in the HIL parse
@@ -49,6 +51,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	protected String stateTimeInvariant = "";
 	protected int LEFTMARGIN = 10;
 	protected Vector<Integer> tabVec = new Vector<Integer>();
+	protected Map<String, Symbol> stateToCSMap;
 	protected String mbnhSTR = "";
 	protected int mbnhLASTLVL = 0;
 	protected AcceptReturnType globalOutputs;
@@ -81,35 +84,83 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 	}
 	
-	protected String mangleSymbolName(Symbol sym) {
-		String mangledName = "";
+	protected String mangleReferences(String refString, Symbol contextClass) {
+		Pattern varPattern = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*");
+		Matcher m = varPattern.matcher(refString);
+		while (m.find()) {
+			refString = refString.replace(m.group(), mangleSymbolReference(m.group(), contextClass));
+		}
+		return refString;
+	}
+	/**
+	 * TODO
+	 * 
+	 * @param name
+	 * @return
+	 */
+	protected String mangleSymbolReference(String symName, Symbol contextClass) {
+		assert(contextClass != null);
+		Symbol sym = null;
+		String instanceName = "";
+		String lhs = "";
+		String rhs = "";
+		// Skip enumerated types (TODO: they really should be handled here)
+		if (symName.contains("__")) { return symName; }
+		// Break the symbol name into a LHS and a RHS
+		final int dotPos = symName.indexOf(".");
+		lhs = symName.substring(0, dotPos);
+		rhs = symName.substring(dotPos + 1);
+		
+		// Is the LHS a class attribute that is an instance of another class?
+		if (SymbolTable.symbolExistsInClass(lhs, contextClass.getName())) {
+			String instDataType =
+				SymbolTable.getDataTypeOfAttribute(lhs, contextClass.getName());
+			instanceName = lhs;
+			lhs = instDataType;
+		}
+		sym = SymbolTable.getSymbol(lhs + "." + rhs);
+		// TODO: Once the regex code is removed, let's assert that the symbol
+		// cannot be null.
+		if (sym == null) { return symName; }
+
+		String mangledName;
 		switch (sym.getType()) {
-			case CLASS:
-			{
-				mangledName = sym.getName() + "_V";
-			}
 			case INSTVAR:
 			{
-				String instDataType = sym.getDataType();
-				if (SymbolTable.symbolExists(instDataType, SymbolType.CLASS)) {
+				if (lhs.equals(contextClass.getName())) {
+					// This instance variable is locally defined in this class.
+					// Use the class value array index that we have been given.
+					mangledName = lhs + "_V[__this]." + rhs;
+				} else if (!instanceName.equals("")) {
 					// This instance variable is an instance of another class.
 					// Find out which struct array index we need to use.
-					Symbol dataTypeSym = SymbolTable.getSymbol(instDataType);
-					Vector<String> instances = (Vector<String>)dataTypeSym.getData("instances");
-					assert(instances.contains(sym));
-					int structIndex = instances.indexOf(sym);
-					mangledName = sym.getOwningClass() + "_V[" + structIndex + "]";
+					Symbol dataTypeSym = SymbolTable.getSymbol(lhs);
+					Symbol instanceSym = SymbolTable.getSymbol(
+							contextClass.getName() + "." + instanceName);
+					final int structIndex =
+						dataTypeSym.getIndexOfInstance(instanceSym);
+					assert(structIndex != -1);
+					mangledName =
+						lhs + "_V[" + structIndex + "]." + rhs;
 				} else {
-					mangledName = sym.getOwningClass() + "_V[0]." + sym.getName();
+					mangledName =
+						lhs + "_V[0]." + rhs;
 				}
+				break;
 			}
 			case SIGNAL:
 			{
-				mangledName = sym.getOwningClass() + "__sig__" + sym.getName();
+				mangledName = sym.getOwningContainer() + "__sig__" + rhs;
+				break;
 			}
 			case ENUM:
 			{
-				mangledName = sym.getOwningClass() + "__" + sym.getName();
+				mangledName = sym.getOwningContainer() + "__" + rhs;
+				break;
+			}
+			default:
+			{
+				 mangledName = sym.getName();
 			}
 		}
 		return mangledName;
@@ -273,7 +324,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "";
 
 		// Do sanity check on the event
-		pinpv.ExpressionParser.Parse_Me(tNode, tNode.getDescription());
+		pinpv.ExpressionParser.parse(tNode, tNode.getDescription());
 
 		String grandpaType = tNode.getParent().getParent().getType();
 		if (grandpaType.equals("ActionNode")) {
@@ -303,7 +354,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			} // if (tNode.getEventType().equals("normal"))
 			if (tNode.getEventType().equals("when")) {
-				String retVal = pinpv.ExpressionParser.Parse_Me(tNode, "when("
+				String retVal = pinpv.ExpressionParser.parse(tNode, "when("
 						+ tNode.getWhenVariable() + ")");
 				tmpStr += strln("        :: atomic{" + retVal + " -> ");
 			} // if (tNode.getEventType().equals("when"))
@@ -391,7 +442,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			}
 		}
-		return tmpART; // outputs to @outputInit
+		return tmpART;
 	}
 
 	/*
@@ -455,7 +506,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		String tmpStr = "";
 		// Check semantics to see if the local class has this InstVar
-		aNode destCN = searchUpForDest(tNode, "ClassNode");
+		ClassNode destCN = (ClassNode)searchUpForDest(tNode, "ClassNode");
 		Boolean intVarIsLocal; // Whether the argument is an mtype or an
 								// instance variable
 		String className = tNode.getClassName();
@@ -487,8 +538,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (className.length() > 0) {
 			if (tNode.getIntVarName().length() > 0) {
 				// With signal argument
-				String intVarName = pinpv.ExpressionParser.Parse_Me(tNode,
+				String intVarName = pinpv.ExpressionParser.parse(tNode,
 						tNode.getIntVarName());
+				intVarName = mangleReferences(intVarName, destCN.getSymbol());
 				String temp1, temp2;
 
 				temp1 = " " + className + "_" + tNode.getSignalName()
@@ -622,7 +674,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String actType = tNode.getActionType();
 		if (actType.equals("newaction")) {
 			// Check action semantics
-			pinpv.ExpressionParser.Parse_Me(tNode, tNode.getContent());
+			pinpv.ExpressionParser.parse(tNode, tNode.getContent());
 			tmpStr += strln("        run " + tNode.getContent() + "();");
 		}
 		if (actType.equals("sendmsg")) {
@@ -631,11 +683,32 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 		}
 		if (actType.equals("assignstmt")) {
-			String retVal = pinpv.ExpressionParser.Parse_Me(tNode,
+			String retVal = pinpv.ExpressionParser.parse(tNode,
 					tNode.getAssignment());
-			aNode classNode = searchUpForDest(tNode, "ClassNode");
-			retVal = retVal.replace(classNode.getID() + "_V.",
-					classNode.getID() + "_V[__this].");
+			ClassNode classNode = (ClassNode)searchUpForDest(tNode, "ClassNode");
+			assert(classNode != null);
+			String lhs = "";
+			String rhs = "";
+			assert(retVal.contains("=") || retVal.contains(":="));
+			if (retVal.contains("=")) {
+				final int assignPos = retVal.indexOf("=");
+				lhs = retVal.substring(0, assignPos);
+				rhs = retVal.substring(assignPos + 1);
+			} else {
+				final int assignPos = retVal.indexOf(":=");
+				lhs = retVal.substring(0, assignPos);
+				rhs = retVal.substring(assignPos + 2);
+			}
+			// Mangle symbol names as needed
+			if (lhs.contains(".")) {
+				lhs = mangleReferences(lhs, classNode.getSymbol());
+			}
+			if (rhs.contains(".")) {
+				// Remove the closing semicolon before mangling
+				rhs = mangleReferences(rhs, classNode.getSymbol());
+			}
+			// Use "=" as the universal assignment operator
+			retVal = lhs + "=" + rhs;
 			tmpStr += strln("        " + retVal);
 		}
 		if (actType.equals("printstmt")) {
@@ -646,14 +719,14 @@ public class Hil2PromelaVisitor extends aVisitor {
 			String retVal = "";
 			if (tNode.getParamList().length() > 0) {
 				retVal = ","
-						+ pinpv.ExpressionParser.Parse_Me(tNode,
+						+ pinpv.ExpressionParser.parse(tNode,
 								tNode.getParamList());
 			}
 			tmpStr += strln("        printf(" + dPrintContent + retVal + ");");
 		}
 		if (actType.equals("function")) {
 			String retVal = "";
-			retVal = pinpv.ExpressionParser.Parse_Me(tNode,
+			retVal = pinpv.ExpressionParser.parse(tNode,
 					tNode.getFunctionID() +
 					"(" + tNode.getParamList() + ")");
 			aNode classNode = searchUpForDest(tNode, "ClassNode");
@@ -699,7 +772,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 					+ tNode.getDestination() + "; skip;}"));
 		}
 
-		return tmpART; // output to @outputTrans (merges @outputtransitionbody)
+		return tmpART;
 	}
 
 	public AcceptReturnType cbnhOutputClassHead(ClassBodyNode tNode) {
@@ -965,7 +1038,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 			tmpART.removeStrKey("CState");
 			tmpART.addStrln("CState", recomposition);
-
+			
 			if (!temp100.equals(comparison)) {
 				// Inline CStateEndOutput
 				tmpART.addStr("CState", temp100);
@@ -1288,12 +1361,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType csbhOutputClassHead(CompositeStateBodyNode tNode) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 		String csName = tNode.getParent().getID();
-		aNode classDest = searchUpForDest(tNode, "ClassNode");
-		String className = classDest.getID();
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "proctype " +
-				csName + "(" + className + "_T __this)");
+				csName + "(int __this)");
 		tmpART.addStr("CState", "{atomic{");
 		tmpART.addStr("CState", "mtype m;");
 
@@ -1388,6 +1459,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				}
 			}
 			if (tempHistory.length() != 0) {
+				// TODO: "ifyu"?  Is that correct?
 				tempHistory = strln("        ifyu") + tempHistory
 						+ strln("        fi;");
 			}
@@ -1611,15 +1683,15 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "proctype event(mtype msg)\n" +
 						"{\n" +
 						"    mtype type;\n" +
-						"    int pid;\n" +
+						"    int proc_pid;\n" +
 						"    atomic {\n" +
 						"    do\n" +
-						"    :: evq??eval(msg),pid] ->\n" +
-						"       evq??eval(msg),pid;\n" +
-						"       evt!msg,pid;\n" +
+						"    :: evq??[eval(msg),proc_pid] ->\n" +
+						"       evq??eval(msg),proc_pid;\n" +
+						"       evt!msg,proc_pid;\n" +
 						"       do\n" +
 						"       :: if\n" +
-						"       :: evq??type,eval(pid)] -> evq??type,eval(pid)\n" +
+						"       :: evq??[type,eval(proc_pid)] -> evq??type,eval(proc_pid)\n" +
 						"       :: else break;\n" +
 						"          fi\n" +
 						"       od\n" +
@@ -1795,8 +1867,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		for (int i = 0; i < entries.length; i++) {
 			if (!entries[i].equals("_SYSTEMCLASS_")) {
+				// TODO: To be complete, this needs to set the timerwait
+				// variable for every instance of this class.
 				tmpStr += mbnhPut(0, "                             "
-						+ entries[i] + "_V.timerwait=0;");
+						+ entries[i] + "_V[0].timerwait=0;");
 			}
 		}
 
@@ -1874,7 +1948,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpStr += mbnhInstVarSignalOutput(anART);
 		tmpStr += mbnhDriverFile(anART);
 		tmpStr += mbnhWholeClassOutput(anART);
-		tmpStr += mbnhTimerProcessOutput(anART);
+		// Timer output disabled until it has unit tests
+		//tmpStr += mbnhTimerProcessOutput(anART);
 		tmpStr += mbnhInitOutput(anART);
 		tmpStr += mbnhNeverClaim(anART);
 		tmpStr += mbnhEventHandlerOutput();
@@ -2179,13 +2254,61 @@ public class Hil2PromelaVisitor extends aVisitor {
 			boolean hasGuard, boolean checkMTypeList) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
+		if (stateToCSMap == null) {
+			stateToCSMap = SymbolTable.getStateToCSMapping();
+		}
+		
+		// Determine whether we are inside a composite state at present
+		Symbol sourceCSSym = null;
+		Symbol sourceStateSym = null;
+		boolean sourceInsideCS = false;
+		StateNode stateNode = (StateNode)searchUpForDest(tNode, "StateNode");
+		sourceStateSym = stateNode.getSymbol();
+		aNode compNode = searchUpForDest(tNode, "ConcurrentCompositeNode");
+		if (compNode != null) {
+			sourceCSSym = ((ConcurrentCompositeNode)compNode).getSymbol();
+			sourceInsideCS = true;
+		} else {
+			compNode = searchUpForDest(tNode, "CompositeStateNode");
+			if (compNode != null) {
+				sourceCSSym = ((CompositeStateNode)compNode).getSymbol();
+				sourceInsideCS = true;
+			}
+		}
+		
 		if (destType.equals("SS")) {
-			if (!hasGuard) {
-				tmpART.addStr("State", "           " + transNodeDesc + "goto "
-						+ dest + "; skip;}");
+			// Determine whether this destination is inside a composite state
+			Symbol destCSSym = null;
+			boolean destInsideCS = false;
+			if (stateToCSMap.containsKey(dest)) {
+				destCSSym = stateToCSMap.get(dest);
+				destInsideCS = true;
+			}
+
+			// Determine whether this transition takes us to a state that
+			// is outside of the current composite state (if any).  If it does,
+			// then we need to launch an instance of the other CS.
+			if (sourceInsideCS && destInsideCS && !sourceCSSym.getName().equals(destCSSym.getName())) {
+				// TODO: Needs unit test
+				tmpART.addStr("State", "           " + transNodeDesc +
+						"atomic{skip; " + destCSSym.getName() + "_start!1;} atomic{" + destCSSym.getName() + "_C?1; wait??" + destCSSym.getName() + "_pid,m;} }");				
+			} else if (!sourceInsideCS && destInsideCS) {
+				// TODO: Needs unit test
+				tmpART.addStr("State", "           " + transNodeDesc +
+						"atomic{skip; " + destCSSym.getName() + "_start!1;} atomic{" + destCSSym.getName() + "_C?1; wait??" + destCSSym.getName() + "_pid,m;} }");
+			} else if (sourceInsideCS && !destInsideCS) {
+				// TODO: Needs unit test
+				System.err.println("Error: transition from simple state inside composite state to a simple state that is not within the composite state.");
+				System.exit(1);			
 			} else {
-				tmpART.addStr("State", "              " + transNodeDesc
-						+ "goto " + dest + "; skip;}");
+				System.err.println("Normal transition");
+				// Safe transition to another simple state
+				String guardSpaceStr = "           ";
+				if (hasGuard) {
+					guardSpaceStr = "              ";
+				}
+				tmpART.addStr("State", guardSpaceStr + transNodeDesc +
+						"goto "	+ dest + "; skip;}");
 			}
 			return tmpART;
 		}
@@ -2276,7 +2399,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 				tmpART.addStr("State", "           :: atomic{Timer_V."
 						+ timeArray[0] + filler1 + timeArray[1] + " -> "
-						+ className + "_V.timerwait = 1;");
+						+ className + "_V[0].timerwait = 1;");
 				tmpART.addStr("State", "              " + className
 						+ "_V.timerwait == 0 -> goto "
 						+ destNode.getParent().getID() + "_G;}");
@@ -2328,11 +2451,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 
 		String guardExpr = "";
-		guardExpr = pinpv.ExpressionParser.Parse_Me(transRef, guardString);
-		guardExpr = guardExpr.replace("_V.", "_V[__this].");
+		guardExpr = pinpv.ExpressionParser.parse(transRef, guardString);
+		ClassNode classRef = (ClassNode)searchUpForDest(transRef, "ClassNode");
+		Symbol contextClass = classRef.getSymbol();
+		guardExpr = mangleReferences(guardExpr, contextClass);
 
 		if (guardExpr.length() == 0) {
-			aNode classRef = searchUpForDest(transRef, "ClassNode");
 			println("In Class [" + classRef.getID() + "], bad expression ["
 					+ guardString + "].");
 			exit();
@@ -2380,7 +2504,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			if (hasEvent) {
 				if (event.getEventType().equals("when")) {
 					String returnValue = "";
-					returnValue = pinpv.ExpressionParser.Parse_Me(event,
+					returnValue = pinpv.ExpressionParser.parse(event,
 							"when(" + event.getWhenVariable() + ")");
 					tmpART.addStr("State", "           :: else -> !("
 							+ returnValue + ") -> goto "
@@ -2470,9 +2594,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 								evtNode.getName();
 						}
 						assert(signalName.equals("") == false);
-						// TODO: Is "evt" the right channel to be checking here?
-						// Won't the signals be sent to individual classes
-						// instead of being broadcasted?
+						// TODO: Fix evt machinery
 						anART.addStr("State", "        :: atomic{"
 								+ transitionMarkerStr + "evt??"
 								+ signalName + ",eval(_pid) -> ");

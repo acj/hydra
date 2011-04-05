@@ -1,20 +1,8 @@
-/*
- * Created on Jul 22, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
 import h2PVisitors.aVisitor;
 
-/**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class TransitionActionNode extends aNode {
 	
 	public MessageNode messageChild;
@@ -25,9 +13,6 @@ public class TransitionActionNode extends aNode {
 	protected String paramList = "";
 	protected String functionID = "";
     
-    /**
-     * @param theID
-     */
     public TransitionActionNode(String firstParam) {
         this (firstParam, "", "", "");
     }
@@ -78,7 +63,7 @@ public class TransitionActionNode extends aNode {
 		return content;
 	}
 	
-	public String getAssignment () {
+	public String getAssignment() {
 		return assignment;
 	}
 	

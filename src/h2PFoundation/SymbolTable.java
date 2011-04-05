@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * Constructs a symbol table to support the HIL and UML parsers.
@@ -102,6 +103,7 @@ public class SymbolTable {
 												String containingClass) {
 		if (symbolExistsInClass(instanceName, containingClass)) {
 			Symbol sym = getSymbol(instanceName, containingClass, SymbolType.INSTVAR);
+			assert(sym != null);
 			return sym.getDataType();
 		} else {
 			return null;
@@ -116,7 +118,7 @@ public class SymbolTable {
 	 */
 	public static String getOwningClass(String symName) {
 		if (symbols.containsKey(symName)) {
-			return symbols.get(symName).owningClass;
+			return symbols.get(symName).owningContainer;
 		} else {
 			return "";
 		}
@@ -164,7 +166,7 @@ public class SymbolTable {
 			// the very end of the string to avoid false-positives.
 			if (tempSym.contains(symName) &&
 					tempSym.indexOf(symName) == tempSym.length() - symName.length()) {
-				return getSymbol(tempSym).owningClass;
+				return getSymbol(tempSym).owningContainer;
 			}
 		}
 		return "";
@@ -188,6 +190,11 @@ public class SymbolTable {
 		return classes;
 	}
 	
+	/**
+	 * Get a list of attribute symbols that are instances of classes.
+	 * 
+	 * @return Set of attribute symbols representing instances of classes.
+	 */
 	public static Set<Symbol> getClassInstanceAttributes() {
 		Set<Symbol> instanceAttribs = new HashSet<Symbol>();
 		for (String key : symbols.keySet()) {
@@ -199,5 +206,20 @@ public class SymbolTable {
 			}
 		}
 		return instanceAttribs;
+	}
+	
+	
+	public static HashMap<String, Symbol> getStateToCSMapping() {
+		HashMap<String, Symbol> csMap = new HashMap<String, Symbol>();
+		for (Symbol sym : symbols.values()) {
+			if (sym.getType() == SymbolType.CCSTATE ||
+					sym.getType() == SymbolType.CSTATE) {
+				Vector<Symbol> states = (Vector<Symbol>)sym.getData("substates");
+				for (Symbol state : states) {
+					csMap.put(state.getName(), sym);
+				}
+			}
+		}
+		return csMap;
 	}
 }

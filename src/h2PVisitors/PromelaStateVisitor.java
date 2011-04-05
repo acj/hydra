@@ -45,8 +45,9 @@ public class PromelaStateVisitor extends aVisitor {
 	
 	public aNode SearchIncluding (aNode tNode, String dest) {
 		if (tNode.getID().equals(dest)) {
-			if (tNode.getType().equals("StateNode") || tNode.getType().equals("CompositeStateNode") 
-					|| tNode.getType().equals("ConcurrentCompositeNode")) {
+			if (tNode.getType().equals("StateNode") ||
+					tNode.getType().equals("CompositeStateNode") ||
+					tNode.getType().equals("ConcurrentCompositeNode")) {
 				return tNode;
 			}
 		}
@@ -84,8 +85,11 @@ public class PromelaStateVisitor extends aVisitor {
 		aNode SorCSorCCS = SearchIncluding(CSNode, dest);
 		
 		if (SorCSorCCS != null) {
+			// We found the destination within the same composite state
 			if (SorCSorCCS.getUniqueID().equals(CSNode.getUniqueID())) {
-				outputString = strln ("        :: atomic{m == st_" + dest + " -> goto to_" + dest + "; skip;};");
+				outputString = strln ("        " +
+						":: atomic{m == st_" + dest + " ->" +
+						" goto to_" + dest + "; skip;};");
 				if (!ifInArray(outsideOutput, "CState", outputString)) {
 					outsideOutput.addStr("CState", outputString);
 				}
@@ -95,11 +99,16 @@ public class PromelaStateVisitor extends aVisitor {
 			}
 			return tmpART;
 		}
+		// The destination lies outside the current state
 		aNode classNode = searchUpForDest(tNode, "ClassNode");
 		SorCSorCCS = SearchIncluding(classNode, dest);
 		if (SorCSorCCS != null) {
 			if (SorCSorCCS.getType().equals("StateNode")) {
-				outputString = "        :: atomic{m == st_" + dest + " -> goto " + dest + "; skip;};";
+				// TODO: Needs to provide a mechanism to jump to a simple
+				// state within another composite state if that's where we need
+				// to go
+				outputString = "        :: atomic{m == st_" + dest + " ->" +
+					" goto " + dest + "; skip;};";
 				if (!ifInArray(outsideOutput, "CState", outputString)) {
 					outsideOutput.addStr("CState", outputString);
 				}
@@ -109,7 +118,8 @@ public class PromelaStateVisitor extends aVisitor {
 			}
 			if (SorCSorCCS.getType().equals("CompositeStateNode") 
 					|| SorCSorCCS.getType().equals("ConcurrentCompositeNode")) {
-				outputString = "        :: atomic{m == st_" + dest + " -> goto to_" + dest + "; skip;};";
+				outputString = "        :: atomic{m == st_" + dest + " ->"
+					+ " goto to_" + dest + "; skip;};";
 				if (!ifInArray(outsideOutput, "CState", outputString)) {
 					outsideOutput.addStr("CState", outputString);
 				}

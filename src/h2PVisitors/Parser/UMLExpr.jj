@@ -45,6 +45,7 @@ import h2PFoundation.*;
 public class UMLExpr extends NodeUtilityClass {
   public String finalStr = "";
   protected aNode classRef;
+  protected String currentClass;
   protected AcceptReturnType globalOutputs;
   protected PromelaInPredicateVisitor pinpv;
   protected Reader dataStream;
@@ -69,17 +70,17 @@ public class UMLExpr extends NodeUtilityClass {
 	}
   }
 
-  public String Parse_Me (aNode theClassRef, String expression) {
+  public String parse (aNode theClassRef, String expression) {
   	 classRef = theClassRef;
+  	 ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
+  	 currentClass = thisClassRef.getID(); 
   	 String retStr = "";
   	 dataStream = new StringReader (expression);
   	 ReInit(dataStream);
   	 try {
   	 	retStr = stmt();
   	 }  catch (ParseException pe) {
-  	 	ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-  		String className = thisClassRef.getID();
-        System.err.println("\nThe error occurred in class `" + className + "' while parsing this: \n    " + expression + "\n");
+        System.err.println("\nThe error occurred in class `" + currentClass + "' while parsing this: \n    " + expression + "\n");
         if (pe.getMessage() != null) {
         	System.err.println(pe.getMessage());
         }
@@ -110,8 +111,7 @@ public class UMLExpr extends NodeUtilityClass {
   		className = varName.substring(0, dotPos);
   		varName = varName.substring(dotPos+1);
   	} else {
-  		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-  		className = thisClassRef.getID();
+  		className = currentClass;
   	}
   	
   	// At this point, the class name and attribute/identifier name are broken
@@ -119,7 +119,7 @@ public class UMLExpr extends NodeUtilityClass {
   	//
   	// Perform a boilerplate check against the list of reserved words in
   	// Promela
-  	if (reservedWords.contains(varName.toLowerCase())) {
+  	if (reservedWords.contains(varName)) {
   		System.err.println("Error: reserved word `" + varName + "' used as " +
   			"a variable.");
   		throw new ParseException();
@@ -127,11 +127,10 @@ public class UMLExpr extends NodeUtilityClass {
   	
   	
   	// Determine whether this is a timer variable
-  	String temp = className + "_V.";
   	String entities [] = globalOutputs.getStrSplit("TimerList");
   	for (int i = 0; i < entities.length; i++) {
   		if (entities[i].equals(varName)) {
-  			temp = "Timer_V.";
+  			className = "Timer";
   		}
   	}
 
@@ -143,8 +142,7 @@ public class UMLExpr extends NodeUtilityClass {
 	// (3) The class name refers to an enumerated type.
 	if (!SymbolTable.symbolExists(className, Symbol.SymbolType.CLASS)) {
   		// The class name does not refer to a valid class.  Is it an attribute?
-  		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-  		String containingClassName = thisClassRef.getID();
+  		String containingClassName = currentClass;
   		String instanceName = className;
   		if (!SymbolTable.symbolExistsInClass(instanceName, containingClassName) &&
   			!SymbolTable.symbolExistsInEnum(varName, className)) {
@@ -166,10 +164,9 @@ public class UMLExpr extends NodeUtilityClass {
 	
 	// Case (1)
 	if (SymbolTable.symbolExistsInClass(varName, className)) {
-		return temp + varName;
+		return className + "." + varName;
 	} else { // Case (2)
-		ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-	  	String containingClassName = thisClassRef.getID();
+	  	String containingClassName = currentClass;
 	  	String instName = className;
 	  	if (SymbolTable.symbolExistsInClass(instName, containingClassName)) {
 		  	Symbol instanceSym = SymbolTable.getSymbol(
@@ -179,13 +176,7 @@ public class UMLExpr extends NodeUtilityClass {
 		  		Symbol instanceTypeSym = SymbolTable.getSymbol(instClass);
 		  		// Tally this instance in the class's symbol
 	        	instanceTypeSym.addClassInstance(instanceSym);
-		  		
-		  		// Mangle the name to use the correct instance of this class
-		  		// TODO: It would be preferable to do this in the visitor class.
-		  		final int instanceIndex =
-		  			instanceTypeSym.getIndexOfInstance(instanceSym);
-		  		assert(instanceIndex != -1);
-		  		return instClass + "_V[" + instanceIndex + "]." + varName;
+		  		return instName + "." + varName;
 		  	} else {
 		  		System.err.println("Error: class `" + instClass +
 		  			"' (the class type of member `" + instName +
@@ -208,21 +199,17 @@ public class UMLExpr extends NodeUtilityClass {
   		if (lhsHint.contains(".")) {
 	  		int dotPos = lhsHint.indexOf(".");
 	  		hintOwningClass = lhsHint.substring(0, dotPos);
-	  		if (hintOwningClass.contains("_V")) {
-	  			hintOwningClass = hintOwningClass.replace("_V", "");
-	  		}
+	  		hintAttrib = lhsHint.substring(dotPos + 1);
 	  		// If the LHS refers to an instance of a class that is an attribute
-	  		// in another class, then unmangle the name.  For our purposes
-	  		// here, we can refer directly to the "original" class and ignore
-	  		// the instance name.
-	  		if (hintOwningClass.contains("__")) {
-	  			int underPos = hintOwningClass.indexOf("__");
+	  		// in another class, then we need to revise it to refer to the
+	  		// class type of the attribute.
+	  		//
+	  		// In this case, hintOwningClass is actually the name of an attribute
+	  		if (SymbolTable.symbolExistsInClass(hintOwningClass, className)) {
 	  			String instType = SymbolTable.getDataTypeOfAttribute(
-	  				hintOwningClass.substring(underPos + 2),
-	  				hintOwningClass.substring(0, underPos));
+	  				hintOwningClass, className);
 	  			hintOwningClass = instType;
 	  		}
-	  		hintAttrib = lhsHint.substring(dotPos + 1);
 	  	} else {
 	  		hintOwningClass = className;
 	  		hintAttrib = lhsHint;
@@ -270,8 +257,7 @@ public class UMLExpr extends NodeUtilityClass {
   }
 
   public String INPredicate(String predtarg) {
-   	ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
-   	String className = thisClassRef.getID();
+   	String className = currentClass;
    	aNode myParent = classRef.getParent().getParent().getParent();
    	String parentName = myParent.getID();
    	
@@ -399,13 +385,10 @@ String function() throws ParseException:
 		String className = cleanFuncID.substring(0, dotPos);
   		String signalName = cleanFuncID.substring(dotPos + 1);
   		// If the class name refers to an instance of another class, then we
-  		// need to unmangle the name and look up the name of the other class.
-  		if (className.contains("__")) {
-  			int underPos = className.indexOf("__");
-  			String classContainingAttribute = className.substring(0, underPos);
-  			String instName = className.substring(underPos + 2);
-  			className = SymbolTable.getDataTypeOfAttribute(instName,
-  				classContainingAttribute);
+  		// need to look up the name of the other class.
+  		if (SymbolTable.symbolExistsInClass(className, currentClass)) {
+  			className = SymbolTable.getDataTypeOfAttribute(className,
+  				currentClass);
   		}
 		if (!SymbolTable.checkSymbolType(signalName, className, Symbol.SymbolType.SIGNAL)) {
 			System.err.println("Error: " + signalName + " being called as an " +
