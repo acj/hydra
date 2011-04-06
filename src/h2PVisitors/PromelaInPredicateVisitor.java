@@ -15,7 +15,7 @@ import h2PNodes.StateNode;
 import h2PNodes.TransitionBodyNode;
 import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
-import h2PVisitors.Parser.UMLExpr;
+import h2PParser.UMLExpr;
 
 import java.util.Vector;
 

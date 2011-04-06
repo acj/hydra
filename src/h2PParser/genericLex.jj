@@ -23,7 +23,7 @@ options {
 
 PARSER_BEGIN(genericLex1)
 
-package h2PVisitors.Parser;
+package h2PParser;
 
 import h2PNodes.*;
 import java.io.*;

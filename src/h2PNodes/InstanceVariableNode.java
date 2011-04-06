@@ -1,9 +1,3 @@
-/*
- * Created on Jul 22, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package h2PNodes;
 
 import h2PFoundation.AcceptReturnType;
@@ -11,14 +5,8 @@ import h2PFoundation.Symbol;
 import h2PFoundation.SymbolTable;
 import h2PFoundation.Symbol.SymbolType;
 import h2PVisitors.aVisitor;
-import h2PVisitors.Parser.ParseException;
+import h2PParser.ParseException;
 
-/**
- * @author karli
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 public class InstanceVariableNode extends aNode {
     
     private String vType = "";

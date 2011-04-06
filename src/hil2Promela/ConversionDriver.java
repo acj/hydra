@@ -5,8 +5,8 @@ import h2PFoundation.NodeUtilityClass;
 import h2PNodes.WorldUtilNode;
 import h2PVisitors.Hil2PromelaVisitor;
 import h2PVisitors.ASTErrorChecker;
-import h2PVisitors.Parser.ParseException;
-import h2PVisitors.Parser.HILParser;
+import h2PParser.ParseException;
+import h2PParser.HILParser;
 
 import java.io.File;
 import java.io.FileInputStream;

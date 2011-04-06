@@ -10,7 +10,7 @@ src:
 		src/xmiParser/*.java
 
 parser:
-	cd ./src/h2PVisitors/Parser && ./generate-parser.sh > /dev/null && cd ../../../
+	cd ./src/h2PParser && ./generate-parser.sh && cd ../../
 
 jar:
 	cd build && jar -cfe ../hydra.jar MainDriver h2PFoundation h2PVisitors xmi2hil h2PNodes umlModel xmiParser MainDriver.class && cd ..

@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import h2PFoundation.NodeUtilityClass;
-import h2PVisitors.Parser.ParseException;
+import h2PParser.ParseException;
 
 /*
  * MainDriver

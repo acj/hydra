@@ -31,7 +31,7 @@ options {
 
 PARSER_BEGIN(UMLExpr)
 
-package h2PVisitors.Parser;
+package h2PParser;
 
 import h2PNodes.*;
 import h2PVisitors.*;

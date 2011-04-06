@@ -32,7 +32,7 @@ import h2PNodes.TransitionActionsNode;
 import h2PNodes.TransitionBodyNode;
 import h2PNodes.TransitionNode;
 import h2PNodes.aNode;
-import h2PVisitors.Parser.genericLex1;
+import h2PParser.genericLex1;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2301,7 +2301,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 				System.err.println("Error: transition from simple state inside composite state to a simple state that is not within the composite state.");
 				System.exit(1);			
 			} else {
-				System.err.println("Normal transition");
 				// Safe transition to another simple state
 				String guardSpaceStr = "           ";
 				if (hasGuard) {
