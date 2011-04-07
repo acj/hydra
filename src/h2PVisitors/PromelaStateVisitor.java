@@ -83,7 +83,6 @@ public class PromelaStateVisitor extends aVisitor {
 		String outputString = "";
 		
 		aNode SorCSorCCS = SearchIncluding(CSNode, dest);
-		
 		if (SorCSorCCS != null) {
 			// We found the destination within the same composite state
 			if (SorCSorCCS.getUniqueID().equals(CSNode.getUniqueID())) {
