@@ -1331,6 +1331,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 	}
 
+	/**
+	 * Produce the Promela code that handles "return values" from composite
+	 * states when there is an outgoing transition that crosses the CS's
+	 * boundary.  The CS uses the "wait" channel to communicate the identifier
+	 * of the destination state.
+	 */
 	public void csbhOutputTBridgeAndPID(AcceptReturnType anART) {
 		Vector<?> vec = anART.getGen("WholeOutgoingTransitionlist");
 		if (vec.size() > 0) {

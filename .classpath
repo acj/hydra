@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/notes|README*|notes|src/|docs/|docs/notes/|obselete/|obselete/HydraVdt/|obselete/HydraVdt/Nodes/|obselete/HydraVdt/Promela/|obselete/HydraVdt/TestSet/|obselete/HydraVdt/TimingTestSets/|obselete/HydraVdt/Universal/|obselete/HydraVdt/Visitors/|obselete/HydraVdt/Yacc/|obselete/test/" kind="src" path=""/>
+	<classpathentry excluding="**/notes|README*|notes|src/|docs/|docs/notes/|obselete/|obselete/HydraVdt/|obselete/HydraVdt/Nodes/|obselete/HydraVdt/Promela/|obselete/HydraVdt/TestSet/|obselete/HydraVdt/TimingTestSets/|obselete/HydraVdt/Universal/|obselete/HydraVdt/Visitors/|obselete/HydraVdt/Yacc/|obselete/test/|models/|spin_src/|tests/" kind="src" path=""/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build"/>

@@ -76,6 +76,12 @@ public class PromelaStateVisitor extends aVisitor {
 		return tmpNode;
 	}
 	
+	/**
+	 * Generate Promela code for doing transitions involving composite
+	 * and concurrent composite states.
+	 * 
+	 * @see{Hil2PromelaVisitor.csbhOutputTBridgeAndPID()}
+	 */
 	public AcceptReturnType visitTransitionNode(TransitionNode tNode) {
 		AcceptReturnType tmpART = super.visitTransitionNode(tNode);		
 		
