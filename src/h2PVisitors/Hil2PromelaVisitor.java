@@ -840,14 +840,13 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		tmpART.addStr("CState", "/* Link to composite state " + cstatename
 				+ " */");
-		String tmpStr = "atomic{skip;";
 
 		String padding1 = " ";
 		if ((!isFromClassCall) && pedantic) {
 			padding1 = "";
 		}
-		tmpART.addStr("CState", "to_" + cstatename + ": " + tmpStr + " "
-				+ cstatename + "_start!1;}");
+		tmpART.addStr("CState", "to_" + cstatename + ": " +
+				cstatename + "_pid = run " + cstatename + "();");
 		tmpART.addStr("CState", "        atomic{" + cstatename + "_C?1;"
 				+ padding1 + "wait??" + cstatename + "_pid,m;}");
 		tmpART.addStr("CState", "        if");
@@ -858,6 +857,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType cbnhAnalyzeCStateNode(aNode tNode) {
 		AcceptReturnType tmpART = new AcceptReturnType();
 
+		// Add "none" type to support transitions to edge of composite states
+		if (!globalOutputs.ifInArray("mTypeList", "none")) {
+			globalOutputs.addStr("mTypeList", "none");
+		}
+		
 		psv.setNodeToTest(tNode);
 
 		for (int i = 0; i < tNode.children.size(); i++) {
@@ -887,7 +891,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType cbnhAnalyzeCCStateNode(
 			ConcurrentCompositeNode tNode, boolean isFromClassCall) {
 		AcceptReturnType tmpART = new AcceptReturnType();
-
+		// Add "none" type to support transitions to edge of composite states
+		if (!globalOutputs.ifInArray("mTypeList", "none")) {
+			globalOutputs.addStr("mTypeList", "none");
+		}
 		tmpART.addStr("CCState", "to_" + tNode.getID() + ":");
 
 		// if (tNode.bodyNode == null) { return tmpART; }
@@ -936,9 +943,6 @@ public class Hil2PromelaVisitor extends aVisitor {
 								"        wait??eval(_pid),_code;}");
 						tmpART.addStr("CCStateIDmtype", "_code");
 					}
-				}
-				if (!globalOutputs.ifInArray("mTypeList", "none")) {
-					globalOutputs.addStr("mTypeList", "none");
 				}
 			}
 		}
@@ -1371,7 +1375,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "");
 		tmpART.addStr("CState", "proctype " +
-				csName + "(int __this)");
+				csName + "(int __this; mtype state)");
 		tmpART.addStr("CState", "{atomic{");
 		tmpART.addStr("CState", "mtype m;");
 
@@ -1419,7 +1423,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			}
 		}
 		currART.moveStrKey("WholeState", "CState");
-		currART.addStr("CState", "exit:        " + tNode.getParent().getID()
+		currART.addStr("CState", "exit: " + tNode.getParent().getID()
 				+ "_start?1->goto startCState;");
 
 		currART.moveStrKey("exit", "CState");
@@ -1765,6 +1769,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpout1.addElement(temp1);
 
 		// Output our mtype declarations if needed
+		String tmpStr = "";
 		if (tmpout1.size() > 0 && !tmpout1.get(0).equals("")) {
 			tmpStr += mbnhPut(0, "mtype={");
 			for (i = 0; i < tmpout1.size(); i++) {
@@ -1896,11 +1901,12 @@ public class Hil2PromelaVisitor extends aVisitor {
 		String tmpStr = "init {\n";
 		// Normal ("static") classes first
 		for (Symbol classSym : SymbolTable.getClasses()) {
+			// TODO: Need to skip over empty classes
 			String className = classSym.getName();
 			tmpStr += "    run " + className + "(0);\n";
 			if (csMap.containsKey(className)) {
 				for (String sName : csMap.get(className)) {
-					tmpStr += "    run " + sName + "(0);\n";
+					tmpStr += "    run " + sName + "(0, none);\n";
 				}
 			}
 			// Instantiate class attributes that are instances of this class
@@ -1914,7 +1920,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				// Instantiate any composite states for this class
 				if (!csMap.containsKey(className)) continue;
 				for (String sName : csMap.get(className)) {
-					tmpStr += "    run " + sName + "(" + instanceIndex + ");\n";
+					tmpStr += "    run " + sName + "(" + instanceIndex + ", none);\n";
 				}				
 			}
 		}
@@ -2262,13 +2268,11 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (stateToCSMap == null) {
 			stateToCSMap = SymbolTable.getStateToCSMapping();
 		}
+		assert(SymbolTable.symbolExists(dest));
 		
 		// Determine whether we are inside a composite state at present
 		Symbol sourceCSSym = null;
-		Symbol sourceStateSym = null;
 		boolean sourceInsideCS = false;
-		StateNode stateNode = (StateNode)searchUpForDest(tNode, "StateNode");
-		sourceStateSym = stateNode.getSymbol();
 		aNode compNode = searchUpForDest(tNode, "ConcurrentCompositeNode");
 		if (compNode != null) {
 			sourceCSSym = ((ConcurrentCompositeNode)compNode).getSymbol();
@@ -2289,7 +2293,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 				destCSSym = stateToCSMap.get(dest);
 				destInsideCS = true;
 			}
-
+			
 			// Determine whether this transition takes us to a state that
 			// is outside of the current composite state (if any).  If it does,
 			// then we need to launch an instance of the other CS.
