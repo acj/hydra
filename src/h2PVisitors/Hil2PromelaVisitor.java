@@ -333,6 +333,8 @@ public class Hil2PromelaVisitor extends aVisitor {
 		if (grandpaType.equals("TransitionNode")) {
 			if (tNode.getEventType().equals("normal")) {
 				String classRefID = searchUpForDest(tNode, "ClassNode").getID();
+				// TODO: We need to wait for messages on the "evt" channel here
+				//       instead of using the "_q" channel.
 				String tmpStateTimeInvariant = stateTimeInvariant;
 				if (tmpStateTimeInvariant.length() > 0) {
 					tmpStr += strln("        :: atomic{" + classRefID + "_q[__this]?"
@@ -751,8 +753,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 
 		tmpART.merge(tNode.acceptChildren(this));
 
-		return tmpART; // output to @outputtranactions from a concatenation of
-						// @outputtranaction
+		return tmpART;
 	}
 
 	/*
@@ -815,7 +816,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		// Channel for receiving events from other classes
 		tmpART.addStr("Signal",
 			"chan " + classID + "_q[" + numInstances + "]=[5] of {mtype};");
-		// TODO: Channel for...
+		// Channel for indicating completion/exit of a composite state
 		tmpART.addStr("Signal",
 			"chan " + classID + "_C[" + numInstances + "]=[0] of {bit};");
 		return tmpART;
@@ -1734,31 +1735,29 @@ public class Hil2PromelaVisitor extends aVisitor {
 	}
 
 	protected String mtypeListOutput() {
-		String tmpStr = "";
 		int i;
 		String tempMTL[] = globalOutputs.getStrSplit("mTypeList");
 		for (i = 0; i < (tempMTL.length - 1); i++) {
 			tempMTL[i] = tempMTL[i] + ", ";
 		}
 
+		// Massage the list into two columns for readability
 		int idx, wholeleng, leng;
 		int mod, divisor = 2;
 		Vector<String> tmpout1 = new Vector<String>();
 		String temp1 = "";
-
 		mod = tempMTL.length % divisor;
 		leng = (tempMTL.length - mod) / divisor;
 		wholeleng = leng * divisor;
 		idx = 0;
 		for (i = 1; i <= wholeleng; i++) {
-			temp1 += tempMTL[idx]/* + "!" */;
+			temp1 += tempMTL[idx];
 			idx++;
 			if ((i % divisor) == 0) {
 				tmpout1.addElement(temp1);
 				temp1 = "";
 			}
 		}
-
 		temp1 = "";
 		for (; idx < tempMTL.length; idx++) {
 			temp1 += tempMTL[idx];
@@ -2787,7 +2786,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 		}
 		stateTimeInvariant = "";
 
-		return tmpART; // output to @outputState
+		return tmpART;
 	}
 
 	/*
@@ -2811,7 +2810,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 			tmpART.merge(tNode.messagesChild.accept(this));
 			tmpART.moveStrKey("default", "transitions");
 		}
-		return tmpART; // output to @outputtransitionbody
+		return tmpART;
 	}
 
 	/*
