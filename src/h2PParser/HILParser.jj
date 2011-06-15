@@ -27,16 +27,18 @@ options {
 PARSER_BEGIN(HILParser)
 
 package h2PParser;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 import h2PNodes.*;
 import h2PFoundation.*;
+import h2PFoundation.Symbol.SymbolType;
 
 public class HILParser extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
     protected String currentClass;
     protected Stack<aNode> compositeStates; // Track nested CS nodes
-
+	protected HashMap<String, String> classInstances;
     public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);
     }
@@ -48,7 +50,21 @@ public class HILParser extends NodeUtilityClass {
     public void parse () {
     	try {
     		compositeStates = new Stack<aNode>();
+    		classInstances = new HashMap<String, String>();
     		spec();
+    		
+    		// Check class instances.  classInstances maps the full
+    		// name of the symbol to its containing class.
+    		for (String key : classInstances.keySet()) {
+				Symbol instanceSym = SymbolTable.getSymbol(key);
+				Symbol typeSym = SymbolTable.getSymbol(classInstances.get(key));
+				
+			  	// Tally this instance in the class's symbol
+			  	if (typeSym != null &&
+			  			typeSym.getType().equals(SymbolType.CLASS)) {
+		        	typeSym.addClassInstance(instanceSym);
+		        }
+    		}
 	    } catch (ParseException pe) {
 	        System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");
 	        if (pe.getMessage() != null) {
@@ -629,7 +645,10 @@ aNode instvar(String className) throws ParseException:
 	t = <ID> { tVar = t.image; }
 	( <ASSIGNOP> initVal = numid() )?
 	<SEMICOLON>
-	{ return new InstanceVariableNode (vType, tVar, initVal, className); }
+	{
+		classInstances.put(className + "." + tVar, vType);
+		return new InstanceVariableNode(vType, tVar, initVal, className);
+	}	
 }
 
 void assocbody() throws ParseException:

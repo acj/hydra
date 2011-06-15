@@ -159,8 +159,8 @@ public class UMLExpr extends NodeUtilityClass {
 	//
 	// There are two cases here:
 	// (1) The class name refers to a real class.
-	// (2) The class name is an *instance* of a class.  In this case, we need
-	//     to dereference the instance to find its class type.
+	// (2) The class name refers to an *instance* of a class.  In this case,
+	//	   we need to dereference the instance to find its class type.
 	
 	// Case (1)
 	if (SymbolTable.symbolExistsInClass(varName, className)) {
@@ -173,9 +173,6 @@ public class UMLExpr extends NodeUtilityClass {
 		  		instName, containingClassName, Symbol.SymbolType.INSTVAR);
 		  	String instClass = instanceSym.getDataType();
 		  	if (SymbolTable.symbolExistsInClass(varName, instClass)) {
-		  		Symbol instanceTypeSym = SymbolTable.getSymbol(instClass);
-		  		// Tally this instance in the class's symbol
-	        	instanceTypeSym.addClassInstance(instanceSym);
 		  		return instName + "." + varName;
 		  	} else {
 		  		System.err.println("Error: class `" + instClass +
@@ -184,7 +181,7 @@ public class UMLExpr extends NodeUtilityClass {
 		  			"') has no member named `" + varName + "'.");
 		  		throw new ParseException(); 
 		  	}
-		}
+		} // else: it's probably an enumerated type
 	}
 	
   	// Is the variable an enumerated type? 

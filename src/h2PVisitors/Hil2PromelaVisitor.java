@@ -529,7 +529,9 @@ public class Hil2PromelaVisitor extends aVisitor {
 			// Mangle class name
 			Symbol instTypeSym = SymbolTable.getSymbol(instanceClassType);
 			Symbol instSym = SymbolTable.getSymbol(destCN.getID() + "." + className);
+			assert(instSym != null && instTypeSym != null);			
 			instIndex = instTypeSym.getIndexOfInstance(instSym);
+			assert(instIndex != -1);
 			className = instanceClassType;
 			// Mangle signal name
 			mangledSignalName = instanceClassType + "__sig__" + tNode.getSignalName(); 
