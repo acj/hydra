@@ -27,7 +27,11 @@ options {
 PARSER_BEGIN(HILParser)
 
 package h2PParser;
+
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 import h2PNodes.*;
@@ -38,7 +42,9 @@ public class HILParser extends NodeUtilityClass {
     protected WorldUtilNode rootNode;
     protected String currentClass;
     protected Stack<aNode> compositeStates; // Track nested CS nodes
-	protected HashMap<String, String> classInstances;
+    protected Map<String, String> classInstances;
+    protected Map<String, HashSet<String>> classInheritance;
+	
     public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);
     }
@@ -51,9 +57,10 @@ public class HILParser extends NodeUtilityClass {
     	try {
     		compositeStates = new Stack<aNode>();
     		classInstances = new HashMap<String, String>();
+    		classInheritance = new HashMap<String, HashSet<String>>();
     		spec();
     		
-    		// Check class instances.  classInstances maps the full
+    		// Process class instances.  classInstances maps the full
     		// name of the symbol to its containing class.
     		for (String key : classInstances.keySet()) {
 				Symbol instanceSym = SymbolTable.getSymbol(key);
@@ -65,8 +72,80 @@ public class HILParser extends NodeUtilityClass {
 		        	typeSym.addClassInstance(instanceSym);
 		        }
     		}
+    		
+            // Process generalization/inheritance relationships
+            for (String key : classInheritance.keySet()) {
+            	String superClassName = key;
+            	ClassNode superClassNode = findClassNodeByID(rootNode, superClassName);
+            	assert(superClassNode != null);
+            	
+            	// For each subclass that inherits this superclass, place a
+            	// copy of the superclass's instance variables and signals
+            	// into the subclass.
+            	for (String subClassName : classInheritance.get(key)) {
+                	ClassNode subClassNode = findClassNodeByID(rootNode, subClassName);
+                	assert(subClassNode != null);
+                	
+                	assert(superClassNode.children.size() == 1 &&
+                		superClassNode.children.get(0).getType().equals("ClassBodyNode"));
+                	ClassBodyNode cBodyNode = (ClassBodyNode)superClassNode.children.get(0);
+                	assert(cBodyNode != null);
+                	
+        			// Nodes at this level should be instance variables,
+        			// signals, states, etc.
+        			for (aNode cbChildNode : cBodyNode.children) {
+        				String memberName = "";
+        				if (cbChildNode.getType().equals("InstanceVariableNode")) {
+        					InstanceVariableNode instNode = (InstanceVariableNode)cbChildNode;
+        					memberName = instNode.getVar();
+        					assert(!memberName.equals(""));
+        					if (SymbolTable.symbolExistsInClass(memberName, subClassName)) {
+        						System.err.println("Error: Class " + subClassName +
+        								" already has a member ``" + instNode.getVar() +
+        								"'' that would be shadowed by the inherited member in " +
+        								superClassName + ".");
+        						throw new ParseException();
+        					} else {
+        						String instType = instNode.getVType();
+        						assert(!instType.equals(""));
+        						Symbol newInstSym = SymbolTable.addSymbol(memberName, SymbolType.INSTVAR, instType, subClassName);
+        						// Is this an instance of a class?  If so, then
+        						// add a reference to this new instance to the
+        						// class's list of instances.
+        						if (SymbolTable.symbolExists(instType, SymbolType.CLASS)) {
+        							Symbol classSym = SymbolTable.getSymbol(instType);
+        							classSym.addClassInstance(newInstSym);
+        						}
+        						aNode subClassBodyNode = subClassNode.children.get(0);
+        						assert(subClassBodyNode != null);
+        						rootNode.addChildToNode(subClassBodyNode, cbChildNode);
+        					}
+        				} else if (cbChildNode.getType().equals("SignalNode")) {
+        					SignalNode sigNode = (SignalNode)cbChildNode;
+        					memberName = sigNode.getName();
+        					assert(!memberName.equals(""));
+        					if (SymbolTable.symbolExistsInClass(memberName, subClassName)) {
+        						System.err.println("Error: Class " + subClassName +
+        								" already has an operation ``" + sigNode.getName() +
+        								"'' that would be shadowed by the inherited operation in " +
+        								superClassName + ".");
+        						throw new ParseException();
+        					} else {
+        						Symbol superInstanceSym =
+        							SymbolTable.getSymbol(memberName, superClassName, SymbolType.SIGNAL);
+        						SymbolTable.addSymbol(memberName, SymbolType.SIGNAL, superInstanceSym.getDataType(), subClassName);
+        						aNode subClassBodyNode = subClassNode.children.get(0);
+        						assert(subClassBodyNode != null);
+        						rootNode.addChildToNode(subClassBodyNode, cbChildNode);
+        					}
+        				}
+        			}
+                }
+            }
 	    } catch (ParseException pe) {
-	        System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");
+	    	if (currentClass != null) {
+	        	System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");
+	        }
 	        if (pe.getMessage() != null) {
 	       		System.err.println("The misbehaving line is as follows:\n\n" +
 	       			pe.getMessage());
@@ -135,8 +214,6 @@ TOKEN: /* main items */
 |  <INSTVAR: "InstanceVar">
 |  <ENUM: "Enum">
 
-|  <SUPER: "super">
-|  <SUB: "sub">
 |  <WHOLE: "Whole">
 |  <PART: "Part">
 |  <NEW: "new">
@@ -152,7 +229,8 @@ TOKEN: /* main items */
 
 <*> TOKEN : /* OPERATORS, IDENTIFIERS & NUMBERS */
 {
-   <AND: "&&" | "&"> 
+   <INHERITS: "<">
+|  <AND: "&&" | "&"> 
 |  <NOT: "~" | "!">
 |  <OR: "||" | "|">
 |  <COMPARE_OP: ">=" | "<=" | ">" | "<">
@@ -278,12 +356,26 @@ aNode modelstmt() throws ParseException:
 | (
     <CLASS>
     t = <ID> { tID = t.image; currentClass = tID; }
+    (
+    	<INHERITS>
+    	t = <ID>
+    	{
+    		String superName = t.image;
+			if (!classInheritance.containsKey(superName)) {
+				HashSet<String> inheritsSet = new HashSet<String>();
+				inheritsSet.add(currentClass);
+				classInheritance.put(superName, inheritsSet);
+			} else {
+				classInheritance.get(superName).add(currentClass);
+			}
+		}
+    )?
     <LCURLY> 
-    ( cbNode = classbody(t.image) )?
+    ( cbNode = classbody(currentClass) )?
     <RCURLY>
   )
   { 
-  	cNode = new ClassNode(tID);
+  	cNode = new ClassNode(currentClass);
   	return rootNode.addChildToNode(cNode, cbNode);
   } 
 | (
@@ -347,10 +439,6 @@ aNode classstmt(String className) throws ParseException:
 	<ID>
 	<LCURLY> agsubbody() <RCURLY>
 	) {return null;}
-|	(
-	<GENERALIZATION>
-	<LCURLY> genbody() <RCURLY>
-    ) { return null; }
 |	ordconst() { return null; }
 }
 
@@ -664,11 +752,6 @@ void agsubbody() throws ParseException:
 	<ID> // temporary! Fix...
 }
 
-void genbody() throws ParseException:
-{}
-{
-	<SUPER> <ID> <SUB> <ID>
-}
 void ordconst() throws ParseException:
 {}
 {

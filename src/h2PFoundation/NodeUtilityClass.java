@@ -1,7 +1,11 @@
 package h2PFoundation;
 
 import h2PNodes.ClassBodyNode;
+import h2PNodes.ClassNode;
+import h2PNodes.InstanceVariableNode;
+import h2PNodes.SignalNode;
 import h2PNodes.aNode;
+import h2PParser.ParseException;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -22,6 +26,27 @@ public class NodeUtilityClass {
 	
 	public String strln(){
 		return strln("");
+	}
+	
+	/**
+	 * Locates a class node with a given ID ("class name").
+	 * 
+	 * @param rootNode The root node of the AST
+	 * @param destID The class name for which to search
+	 * @return A ClassNode representing the desired class; null if the class does not exist
+	 */
+	public ClassNode findClassNodeByID(aNode rootNode, String destID) {
+		ClassNode target = null;
+        assert(rootNode.children.size() > 0 &&
+        		rootNode.children.get(0).children.size() > 0);
+        aNode mBodyNode = rootNode.children.get(0).children.get(0);
+        for (aNode mbNode : mBodyNode.children) {
+        	if (mbNode.getType().equals("ClassNode") &&
+        			mbNode.getID().equals(destID)) {
+        		target = (ClassNode)mbNode;
+        	}
+        }
+        return target;
 	}
 
 	/*
