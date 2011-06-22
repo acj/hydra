@@ -60,19 +60,6 @@ public class HILParser extends NodeUtilityClass {
     		classInheritance = new HashMap<String, HashSet<String>>();
     		spec();
     		
-    		// Process class instances.  classInstances maps the full
-    		// name of the symbol to its containing class.
-    		for (String key : classInstances.keySet()) {
-				Symbol instanceSym = SymbolTable.getSymbol(key);
-				Symbol typeSym = SymbolTable.getSymbol(classInstances.get(key));
-				
-			  	// Tally this instance in the class's symbol
-			  	if (typeSym != null &&
-			  			typeSym.getType().equals(SymbolType.CLASS)) {
-		        	typeSym.addClassInstance(instanceSym);
-		        }
-    		}
-    		
             // Process generalization/inheritance relationships
             for (String key : classInheritance.keySet()) {
             	String superClassName = key;
@@ -106,19 +93,21 @@ public class HILParser extends NodeUtilityClass {
         								superClassName + ".");
         						throw new ParseException();
         					} else {
-        						String instType = instNode.getVType();
-        						assert(!instType.equals(""));
-        						Symbol newInstSym = SymbolTable.addSymbol(memberName, SymbolType.INSTVAR, instType, subClassName);
+        						InstanceVariableNode newInstNode = new InstanceVariableNode(
+                                	instNode.getVType(), instNode.getVar(),
+                                	instNode.getInitValue(), subClassName);
+                                Symbol newInstSym = newInstNode.getSymbol();
+
         						// Is this an instance of a class?  If so, then
         						// add a reference to this new instance to the
         						// class's list of instances.
-        						if (SymbolTable.symbolExists(instType, SymbolType.CLASS)) {
-        							Symbol classSym = SymbolTable.getSymbol(instType);
-        							classSym.addClassInstance(newInstSym);
+        						if (SymbolTable.symbolExists(newInstNode.getVType(), SymbolType.CLASS)) {
+        							Symbol classSym = SymbolTable.getSymbol(newInstNode.getVType());
+        							classInstances.put(subClassName + "." + newInstNode.getVar(), newInstNode.getVType());
         						}
         						aNode subClassBodyNode = subClassNode.children.get(0);
         						assert(subClassBodyNode != null);
-        						rootNode.addChildToNode(subClassBodyNode, cbChildNode);
+        						rootNode.addChildToNode(subClassBodyNode, newInstNode);
         					}
         				} else if (cbChildNode.getType().equals("SignalNode")) {
         					SignalNode sigNode = (SignalNode)cbChildNode;
@@ -131,17 +120,30 @@ public class HILParser extends NodeUtilityClass {
         								superClassName + ".");
         						throw new ParseException();
         					} else {
-        						Symbol superInstanceSym =
-        							SymbolTable.getSymbol(memberName, superClassName, SymbolType.SIGNAL);
-        						SymbolTable.addSymbol(memberName, SymbolType.SIGNAL, superInstanceSym.getDataType(), subClassName);
+        						SignalNode newSigNode = new SignalNode(
+        							sigNode.getName(), sigNode.getSignalType(),
+        							subClassName);
         						aNode subClassBodyNode = subClassNode.children.get(0);
         						assert(subClassBodyNode != null);
-        						rootNode.addChildToNode(subClassBodyNode, cbChildNode);
+        						rootNode.addChildToNode(subClassBodyNode, newSigNode);
         					}
         				}
         			}
                 }
             }
+            
+            // Process class instances.  classInstances maps the full name of
+            // the symbol to the name of the class of which it is an instance.
+    		for (String key : classInstances.keySet()) {
+				Symbol instanceSym = SymbolTable.getSymbol(key);
+				Symbol typeSym = SymbolTable.getSymbol(classInstances.get(key));
+				
+			  	// Tally this instance in the class's symbol
+			  	if (typeSym != null &&
+			  			typeSym.getType().equals(SymbolType.CLASS)) {
+		        	typeSym.addClassInstance(instanceSym);
+		        }
+    		}
 	    } catch (ParseException pe) {
 	    	if (currentClass != null) {
 	        	System.err.println("\nThe error occurred in class `" + currentClass + "'.\n");

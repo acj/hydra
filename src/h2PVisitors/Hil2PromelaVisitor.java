@@ -819,8 +819,10 @@ public class Hil2PromelaVisitor extends aVisitor {
 		tmpART.addStr("Signal",
 			"chan " + classID + "_q[" + numInstances + "]=[5] of {mtype};");
 		// Channel for indicating completion/exit of a composite state
-		tmpART.addStr("Signal",
-			"chan " + classID + "_C[" + numInstances + "]=[0] of {bit};");
+		// TODO: Only enable if composite states are used so that we don't
+		//       exceed the maximum number of states. 
+		//tmpART.addStr("Signal",
+		//    "chan " + classID + "_C[" + numInstances + "]=[0] of {bit};");
 		return tmpART;
 	}
 

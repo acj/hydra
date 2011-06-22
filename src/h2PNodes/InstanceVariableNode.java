@@ -8,15 +8,11 @@ import h2PVisitors.aVisitor;
 import h2PParser.ParseException;
 
 public class InstanceVariableNode extends aNode {
-    
     private String vType = "";
     private String tVariable = "";
     private String initValue = "";
+    private Symbol symbol;
     
-    /**
-     * @param theID
-     * @throws ParseException 
-     */
     public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) throws ParseException {
         super(noID(), "InstanceVariableNode");
         vType = theVType;
@@ -28,9 +24,8 @@ public class InstanceVariableNode extends aNode {
         			newVar + "' and an existing class.");
         	throw new ParseException();
         }
-        SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, theVType, className);
+        symbol = SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, theVType, className);
     }
-    
 
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitInstanceVariableNode(this);
@@ -48,21 +43,18 @@ public class InstanceVariableNode extends aNode {
       return initValue;   
     }
 
+	public Symbol getSymbol() {
+        return symbol;
+    }
 
-	public String getNodeVal(String valName) {
-		// TODO Auto-generated method stub
+    public String getNodeVal(String valName) {
 		if (valName.equals("var")) {
 			return getVar();
 		}
 		return super.getNodeVal(valName);
 	}
 
-	/* (non-Javadoc)
-	 * @see h2PNodes.aNode#getNodeName(boolean, boolean, boolean)
-	 */
 	public String getNodeName(boolean withClassName, boolean withModelName, boolean withID) {
 		return super.getNodeName(withClassName, withModelName, false) + this.getVar();		
 	}
-
-
 }
