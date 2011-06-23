@@ -371,6 +371,20 @@ aNode modelstmt() throws ParseException:
 				classInheritance.get(superName).add(currentClass);
 			}
 		}
+		(
+			<COMMA>
+			t = <ID>
+		)*
+		{
+			superName = t.image;
+			if (!classInheritance.containsKey(superName)) {
+				HashSet<String> inheritsSet = new HashSet<String>();
+				inheritsSet.add(currentClass);
+				classInheritance.put(superName, inheritsSet);
+			} else {
+				classInheritance.get(superName).add(currentClass);
+			}
+		}	
     )?
     <LCURLY> 
     ( cbNode = classbody(currentClass) )?
