@@ -10,13 +10,15 @@ import h2PVisitors.aVisitor;
 
 public class ClassNode extends aNode {
 	public ClassBodyNode classBodyNode;
-	private String className;
+	private ClassNode parentClassNode;
+    private String className;
     private Symbol symbol;
 	protected boolean hasClassBodyNodeBoolean = false;
 	
     public ClassNode(String className) {
         super(className, "ClassNode");
         this.className = className;
+        parentClassNode = null;
         symbol = SymbolTable.addSymbol(className, SymbolType.CLASS, "", "");
     }
     
@@ -25,9 +27,10 @@ public class ClassNode extends aNode {
 	}
 	
 	/**
+	 * Inherit the attributes and operations from another class, usually a superclass. 
 	 * 
-	 * @param superClassNode
-	 * @return
+	 * @param superClassNode The superclass from which to inherit.
+	 * @return A map of attributes that are instances of other classes. (cf. HILParser)
 	 * @throws Exception
 	 */
 	public HashMap<String, String> inheritFrom(ClassNode superClassNode) throws Exception {
@@ -86,12 +89,28 @@ public class ClassNode extends aNode {
         return classInstances;
 	}
 	
+	public ClassNode getParentClassNode() {
+        return parentClassNode;
+    }
+
+    public void setParentClassNode(ClassNode parentClassNode) {
+        this.parentClassNode = parentClassNode;
+    }
+	    
 	public String getName() {
         return className;
     }
 	
 	public boolean hasClassBodyNode() {
 		return hasClassBodyNodeBoolean;
+	}
+	
+	public boolean hasSuperClass() {
+	    if (parentClassNode != null) {
+	        return true;
+	    } else {
+	        return false;
+	    }
 	}
 	
 	public void addChild(aNode newChild){
