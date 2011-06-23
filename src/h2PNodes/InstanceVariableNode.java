@@ -13,7 +13,7 @@ public class InstanceVariableNode extends aNode {
     private String initValue = "";
     private Symbol symbol;
     
-    public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) throws ParseException {
+    public InstanceVariableNode(String theVType, String newVar, String anInitValue, String className) throws Exception {
         super(noID(), "InstanceVariableNode");
         vType = theVType;
         tVariable = newVar;
@@ -22,7 +22,7 @@ public class InstanceVariableNode extends aNode {
         if (SymbolTable.symbolExists(newVar, Symbol.SymbolType.CLASS)) {
         	System.err.println("Error: name collision between instance variable `" +
         			newVar + "' and an existing class.");
-        	throw new ParseException();
+        	throw new Exception();
         }
         symbol = SymbolTable.addSymbol(newVar, SymbolType.INSTVAR, theVType, className);
     }

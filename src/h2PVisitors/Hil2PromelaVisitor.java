@@ -222,7 +222,7 @@ public class Hil2PromelaVisitor extends aVisitor {
 	public AcceptReturnType visitClassNode(ClassNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		if (tNode.hasClassBodyNode()) {
-			tmpART.merge(tNode.subnode.accept(this)); // called by modelbody
+			tmpART.merge(tNode.classBodyNode.accept(this)); // called by modelbody
 														// node.
 		}
 

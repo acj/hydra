@@ -143,7 +143,7 @@ public class ASTErrorChecker extends aVisitor {
 			if (!tNode.hasClassBodyNode()) {
 				tART.addStr("errors", "Class: (" + nodeName + ") Has has children but no body.");
 			} else {
-				tART.merge(tNode.subnode.accept(this));
+				tART.merge(tNode.classBodyNode.accept(this));
 			}
 		}
 		

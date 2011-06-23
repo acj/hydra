@@ -71,64 +71,14 @@ public class HILParser extends NodeUtilityClass {
             	// into the subclass.
             	for (String subClassName : classInheritance.get(key)) {
                 	ClassNode subClassNode = findClassNodeByID(rootNode, subClassName);
-                	assert(subClassNode != null);
-                	
-                	assert(superClassNode.children.size() == 1 &&
-                		superClassNode.children.get(0).getType().equals("ClassBodyNode"));
-                	ClassBodyNode cBodyNode = (ClassBodyNode)superClassNode.children.get(0);
-                	assert(cBodyNode != null);
-                	
-        			// Nodes at this level should be instance variables,
-        			// signals, states, etc.
-        			for (aNode cbChildNode : cBodyNode.children) {
-        				String memberName = "";
-        				if (cbChildNode.getType().equals("InstanceVariableNode")) {
-        					InstanceVariableNode instNode = (InstanceVariableNode)cbChildNode;
-        					memberName = instNode.getVar();
-        					assert(!memberName.equals(""));
-        					if (SymbolTable.symbolExistsInClass(memberName, subClassName)) {
-        						System.err.println("Error: Class " + subClassName +
-        								" already has a member ``" + instNode.getVar() +
-        								"'' that would be shadowed by the inherited member in " +
-        								superClassName + ".");
-        						throw new ParseException();
-        					} else {
-        						InstanceVariableNode newInstNode = new InstanceVariableNode(
-                                	instNode.getVType(), instNode.getVar(),
-                                	instNode.getInitValue(), subClassName);
-                                Symbol newInstSym = newInstNode.getSymbol();
-
-        						// Is this an instance of a class?  If so, then
-        						// add a reference to this new instance to the
-        						// class's list of instances.
-        						if (SymbolTable.symbolExists(newInstNode.getVType(), SymbolType.CLASS)) {
-        							Symbol classSym = SymbolTable.getSymbol(newInstNode.getVType());
-        							classInstances.put(subClassName + "." + newInstNode.getVar(), newInstNode.getVType());
-        						}
-        						aNode subClassBodyNode = subClassNode.children.get(0);
-        						assert(subClassBodyNode != null);
-        						rootNode.addChildToNode(subClassBodyNode, newInstNode);
-        					}
-        				} else if (cbChildNode.getType().equals("SignalNode")) {
-        					SignalNode sigNode = (SignalNode)cbChildNode;
-        					memberName = sigNode.getName();
-        					assert(!memberName.equals(""));
-        					if (SymbolTable.symbolExistsInClass(memberName, subClassName)) {
-        						System.err.println("Error: Class " + subClassName +
-        								" already has an operation ``" + sigNode.getName() +
-        								"'' that would be shadowed by the inherited operation in " +
-        								superClassName + ".");
-        						throw new ParseException();
-        					} else {
-        						SignalNode newSigNode = new SignalNode(
-        							sigNode.getName(), sigNode.getSignalType(),
-        							subClassName);
-        						aNode subClassBodyNode = subClassNode.children.get(0);
-        						assert(subClassBodyNode != null);
-        						rootNode.addChildToNode(subClassBodyNode, newSigNode);
-        					}
-        				}
-        			}
+					assert(subClassNode != null);
+                	HashMap<String, String> newClassInstances;
+                	try {
+                		newClassInstances = subClassNode.inheritFrom(superClassNode);
+                	} catch (Exception e) {
+                		throw new ParseException();
+                	}
+                	classInstances.putAll(newClassInstances);
                 }
             }
             
@@ -751,7 +701,11 @@ aNode instvar(String className) throws ParseException:
 	<SEMICOLON>
 	{
 		classInstances.put(className + "." + tVar, vType);
-		return new InstanceVariableNode(vType, tVar, initVal, className);
+		try {
+			return new InstanceVariableNode(vType, tVar, initVal, className);
+		} catch(Exception e) {
+			throw new ParseException();
+		}
 	}	
 }
 
