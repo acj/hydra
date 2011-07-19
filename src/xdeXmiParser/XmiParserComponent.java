@@ -1,4 +1,4 @@
-package xmiParser;
+package xdeXmiParser;
 
 import java.io.File;
 
@@ -55,7 +55,7 @@ public class XmiParserComponent {
 
 	/** @modelguid {35D1A1A0-FC7D-4F83-BBCD-0B4FBFB08CDD} */
 	public Model getUMLModel() {
-		// Return the last parsed and construicted UML model
+		// Return the last parsed and constructed UML model
 		return theUMLModel;
 	}
 

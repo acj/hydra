@@ -13,7 +13,7 @@ import java.util.List;
 
 import umlModel.Model;
 import umlModel.Visitor;
-import xmiParser.XmiParserComponent;
+import xdeXmiParser.XmiParserComponent;
 
 /**
  * Instruments the conversion of XMI data into the Hydra Intermediate

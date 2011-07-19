@@ -1,4 +1,4 @@
-package xmiParser;
+package xdeXmiParser;
 
 
 import java.util.HashMap;
