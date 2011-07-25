@@ -51,6 +51,7 @@ public class UMLExpr extends NodeUtilityClass {
   protected Reader dataStream;
   protected String lhsHint = "";
   protected Set<String> reservedWords;
+  protected Set<Symbol> referencedSymbols;
 
   public UMLExpr(AcceptReturnType theGlobalOutputs, PromelaInPredicateVisitor THEpinpv) {
 	this(new StringReader("This is a test string"));
@@ -65,6 +66,7 @@ public class UMLExpr extends NodeUtilityClass {
 		"short", "skip", "timeout", "typedef", "unless", "unsigned",
 		"xr", "xs" };
 	reservedWords = new HashSet<String>();
+	referencedSymbols = new HashSet<Symbol>();
 	for (String word : reservedWordArray) {
 		reservedWords.add(word);
 	}
@@ -125,7 +127,6 @@ public class UMLExpr extends NodeUtilityClass {
   		throw new ParseException();
   	}
   	
-  	
   	// Determine whether this is a timer variable
   	String entities [] = globalOutputs.getStrSplit("TimerList");
   	for (int i = 0; i < entities.length; i++) {
@@ -164,7 +165,9 @@ public class UMLExpr extends NodeUtilityClass {
 	
 	// Case (1)
 	if (SymbolTable.symbolExistsInClass(varName, className)) {
-		return className + "." + varName;
+		String fullVarName = className + "." + varName;
+		referencedSymbols.add(SymbolTable.getSymbol(fullVarName));
+		return fullVarName;
 	} else { // Case (2)
 	  	String containingClassName = currentClass;
 	  	String instName = className;
@@ -173,6 +176,10 @@ public class UMLExpr extends NodeUtilityClass {
 		  		instName, containingClassName, Symbol.SymbolType.INSTVAR);
 		  	String instClass = instanceSym.getDataType();
 		  	if (SymbolTable.symbolExistsInClass(varName, instClass)) {
+		  		Symbol instanceTypeSym = SymbolTable.getSymbol(instClass);
+		  		// Tally this instance in the class's symbol
+	        	instanceTypeSym.addClassInstance(instanceSym);
+	        	referencedSymbols.add(instanceSym);
 		  		return instName + "." + varName;
 		  	} else {
 		  		System.err.println("Error: class `" + instClass +
@@ -250,6 +257,11 @@ public class UMLExpr extends NodeUtilityClass {
   		throw new ParseException();
   	}
   	
+  	System.err.println("Unhandled name resolution: " + varName);
+  	Symbol varSym = SymbolTable.getSymbol(varName);
+  	if (varSym != null) {
+  		referencedSymbols.add(varSym);
+  	}
   	return varName;
   }
 
@@ -273,6 +285,10 @@ public class UMLExpr extends NodeUtilityClass {
   public String Assignment(String assignto, String assignfrom) throws ParseException {
   	String newleft = InstVar(assignto);
   	return newleft + "=" + assignfrom + ";";
+  }
+  
+  public Set<Symbol> getReferencedSymbols() {
+  	return referencedSymbols;
   }
 }
 
