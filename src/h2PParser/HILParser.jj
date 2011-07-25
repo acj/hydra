@@ -43,7 +43,7 @@ public class HILParser extends NodeUtilityClass {
     protected String currentClass;
     protected Stack<aNode> compositeStates; // Track nested CS nodes
     protected Map<String, String> classInstances;
-    protected HashSet<String> inheritingClasses;
+    protected Map<String, HashSet<String>> classInheritance;
 	
     public HILParser (WorldUtilNode theRootNode) {
     	setRootNode (theRootNode);
@@ -57,24 +57,31 @@ public class HILParser extends NodeUtilityClass {
     	try {
     		compositeStates = new Stack<aNode>();
     		classInstances = new HashMap<String, String>();
-    		inheritingClasses = new HashSet<String>();
+    		classInheritance = new HashMap<String, HashSet<String>>();
     		spec();
     		
-            // Process generalization/inheritance relationships
-            for (String subClassName : inheritingClasses) {
+            // Process generalization/inheritance relationships.  This must
+            // take place after parsing so that all classes have been
+            // accounted for.
+            for (String subClassName : classInheritance.keySet()) {
             	ClassNode currentClassNode = findClassNodeByID(rootNode, subClassName);
             	assert(currentClassNode != null);
             	
-            	// Climb the inheritance tree until we run out of superclasses
-            	while (currentClassNode.hasSuperClass()) {
-            	    try {
-	            		currentClassNode = currentClassNode.getParentClassNode();
-	                	newClassInstances = subClassNode.inheritFrom(currentClassNode);
-	                	classInstances.putAll(newClassInstances);
-	                } catch (Exception e) {
-	                	throw new ParseException();
-	                }
+            	HashSet<String> superClassNames = classInheritance.get(subClassName);
+            	for (String superClass : superClassNames) {
+            		ClassNode superClassNode = findClassNodeByID(rootNode, superClass);
+            		currentClassNode.addSuperClass(superClassNode);
             	}
+            }
+            
+            for (String subClassName : classInheritance.keySet()) {
+            	ClassNode currentClassNode = findClassNodeByID(rootNode, subClassName);
+            	assert(currentClassNode != null);
+            	try {
+            		currentClassNode.inheritFromSuperClasses();
+            	} catch (Exception e) {
+	            	throw new ParseException();
+	            }
             }
             
             // Process class instances.  classInstances maps the full name of
@@ -293,6 +300,7 @@ aNode modelstmt() throws ParseException:
   ClassNode cNode = null;
   ClassBodyNode cbNode = null;
   EnumNode enumNode;
+  String superName;
 }
 {
   (
@@ -307,16 +315,27 @@ aNode modelstmt() throws ParseException:
     	<INHERITS>
     	t = <ID>
     	{
-    		String superName = t.image;
-    		inheritingClasses.add(currentClass);
+    		superName = t.image;
+    		if (!classInheritance.containsKey(currentClass)) {
+           		HashSet<String> inheritsSet = new HashSet<String>();
+           		inheritsSet.add(superName);
+           		classInheritance.put(currentClass, inheritsSet);
+			} else {
+            	classInheritance.get(currentClass).add(superName);
+	    	}
 		}
 		(
 			<COMMA>
 			t = <ID>
 		)*
 		{
-			superName = t.image;
-			inheritingClasses.add(currentClass);
+    		if (!classInheritance.containsKey(currentClass)) {
+           		HashSet<String> inheritsSet = new HashSet<String>();
+           		inheritsSet.add(superName);
+           		classInheritance.put(currentClass, inheritsSet);
+			} else {
+            	classInheritance.get(currentClass).add(superName);
+	    	}
 		}	
     )?
     <LCURLY> 

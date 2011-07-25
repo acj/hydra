@@ -1,6 +1,7 @@
 package h2PNodes;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import h2PFoundation.AcceptReturnType;
 import h2PFoundation.Symbol;
@@ -10,7 +11,8 @@ import h2PVisitors.aVisitor;
 
 public class ClassNode extends aNode {
 	public ClassBodyNode classBodyNode;
-	private ClassNode parentClassNode;
+	private HashSet<ClassNode> superClassNodes;
+	private boolean visitedForInheritance;
     private String className;
     private Symbol symbol;
 	protected boolean hasClassBodyNodeBoolean = false;
@@ -18,12 +20,24 @@ public class ClassNode extends aNode {
     public ClassNode(String className) {
         super(className, "ClassNode");
         this.className = className;
-        parentClassNode = null;
+        superClassNodes = new HashSet<ClassNode>();
+        visitedForInheritance = false;
         symbol = SymbolTable.addSymbol(className, SymbolType.CLASS, "", "");
     }
     
 	public AcceptReturnType accept(aVisitor v) {
 		return v.visitClassNode(this);
+	}
+	
+	public void inheritFromSuperClasses() throws Exception {
+	    if (visitedForInheritance) {
+	        return;
+	    }
+	    for (ClassNode superClass : superClassNodes) {
+	        superClass.inheritFromSuperClasses();
+	        inheritFrom(superClass);
+	    }
+	    visitedForInheritance = true;
 	}
 	
 	/**
@@ -89,13 +103,11 @@ public class ClassNode extends aNode {
         return classInstances;
 	}
 	
-	public ClassNode getParentClassNode() {
-        return parentClassNode;
-    }
-
-    public void setParentClassNode(ClassNode parentClassNode) {
-        this.parentClassNode = parentClassNode;
-    }
+	public void addSuperClass(ClassNode superClass) {
+	    if (!superClassNodes.contains(superClass)) {
+	        superClassNodes.add(superClass);
+	    }
+	}
 	    
 	public String getName() {
         return className;
@@ -106,10 +118,10 @@ public class ClassNode extends aNode {
 	}
 	
 	public boolean hasSuperClass() {
-	    if (parentClassNode != null) {
-	        return true;
-	    } else {
+	    if (superClassNodes.isEmpty()) {
 	        return false;
+	    } else {
+	        return true;
 	    }
 	}
 	
