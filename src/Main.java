@@ -2,8 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import h2PFoundation.NodeUtilityClass;
-import h2PParser.ParseException;
+import backend.h2PFoundation.NodeUtilityClass;
+import backend.h2PParser.ParseException;
+
 
 /*
  * MainDriver
@@ -66,7 +67,7 @@ public class Main {
 	}
 	
 	private static void convertXMItoHIL(File sourceFile, File sinkFile) {
-    	xmi2hil.ConversionDriver x2hDriver = new xmi2hil.ConversionDriver(sourceFile);
+    	frontend.xmi2hil.ConversionDriver x2hDriver = new frontend.xmi2hil.ConversionDriver(sourceFile);
     	String intermediateFilename = sourceFile.getName();
     	intermediateFilename = intermediateFilename.replace(".xmi", "") + ".hil";
     	x2hDriver.setHilIntermediateFilename(intermediateFilename);
@@ -82,7 +83,7 @@ public class Main {
 	}
 
 	private static void convertXMItoPromela(File sourceFile, File sinkFile) {
-    	xmi2hil.ConversionDriver x2hDriver = new xmi2hil.ConversionDriver(sourceFile);
+    	frontend.xmi2hil.ConversionDriver x2hDriver = new frontend.xmi2hil.ConversionDriver(sourceFile);
     	String intermediateFilename = sourceFile.getName();
     	intermediateFilename = intermediateFilename.replace(".xmi", "") + ".hil";
     	x2hDriver.setHilIntermediateFilename(intermediateFilename);
@@ -99,7 +100,7 @@ public class Main {
 	}
 	
 	private static void convertHILtoPromela(String hilText, File sinkFile) {
-        hil2Promela.ConversionDriver h2pDriver = new hil2Promela.ConversionDriver();
+        backend.hil2Promela.ConversionDriver h2pDriver = new backend.hil2Promela.ConversionDriver();
         h2pDriver.setHILInput(hilText);
         try {
 			h2pDriver.convert();
@@ -117,7 +118,7 @@ public class Main {
 	}
 	
 	private static void convertHILtoPromela(File sourceFile, File sinkFile) {
-        hil2Promela.ConversionDriver h2pDriver = new hil2Promela.ConversionDriver(sourceFile);
+        backend.hil2Promela.ConversionDriver h2pDriver = new backend.hil2Promela.ConversionDriver(sourceFile);
         try {
 			h2pDriver.convert();
 			if (h2pDriver.save(sinkFile)) {
