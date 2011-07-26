@@ -53,10 +53,9 @@ public class UMLExpr extends NodeUtilityClass {
   protected Set<String> reservedWords;
   protected Set<Symbol> referencedSymbols;
 
-  public UMLExpr(AcceptReturnType theGlobalOutputs, PromelaInPredicateVisitor THEpinpv) {
+  public UMLExpr(AcceptReturnType theGlobalOutputs) {
 	this(new StringReader("This is a test string"));
 	globalOutputs = theGlobalOutputs;
-	pinpv = THEpinpv;
 	String[] reservedWordArray = new String[] {
 		"active", "assert", "atomic", "bit",
 		"bool", "break", "byte", "chan", "d_step", "D_proctype", "do", "else",
@@ -71,12 +70,18 @@ public class UMLExpr extends NodeUtilityClass {
 		reservedWords.add(word);
 	}
   }
+  
+  public void setPromelaInPVisitor(PromelaInPredicateVisitor pinVisitor) {
+  	 pinpv = pinVisitor;
+  }
 
   public String parse (aNode theClassRef, String expression) {
+  	 System.err.println("Parsing expr: '" + expression + "'");
   	 classRef = theClassRef;
   	 ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
   	 currentClass = thisClassRef.getID(); 
   	 String retStr = "";
+  	 referencedSymbols.clear();
   	 dataStream = new StringReader (expression);
   	 ReInit(dataStream);
   	 try {

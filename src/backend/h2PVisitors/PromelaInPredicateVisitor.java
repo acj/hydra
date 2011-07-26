@@ -34,7 +34,8 @@ public class PromelaInPredicateVisitor extends aVisitor {
 		
 		INPredicateTarget = new AcceptReturnType();
 		callVisitNodeAlways = false; 
-		ExpressionParser = new UMLExpr(globalOutputs, this);
+		ExpressionParser = new UMLExpr(globalOutputs);
+		ExpressionParser.setPromelaInPVisitor(this);
 	}
 
 	public void INTarget (ClassBodyNode tNode, String target) {
