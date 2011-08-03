@@ -76,7 +76,6 @@ public class UMLExpr extends NodeUtilityClass {
   }
 
   public String parse (aNode theClassRef, String expression) {
-  	 System.err.println("Parsing expr: '" + expression + "'");
   	 classRef = theClassRef;
   	 ClassNode thisClassRef = (ClassNode) searchUpForDest (classRef, "ClassNode");
   	 currentClass = thisClassRef.getID(); 
@@ -184,7 +183,7 @@ public class UMLExpr extends NodeUtilityClass {
 		  		Symbol instanceTypeSym = SymbolTable.getSymbol(instClass);
 		  		// Tally this instance in the class's symbol
 	        	instanceTypeSym.addClassInstance(instanceSym);
-	        	referencedSymbols.add(instanceSym);
+	        	referencedSymbols.add(SymbolTable.getSymbol(instClass + "." + varName));
 		  		return instName + "." + varName;
 		  	} else {
 		  		System.err.println("Error: class `" + instClass +

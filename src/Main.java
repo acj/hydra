@@ -79,6 +79,7 @@ public class Main {
 	    try {
 	        prologDriver.convert();
 	        prologDriver.save(sinkFile);
+	        System.out.println("\nOutput written to " + sinkFile);
         } catch (ParseException e) {
             System.err.println("Error parsing `" + sourceFile + "'");
             e.printStackTrace();

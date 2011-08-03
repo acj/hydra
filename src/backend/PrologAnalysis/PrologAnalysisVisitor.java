@@ -1,6 +1,5 @@
 package backend.PrologAnalysis;
 
-
 import java.util.Set;
 
 import backend.h2PFoundation.AcceptReturnType;
@@ -44,6 +43,14 @@ import backend.h2PVisitors.aVisitor;
 public class PrologAnalysisVisitor extends aVisitor {
 	protected genericLex1 genLex;
 	protected UMLExpr exprParser;
+	private ClassNode currentClass;
+	private InitNode currentInit;
+	private TransitionNode currentTransition;
+	private TransitionActionNode currentTransitionAction;
+	private TransitionActionsNode currentTransitionActions;
+	private EventNode currentEvent;
+	private MessageNode currentMessage;
+	private MessagesNode currentMessages;
 
 	public PrologAnalysisVisitor() {
 		super();
@@ -67,24 +74,60 @@ public class PrologAnalysisVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitClassNode(ClassNode tNode) {
+	    currentClass = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
+		tmpART.addStr("default", "classid('" + tNode.getUniqueID() + "','" + tNode.getID() + "').");
 		if (tNode.hasClassBodyNode()) {
             tmpART.merge(tNode.classBodyNode.accept(this));
 		}
 		return tmpART;
 	}
+	
+   public AcceptReturnType visitClassBodyNode(ClassBodyNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        for (int i = 0; i < tNode.children.size(); i++) {
+            aNode childNode = (aNode) tNode.children.get(i);
+            if (childNode.getType().equals("InitNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+            if (childNode.getType().equals("InstanceVariableNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+            if (childNode.getType().equals("SignalNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+            if (childNode.getType().equals("StateNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+        }
+        return tmpART;
+    }
 
-	public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
+    public AcceptReturnType visitCompositeStateNode(CompositeStateNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+          
+        return tmpART;
+    }
 
-		return tmpART;
-	}
+    public AcceptReturnType visitCompositeStateBodyNode(
+            CompositeStateBodyNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        
+        return tmpART;
+    }
 
-	public AcceptReturnType visitConcurrentCompositeNode(
-			ConcurrentCompositeNode tNode) {
-	    AcceptReturnType tmpART = super.visitNode(tNode);
-		return tmpART;
-	}
+    public AcceptReturnType visitConcurrentCompositeNode(
+            ConcurrentCompositeNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        return tmpART;
+    }
+    
+    public AcceptReturnType visitConcurrentCompositeBodyNode(
+            ConcurrentCompositeBodyNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+
+        return tmpART;
+    }
 
 	public AcceptReturnType visitDriverFileNode(DriverFileNode tNode) {
 	    AcceptReturnType tmpART = super.visitNode(tNode);
@@ -98,13 +141,13 @@ public class PrologAnalysisVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitEventNode(EventNode tNode) {
+	    currentEvent = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		// Do sanity check on the event
 		exprParser.parse(tNode, tNode.getDescription());
-		System.err.println("Event!");
 		Set<Symbol> referencedSyms = exprParser.getReferencedSymbols();
 		for (Symbol sym : referencedSyms) {
-		    System.err.println("Event sym: " + sym.getName());
+		    tmpART.addStr("default", "event('" + currentClass.getUniqueID() + "','" + currentTransition.getUniqueID() + "','" + sym.getName() + "').");
 		}
 		return tmpART;
 	}
@@ -116,6 +159,7 @@ public class PrologAnalysisVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitInitNode(InitNode tNode) {
+	    currentInit = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		if (tNode.hasTransitionBodyNode()) {
             tmpART.merge(tNode.subnode.accept(this));
@@ -135,16 +179,23 @@ public class PrologAnalysisVisitor extends aVisitor {
 	}
 
 	public AcceptReturnType visitMessageNode(MessageNode tNode) {
+	    currentMessage = tNode;
 		assert(tNode.getSignalName().length() > 0);
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		if (! tNode.getIntVarName().equals("")) {
 		    exprParser.parse(tNode,	tNode.getIntVarName());
+		    for (Symbol sym : exprParser.getReferencedSymbols()) {
+		        if (sym.getType() != Symbol.SymbolType.ENUM) {
+		            tmpART.addStr("default", "message('" + currentClass.getUniqueID() + "','" + currentTransition.getUniqueID() + "','" + sym.getName() + "').");
+		        }
+		    }
 		}
 
 		return tmpART;
 	}
 
 	public AcceptReturnType visitMessagesNode(MessagesNode tNode) {
+	    currentMessages = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		// TODO: Parse message text
 		tmpART.merge(tNode.acceptChildren(this));
@@ -156,9 +207,25 @@ public class PrologAnalysisVisitor extends aVisitor {
         if (tNode.hasModelBodyNode()) {
             tmpART.merge(tNode.subnode.accept(this));
         }
-		String finalString = "";
-        return AcceptReturnType.retString(finalString);
+        return AcceptReturnType.retString(tmpART.getStr("default"));
 	}
+	
+    public AcceptReturnType visitModelBodyNode(ModelBodyNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        for (int i = 0; i < tNode.children.size(); i++) {
+            aNode childNode = (aNode) tNode.children.get(i);
+            if (childNode.getType().equals("ClassNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+            if (childNode.getType().equals("DriverFileNode")) {
+                childNode.accept(this).defV();
+            }
+            if (childNode.getType().equals("EnumNode")) {
+                tmpART.merge(childNode.accept(this));
+            }
+        }
+        return tmpART;
+    }
 
 	public AcceptReturnType visitNullNode(NullNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
@@ -178,14 +245,50 @@ public class PrologAnalysisVisitor extends aVisitor {
         }
 		return tmpART;
 	}
+	
+    public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        for (int i = 0; i < tNode.children.size(); i++) {
+            aNode childNode = (aNode) (tNode.children.get(i));
+
+            if (childNode.getType().equals("ActionNode")) {
+                ActionNode actNode = (ActionNode) childNode;
+                tmpART.merge(actNode.accept(this));
+            } else if (childNode.getType().equals("TransitionNode")) {
+                TransitionNode tranNode = (TransitionNode) childNode;
+                if (tranNode.hasBody()) {
+                    if (tranNode.bodyChild.hasEventNodeChild()) {
+                        tmpART.merge(tranNode.accept(this));
+                    }
+                }
+            } else {
+                System.err.println("Unhandled node type: " + childNode.getType());
+            }
+        }
+        return tmpART;
+    }
+    
+    public AcceptReturnType visitTransitionNode(TransitionNode tNode) {
+        currentTransition = tNode;
+        currentEvent = null;
+        currentTransitionAction = null;
+        currentTransitionActions = null;
+        currentMessage = null;
+        currentMessages = null;
+        AcceptReturnType tmpART = super.visitNode(tNode);
+        if (tNode.hasBody()) {
+            tmpART.addStr("default", "transitiontext('" + currentClass.getUniqueID() + "','" + tNode.getUniqueID() + "','" + tNode.getDescription() + "').");
+            tmpART.merge(tNode.bodyChild.accept(this));
+        }
+        return tmpART;
+    }
 
 	public AcceptReturnType visitTransitionActionNode(TransitionActionNode tNode) {
+	    currentTransitionAction = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
-		String tmpStr = "";
-		System.err.println("Transition!");
 		String actType = tNode.getActionType();
 		if (actType.equals("newaction")) {
-		    String retVal = exprParser.parse(tNode, tNode.getContent());
+		    exprParser.parse(tNode, tNode.getContent());
 		}
 		if (actType.equals("sendmsg")) {
             if (tNode.hasMessageChild()) {
@@ -193,17 +296,20 @@ public class PrologAnalysisVisitor extends aVisitor {
             }
         }
 		if (actType.equals("assignstmt")) {
-			String retVal = exprParser.parse(tNode,	tNode.getAssignment());
+			exprParser.parse(tNode,	tNode.getAssignment());
+			for (Symbol sym : exprParser.getReferencedSymbols()) {
+			    tmpART.addStr("default", "assign('" + currentClass.getUniqueID() + "','" + currentTransition.getUniqueID() + "','" + sym.getName() + "').");
+			}
 		}
 		if (actType.equals("function")) {
-			String retVal = exprParser.parse(tNode, tNode.getFunctionID() + "(" + tNode.getParamList() + ")");
+			exprParser.parse(tNode, tNode.getFunctionID() + "(" + tNode.getParamList() + ")");
 		}
 
 		return tmpART;
 	}
 
-	public AcceptReturnType visitTransitionActionsNode(
-			TransitionActionsNode tNode) {
+	public AcceptReturnType visitTransitionActionsNode(TransitionActionsNode tNode) {
+	    currentTransitionActions = tNode;
 		AcceptReturnType tmpART = super.visitNode(tNode);
 		// TODO: Parse action text
 		System.err.println("Action: " + tNode.getDescription());
@@ -212,91 +318,18 @@ public class PrologAnalysisVisitor extends aVisitor {
 		return tmpART;
 	}
 
-	public AcceptReturnType visitTransitionNode(TransitionNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-		if (tNode.hasBody()) {
-            tmpART.merge(tNode.bodyChild.accept(this));
-        }
-		return tmpART;
-	}
-
-	public AcceptReturnType visitClassBodyNode(ClassBodyNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-        for (int i = 0; i < tNode.children.size(); i++) {
-            aNode childNode = (aNode) tNode.children.get(i);
-            if (childNode.getType().equals("InitNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-            if (childNode.getType().equals("InstanceVariableNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-            if (childNode.getType().equals("SignalNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-            if (childNode.getType().equals("StateNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-        }
-		return tmpART;
-	}
-
-	public AcceptReturnType visitCompositeStateBodyNode(
-			CompositeStateBodyNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-		
-		return tmpART;
-	}
-
-	public AcceptReturnType visitConcurrentCompositeBodyNode(
-			ConcurrentCompositeBodyNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-
-		return tmpART;
-	}
-
-	public AcceptReturnType visitModelBodyNode(ModelBodyNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-        for (int i = 0; i < tNode.children.size(); i++) {
-            aNode childNode = (aNode) tNode.children.get(i);
-            if (childNode.getType().equals("ClassNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-            if (childNode.getType().equals("DriverFileNode")) {
-                childNode.accept(this).defV();
-            }
-            if (childNode.getType().equals("EnumNode")) {
-                tmpART.merge(childNode.accept(this));
-            }
-        }
-		return tmpART;
-	}
-
-	public AcceptReturnType visitStateBodyNode(StateBodyNode tNode) {
-		AcceptReturnType tmpART = super.visitNode(tNode);
-		for (int i = 0; i < tNode.children.size(); i++) {
-		    aNode childNode = (aNode) (tNode.children.get(i));
-
-		    if (childNode.getType().equals("ActionNode")) {
-		        ActionNode actNode = (ActionNode) childNode;
-		        actNode.accept(this);
-		    } else if (childNode.getType().equals("TransitionNode")) {
-                TransitionNode tranNode = (TransitionNode) childNode;
-                if (tranNode.hasBody()) {
-                    if (tranNode.bodyChild.hasEventNodeChild()) {
-                        tranNode.accept(this);
-                    }
-                }
-            } else {
-                System.err.println("Unhandled node type: " + childNode.getType());
-            }
-		}
-		return tmpART;
-	}
-
 	public AcceptReturnType visitTransitionBodyNode(TransitionBodyNode tNode) {
 		AcceptReturnType tmpART = super.visitNode(tNode);
-		// TODO: Check guard via tNode.getGuard()
         if (tNode.hasEventNodeChild()) {
+            if (!tNode.getGuard().equals("")) {
+                exprParser.parse(tNode, tNode.getGuard());
+            }
+            tmpART.addStr("default", "SIZE start: " + exprParser.getReferencedSymbols().size());
+            tmpART.addStr("default", "Guard: " + tNode.getGuard());
+            for (Symbol sym : exprParser.getReferencedSymbols()) {
+                tmpART.addStr("default", "guard('" + currentClass.getUniqueID() + "','" + currentTransition.getUniqueID() + "','" + sym.getName() + "').");
+            }
+            tmpART.addStr("default", "SIZE end: " + exprParser.getReferencedSymbols().size());
             tmpART.merge(tNode.eventNodeChild.accept(this));
         }
         // These are TransitionActions Children
@@ -313,6 +346,5 @@ public class PrologAnalysisVisitor extends aVisitor {
 		AcceptReturnType tmpART = super.visitNode(tNode);
 
 		return tmpART;
-
 	}
 }
