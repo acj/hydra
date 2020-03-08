@@ -4,7 +4,7 @@ src:
 	javac -d build -nowarn -cp src src/backend/h2PFoundation/*.java \
 		src/backend/h2PVisitors/*.java 
 		src/backend/h2PNodes/*.java \
-		src/MainDriver.java \
+		src/Main.java \
 		src/frontend/umlModel/*.java \
 		src/frontend/xmi2hil/*.java \
 		src/frontend/xdeXmiParser/*.java \
