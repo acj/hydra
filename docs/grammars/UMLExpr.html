@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for UMLExpr.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for UMLExpr.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+" "
+| "\r"
+| "\t"
+| "\n"
+| "\f"
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;OR: "||" | "|"&gt;
+| &lt;AND: "&amp;&amp;" | "&amp;"&gt;
+| &lt;NOT: "~" | "!"&gt;
+| &lt;IMP: "-&gt;"&gt;
+| &lt;COMPARE_OP: "&gt;=" | "&lt;=" | "&gt;" | "&lt;"&gt;
+| &lt;EQUALITY_OP: "==" | "!=" | "&lt;&gt;"&gt;
+| &lt;ASSGNOP: ":=" | "="&gt;
+| &lt;IN: "in"&gt;
+| &lt;WHEN: "when"&gt;
+| &lt;SENT: "sent"&gt;
+| &lt;PLUS: "+"&gt;
+| &lt;MINUS: "-"&gt;
+| &lt;TIMES: "*"&gt;
+| &lt;SEMICOLON: ";"&gt;
+| &lt;LPARENS: "("&gt;
+| &lt;RPARENS: ")"&gt;
+| &lt;PERIOD: "."&gt;
+| &lt;COMMA: ","&gt;
+| &lt;SLASH: "/"&gt;
+| &lt;LBRACKET: "["&gt;
+| &lt;RBRACKET: "]"&gt;
+| &lt;#CONSTANT: (&lt;DIGIT&gt;)+&gt;
+| &lt;#DIGIT: ["0"-"9"]&gt;
+| &lt;#LETTER: ["A"-"Z"] | ["a"-"z"]&gt;
+| &lt;NUM: &lt;CONSTANT&gt;&gt;
+| &lt;TRUTH: "true" | "TRUE" | "false" | "FALSE"&gt;
+| &lt;ID: (&lt;LETTER&gt; | "_") (&lt;LETTER&gt; | "_" | &lt;DIGIT&gt;)*&gt;
+| &lt;FULLID: &lt;ID&gt; &lt;PERIOD&gt; &lt;ID&gt;&gt;
+| &lt;UNOP: &lt;NOT&gt; | "&lt;&gt;" | "[]"&gt;
+| &lt;EQV: "&lt;-&gt;"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">stmt</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">assignment</A> | <A HREF="#prod3">guard</A> | <A HREF="#prod4">parameterList</A> | <A HREF="#prod5">whenclause</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">assignment</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ID&gt; | &lt;FULLID&gt; ) &lt;ASSGNOP&gt; <A HREF="#prod6">expression</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">function</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;ID&gt; | &lt;FULLID&gt; ) &lt;LPARENS&gt; ( <A HREF="#prod4">parameterList</A> )? &lt;RPARENS&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;IN&gt; &lt;LPARENS&gt; ( &lt;ID&gt; | &lt;FULLID&gt; ) &lt;RPARENS&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">parameterList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">parm</A> ( &lt;COMMA&gt; <A HREF="#prod8">parm</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">parm</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod6">expression</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">guard</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LBRACKET&gt; <A HREF="#prod6">expression</A> &lt;RBRACKET&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">whenclause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;WHEN&gt; &lt;LPARENS&gt; <A HREF="#prod6">expression</A> &lt;RPARENS&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">expression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod9">logicalExpression</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">logicalExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod10">booleanExpression</A> ( &lt;OR&gt; <A HREF="#prod10">booleanExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">booleanExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod11">equalityExpression</A> ( &lt;AND&gt; <A HREF="#prod11">equalityExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">equalityExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod12">relationalExpression</A> ( &lt;EQUALITY_OP&gt; <A HREF="#prod12">relationalExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">relationalExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod13">additiveExpression</A> ( &lt;COMPARE_OP&gt; <A HREF="#prod13">additiveExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">additiveExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod14">multiplicativeExpression</A> ( ( &lt;PLUS&gt; | &lt;MINUS&gt; ) <A HREF="#prod14">multiplicativeExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">multiplicativeExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod15">unaryExpression</A> ( ( &lt;TIMES&gt; | &lt;SLASH&gt; ) <A HREF="#prod15">unaryExpression</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">unaryExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod16">primaryExpression</A> | &lt;NOT&gt; <A HREF="#prod16">primaryExpression</A> | &lt;MINUS&gt; <A HREF="#prod16">primaryExpression</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">primaryExpression</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;LPARENS&gt; <A HREF="#prod9">logicalExpression</A> &lt;RPARENS&gt; | <A HREF="#prod7">function</A> | &lt;TRUTH&gt; | <A HREF="#prod17">numid</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">numid</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ID&gt; | &lt;FULLID&gt; | &lt;NUM&gt; )</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

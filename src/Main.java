@@ -2,8 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import h2PFoundation.NodeUtilityClass;
-import h2PParser.ParseException;
+import backend.h2PFoundation.NodeUtilityClass;
+import backend.h2PParser.ParseException;
+
 
 /*
  * MainDriver
@@ -11,7 +12,7 @@ import h2PParser.ParseException;
  * Driver class for bootstrapping Hydra.
  */
 public class Main {
-	enum Mode { CHECK_XMI, XMI_TO_HIL, XMI_TO_PROMELA, HIL_TO_PROMELA };
+	enum Mode { CHECK_XMI, XMI_TO_HIL, XMI_TO_PROMELA, HIL_TO_PROMELA, PROLOG_ANALYSIS };
 	/**
 	 * Launch Hydra using arguments from the command line.
 	 * 
@@ -25,7 +26,9 @@ public class Main {
         	printUsage();
 			System.exit(0);
         } else {
-        	if (args[0].equals("-c")) {
+            if (args[0].equals("-a")) {
+                mode = Mode.PROLOG_ANALYSIS;
+            } else if (args[0].equals("-c")) {
         		mode = Mode.CHECK_XMI;
         	} else if (args[0].equals("-h")) {
         		mode = Mode.XMI_TO_HIL; 
@@ -41,6 +44,11 @@ public class Main {
         File sourceFile = new File(sourceFilename);
         File sinkFile = new File(sinkFilename);
         switch (mode) {
+            case PROLOG_ANALYSIS:
+            {
+                prologAnalysis(sourceFile, sinkFile);
+                break;
+            }
 	        case CHECK_XMI:
 	        {
 	        	// TODO
@@ -65,8 +73,22 @@ public class Main {
 	    System.exit(0);
 	}
 	
+	private static void prologAnalysis(File sourceFile, File sinkFile) {
+	    backend.PrologAnalysis.ConversionDriver prologDriver =
+	        new backend.PrologAnalysis.ConversionDriver(sourceFile);
+	    try {
+	        prologDriver.convert();
+	        prologDriver.save(sinkFile);
+	        System.out.println("\nOutput written to " + sinkFile);
+        } catch (ParseException e) {
+            System.err.println("Error parsing `" + sourceFile + "'");
+            e.printStackTrace();
+            System.exit(1);
+        }
+	}
+	
 	private static void convertXMItoHIL(File sourceFile, File sinkFile) {
-    	xmi2hil.ConversionDriver x2hDriver = new xmi2hil.ConversionDriver(sourceFile);
+    	frontend.xmi2hil.ConversionDriver x2hDriver = new frontend.xmi2hil.ConversionDriver(sourceFile);
     	String intermediateFilename = sourceFile.getName();
     	intermediateFilename = intermediateFilename.replace(".xmi", "") + ".hil";
     	x2hDriver.setHilIntermediateFilename(intermediateFilename);
@@ -82,7 +104,7 @@ public class Main {
 	}
 
 	private static void convertXMItoPromela(File sourceFile, File sinkFile) {
-    	xmi2hil.ConversionDriver x2hDriver = new xmi2hil.ConversionDriver(sourceFile);
+    	frontend.xmi2hil.ConversionDriver x2hDriver = new frontend.xmi2hil.ConversionDriver(sourceFile);
     	String intermediateFilename = sourceFile.getName();
     	intermediateFilename = intermediateFilename.replace(".xmi", "") + ".hil";
     	x2hDriver.setHilIntermediateFilename(intermediateFilename);
@@ -99,7 +121,7 @@ public class Main {
 	}
 	
 	private static void convertHILtoPromela(String hilText, File sinkFile) {
-        hil2Promela.ConversionDriver h2pDriver = new hil2Promela.ConversionDriver();
+        backend.hil2Promela.ConversionDriver h2pDriver = new backend.hil2Promela.ConversionDriver();
         h2pDriver.setHILInput(hilText);
         try {
 			h2pDriver.convert();
@@ -117,7 +139,7 @@ public class Main {
 	}
 	
 	private static void convertHILtoPromela(File sourceFile, File sinkFile) {
-        hil2Promela.ConversionDriver h2pDriver = new hil2Promela.ConversionDriver(sourceFile);
+        backend.hil2Promela.ConversionDriver h2pDriver = new backend.hil2Promela.ConversionDriver(sourceFile);
         try {
 			h2pDriver.convert();
 			if (h2pDriver.save(sinkFile)) {
